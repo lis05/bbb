@@ -1,0 +1,241 @@
+// ========================
+// grammar for bbb - low level, 64-bit programming language targetting x86_64
+// systems compatible with System V ABI64.
+// ========================
+
+// #list(x) means a comma separated list of x.
+// #ifany(x, y) means that x appers only if any of y does.
+
+// special token that serves 2 purposes:
+// 1. in a layout, it defines a nameless padding
+// 2. in a variable definition, it defines a variable without a name,
+nameless:
+	'_'
+
+// used to define variables, functions, layouts, and offsets in layouts.
+// bbb does not mangle symbol names.
+name:
+	[a-zA-Z_][a-zA-Z0-9_]* |
+	nameless
+
+// rsp - rvalue pointing to the top of the stack
+// rbp - lvalue pointing to the base of the stack
+register:
+	'rsp' |
+	'rbp'
+
+// allows to interpret memory as meaningful values
+// s makese types bwdq signed, which are unsigned by default.
+// bwdq are 1,2,4,8 bytes respectively.
+// fF are 4-byte single and 8-byte double precision floats respectively
+//
+// memory_length rule is used to interpret memory as memroy blocks
+type:
+	[s]?[bwdqfF] |
+	memory_length
+
+
+// =================================================================
+
+program:
+	(
+		global_variable_declaration |
+		layout_delcaration |
+		extern_declaration |
+		function_declaration |
+		nasm_block
+	)*
+
+// gives the size of the layout
+layout_sizeof:
+	'sizeof' name
+
+// static - makes the symbol local to the current source file.
+// default is global, which adds nasm's 'global name' before every global
+// variable / function.
+visibility:
+	'static'
+
+// specifies length of a memory region. can be zero, which essentially allows
+// multiple variables to share the same memory.
+memory_length:
+	'm'[0-9]* |
+	'm' '(' layout_sizeof ')'
+
+// alignment requirements for variables and function parameters.
+// default is 8
+alignment:
+	'align'[1-9][0-9]*
+
+// global variables are put in the .bss section
+// and can be accessed from nasm by their name
+global_variable_declaration:
+	name ':' visibility? memory_length alignment?
+
+// used to let the compiler know that a 8-byte long chunk of data is to be
+// classified as int/sse/memory when being passed to / returned from a function.
+// default is int.
+chunk_class:
+	'#' 'mem' |
+	'#' 'sse' |
+	'#' 'int'
+
+// same as above, but can also accept a layout name. this is useful in
+// functions that return / accept small C structures.
+abi_class:
+	chunk_class |
+	'#' name
+
+// 1. the size of the layout is the sum of lengths of all elements inside of it.
+// 2. each element inside of a layout introduces some offset for the next element.
+//    you can think of this as elements 'reserving' memory for themselves.
+// 3. if the layout is larger than 16 bytes, memory described by it will always be
+//    passed to / returned from function by reference by taking a pointer to it.
+//    therefore, both chunk_class will have no effect on such a memory region.
+//
+//    on the other hand, memory smaller than 16 bytes has to be manually classified
+//    by providing class for each 8-byte long chunk. if the layout is at most 8
+//    bytes, only one chunk class needs to be provided; the other one will have no
+//    effect. if the layout has a size that is not divisible by 8, classification
+//    will be applied to the smaller part of the incomplete chunk.
+//    examples: struct {int; float;} must be classified as int, struct {double; int;
+//    } as sse,int
+// 4. padding may be introduces by adding a nameless member to the layout:
+//    ...
+//    _: m8             // 8 bytes of padding
+//    ...
+layout_declaration:
+	name ':' 'layout' chunk_class? chunk_class? '{'
+		(name ':' memory_length)+
+	'}'
+
+// will be converted 1:1 to nasm's 'extern name'
+extern_declaration:
+	'extern' name
+
+// function parameters are copied on the stack
+function_declaration:
+	name ':' visibility? 'fn' '('
+		#list(name #ifany(':', memory_length? alignment? abi_class?))+
+	')' #ifany('->', memory_length? abi_class?) body
+
+// everything between %nasm and %endnasm is inserted in the output file.
+// this can be used in 2 places:
+// 1. as a statement inside of a function.
+// 2. at the level of global variables and functions - can be used to define
+//    custom labels, sections, segments, etc.
+//
+// nasm blocks can interract with bbb global and local variables by prepending them
+// with % symbol. such a variable name will later be replaced with the location of
+// the variable. for example, local variable 'var' will make '%var' be replaced
+// with 'qword [rbp - 8]', and global variable 'g' will make '%g' be replaced with
+// 'qword [rel g]`.
+nasm_block:
+	'%nasm'.*'%endnasm'
+
+// ===================================================
+
+body:
+	'{' statement* '}'
+
+statement:
+	variable_declaration |
+	extern_declaration |
+	if_statement |
+	label_declaration |
+	goto_statement |
+	loop_statement |
+	break_statement |
+	ret_statement |
+	expression ';'
+	nasm_block
+
+// creates a local variable on the stack.
+// alignment will make sure the variable is aligned properly. default alignment is 8
+//
+// nameless variable will not be referenceable, but instead will function as
+// stack allocation
+variable_declaration:
+	name ':' memory_length alignment?
+
+if_statement:
+	'if' expression body ('else' body)?
+
+// will be translated to nasm's 'name:'
+label_declaration:
+	'label name ':'
+
+// labels can be from different functions, but its risky
+goto_statement:
+	'goto' name
+
+loop_statement:
+	'loop' body
+
+break_statement:
+	'break' |
+	'continue'
+
+ret_statement:
+	'ret' expression
+
+// operators do have precedence, but it will be specified later.
+// for now, assume standard C operator precedence.
+expression:
+	special_operator |
+	binary_operator |
+	unary_operator |
+	name |
+	literal |
+	register |
+	'(' expression ')'
+
+special_operator:
+	function_call |
+	address_of |
+	pointer_dereference |
+	layout_access |
+	type_cast |
+	sizeof
+
+function_call:
+	'call' memory_length? abi_class? expression '('
+		#list(expression, #ifany(':', memory_length? abi_class?))+
+	')'
+
+// first expression is the index offset from the address of the second expression.
+// it can be ommited.
+// []var is equivalent to (char*)&var in C,
+// [8]var is equivalent to (char*)&var + 8
+address_of:
+	'[' expression? ']' expression
+
+// similar to address_of
+// var[] is *var
+// var[8] is *((char*)var + 8)
+pointer_dereference:
+	expression '[' expression ']'
+
+// first name is the layout, second - the name of the offset in that layout
+// a Name . b should be written as a Name. b
+layout_access:
+	expression name '.' name
+
+// converts expression from first type to the second type
+type_cast:
+	expression type '->' type
+
+binary_operator:
+	expression type? binary_op type? expression
+
+binary_op:
+    '=' | '+=' | '-=' | '*=' | '/=' | '%=' | '&=' | '|=' | '^=' | '<<=' | '>>=' |
+    '+' | '-' | '*' | '/' | '%' | '&' | '|' | '^' | '<<' | '>>' |
+    '==' | '!=' | '<' | '<=' | '>' | '>=' |
+    '&&' | '||'
+
+unary_operator:
+	unary_op type? expression
+
+unary_op:
+    '+' | '-' | '!' | '~' | '++' | '--'
