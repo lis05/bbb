@@ -321,7 +321,8 @@ and has 2 elements that form a chunk: `INT` and `SSE`. Therefore, it is classifi
 `INT`, and will be passed to a `GPR`.
 
 Since bbb does not have types, you have to manually define the classification of each
-parameter, both when declaring and calling a function. Example:
+parameter, both when declaring and calling a function. You also should classify the
+return value, because otherwise it will be implicitly classified as `m8 #int`.
 ```asm
 sum: fn(a: m4 #int, b: m8 #sse) -> m8 #sse {
     ret a d+F b         // operators will be covered later
@@ -329,17 +330,9 @@ sum: fn(a: m4 #int, b: m8 #sse) -> m8 #sse {
                         // an int and a double value in C
 }
 
-extern sum2             // same as sum, but defined elsewhere
-
 ...
 
-// bbb knows the signature of sum
-// so we dont need to specify #int #sse #mem.
-res = call sum(1, 5.23); // 6.23
-
-// here it is unknown, so we
-// specify it manually.
-res = call m8 #sse sum2(1: m4 #int, 5.23: m8 #sse); // 6.23
+res = call m8 #sse sum(1: m4 #int, 5.23: m8 #sse); // 6.23
 ```
 
 Note that you cannot specify more than one chunk classification per argument. How do
