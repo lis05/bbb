@@ -219,11 +219,12 @@ pointer_dereference:
 // first name is the layout, second - the name of the offset in that layout
 // a Name . b should be written as a Name. b
 layout_access:
-	expression name '.' name
+	expression name '.' name |
+	expression name '->' name
 
 // converts expression from first type to the second type
 type_cast:
-	expression type '->' type
+	expression type '?' type
 
 binary_operator:
 	expression type? binary_op type? expression
