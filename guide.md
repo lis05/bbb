@@ -1,3 +1,16 @@
+- [Introduction](#introduction)
+- [Spirit of bbb](#spirit-of-bbb)
+- [Program structure](#program-structure)
+  - [Global variables](#global-variables)
+  - [Extern declaration](#extern-declaration)
+  - [Layouts](#layouts)
+  - [Functions](#functions)
+    - [ABI calling conventions](#abi-calling-conventions)
+    - [Local variables](#local-variables)
+    - [Stack frame](#stack-frame)
+    - [VLA](#vla)
+    - [Operators](#operators)
+
 # Introduction
 This document is a brief introduction to bbb programing.
 bbb is a low level programming language designed with assembly and C in mind. It
@@ -59,7 +72,6 @@ res: m8
 ret res
 ```
 
-# Language guide
 # Program structure
 bbb program is very similar to C. You have global variables, functions, some
 other declarations (in case of bbb - `extern` is the only declaration at the
@@ -341,10 +353,20 @@ is small (like 8 bytes), you only specify one chunk. If your structure does not
 contain floats, you don't need to specify anything at all; by default, everything is
 classified as `int`.
 
-### Back to functions
+### Local variables
+Variables can be allocated on the stack in the same manner global variables function.
+However, symbols are not created for local variables, and you cannot make them
+`static`. Local variables simply allocate space on the stack:
+```asm
+var1: m8
+var2: m16 align32
+var3: m0   // references same memory as var2
+```
+
+### Stack frame
 Should have mentioned that parameters and arguments are 8 bytes by default. You can
 specify their size by adding `: m16` or any other size after the argument:
-```
+```asm
 useless: fn(data: m1024) -> m1024 {
     ret data
 }
@@ -355,6 +377,149 @@ res = useless(data)
 ```
 
 Note that values bigger than 16 bytes are passed by reference.
+
+Another important thing is that bbb functions (due to me being too dumb to implement
+any sort of optimizer) put all arguments on the stack. For example:
+```asm
+foo: fn(a: m4, b: m8, c: m32) {
+    ...
+}
+```
+
+Calling `foo` will:
+0. Calculate how much size the arguments will take, their alignment requirements,
+   paddings, and the total size of the "arguments".
+1. Reserve space on the stack so that it is aligned and all the arguments can be
+   copied.
+2. Put arguments that have to go on the stack on the stack, so that they can be
+   accessed by using the base pointer of the future stack frame.
+3. Put arguments that have to go in the registers in the registers.
+4. Call `foo`.
+5. `foo` will create a new stack frame.
+6. `foo` will copy all arguments in the order they were passed in on the stack. These
+   arguments will later be accessible by variables that represent the arguments.
+
+Here, the stack frame after step 6 will look like (assume the stack has to be aligned
+by 8 bytes):
+```asm
+[rbp + 32]:     pointer to c
+[rbp + 24]:     b
+[rbp + 20]:     padding (4 bytes)
+[rbp + 16]:     a (4 bytes)
+[rbp + 8]:      return address
+[rbp]:          rbp
+[rbp - 4]:      a (4 bytes)
+[rbp - 8]:      padding (4 bytes)
+[rbp - 16]:     b
+[rbp - 24]:     pointer to c
+```
+
+If you don't want to make a stack frame for a function, sorry, you have to use nasm
+blocks.
+
+bbb exposes `rsp` and `rbp` registers. You can modify `rsp`, but `rbp` is readonly.
+Note that if you modify `rsp` you're responsible for all potential misalignment of
+the stack. Be careful.
+
+### VLA
+Just allocate some stack memory and make a pointer to it:
+```asm
+vla: m8        // int[]
+
+rsp -= 1024 * 4
+vla = []rsp
+
+vla[4 * i]    // access element at index i
+```
+
+## Operators
+Operators in bbb are special: they have types. By default, everything is treated as a
+8-byte unsigned integer (m8). However, if you want to add 2 floats, you can specify
+that their memory regions are to be treated as floats by adding `f` before and after
+the `+`:
+```asm
+a: m4
+a = 5.123 F?f;
+
+b: m4
+b = 1.0 F?f;
+
+res: m4
+res = a f+f b; // 6.123
+```
+
+Note that literals have to be converted to float values, as by default flaot literals
+are 8-byte double precision floats. The `?` operator creates a new value from the
+provided memory. Here, it is used to make double precision floats from single
+precision floats.
+
+Almost all operators can be used (and should be used) with type prefixes / sufixes.
+The types that can be used are:
+- b - 1 byte unsigned int
+- sb - 1 byte signed int
+- w - 2 byte unsigned int
+- sw - 2 byte unsigned int
+- d - 4 byte unsigned int
+- sd - 4 byte unsigned int
+- q - 8 byte unsigned int
+- sq - 8 byte signed int
+- f - 4 byte single precision float
+- F - 8 byte double precision float
+
+Also, when working with block of memory, you can specify their lengthes:
+- mX where X is a number
+- m(X) where X is a number or a `sizeof layout`
+
+Some examples:
+```asm
+// 1. float (a) plus double (b)
+res F=F a f+F b;
+res = a f+F b; // same because we copy 8 bytes
+
+// 2. signed long (a) divided by float (b)
+res = a sq/f b;
+
+// 3. copying 1mb of memory
+ptr1[] m1000000=m1000000 ptr2[]
+```
+
+Conversion operator `?` does not reinterpret memory; it creates a new value from the
+given one.
+
+Another interesting operators are dereferencing and taking an address of a variable:
+```asm
+ptr: m8
+ptr = call malloc(1024)
+
+// access the data of ptr
+ptr[];
+ptr[0];
+
+// access the data of ptr offset by 16 bytes
+ptr[16];
+
+data: m1024
+
+// copy data to ptr
+ptr[] m1024=m1024 data;
+
+// make ptr point to data
+ptr = []data;
+ptr = [0]data;
+
+// make ptr point to the value directly 13 bytes after data on the stack:
+ptr = [13]data;
+```
+
+With this, you can access variables by offsetting other variables:
+```asm
+var1: m8
+var2: m8 // directly below var1
+
+[-8]var1 = 5;
+// var2 is set to 5
+```
+
 
 
 
