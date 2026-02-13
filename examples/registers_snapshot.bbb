@@ -1,0 +1,96 @@
+// program that prints all registers
+
+extern printf
+
+gpr_regs: layout {
+	rax: m8
+	rbx: m8
+	rcx: m8
+	rdx: m8
+	rsi: m8
+	rdi: m8
+	rbp: m8
+	rsp: m8
+	r8: m8
+	r9: m8
+	r10: m8
+	r11: m8
+	r12: m8
+	r13: m8
+	r14: m8
+	r15: m8
+}
+
+sse_regs: layout {
+	xmm0: m16
+	xmm1: m16
+	xmm2: m16
+	xmm3: m16
+	xmm4: m16
+	xmm5: m16
+	xmm6: m16
+	xmm7: m16
+	xmm8: m16
+	xmm9: m16
+	xmm10: m16
+	xmm11: m16
+	xmm12: m16
+	xmm13: m16
+	xmm14: m16
+	xmm15: m16
+}
+
+regs: layout {
+	gpr: m(sizeof gpr_regs)
+	sse: m(sizeof sse_regs)
+}
+
+snapshot: fn() -> m(sizeof regs) {
+	res: m(sizeof regs)
+
+	%nasm
+		mov qword [%res], rax
+		mov qword [%res + 8], rbx
+		mov qword [%res + 16], rcx
+		mov qword [%res + 24], rdx
+		mov qword [%res + 32], rsi
+		mov qword [%res + 40], rdi
+		mov qword [%res + 48], rbp
+		mov qword [%res + 56], rsp
+		mov qword [%res + 64], r8
+		mov qword [%res + 72], r9
+		mov qword [%res + 80], r10
+		mov qword [%res + 88], r11
+		mov qword [%res + 96], r12
+		mov qword [%res + 104], r13
+		mov qword [%res + 112], r14
+		mov qword [%res + 120], r15
+
+		movups [%res + 128], xmm0
+		movups [%res + 144], xmm1
+		movups [%res + 160], xmm2
+		movups [%res + 176], xmm3
+		movups [%res + 192], xmm4
+		movups [%res + 208], xmm5
+		movups [%res + 224], xmm6
+		movups [%res + 240], xmm7
+		movups [%res + 256], xmm8
+		movups [%res + 272], xmm9
+		movups [%res + 288], xmm10
+		movups [%res + 304], xmm11
+		movups [%res + 320], xmm12
+		movups [%res + 336], xmm13
+		movups [%res + 352], xmm14
+		movups [%res + 368], xmm15
+	%endnasm
+
+	ret res
+}
+
+main: fn() {
+	val: m(sizeof regs)
+	call = call #regs snapshot();
+
+	printf("rax: %llu\n:, val regs. gpr gpr_regs. rax);
+	printf("float xmm5[2]: %f\n", [4 * 2](val regs. sse sse_regs. xmm5));
+}
