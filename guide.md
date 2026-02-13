@@ -219,8 +219,8 @@ point: m(sizeof(vec2))
 
 Now, you can access `x` and `y` parts by writing:
 ```asm
-point vec2. x
-point vec2. y
+point vec2. x;
+point vec2. y;
 ```
 
 Note how you have to specify the layout name together with the dot operator.
@@ -238,10 +238,10 @@ vec4: layout {
 
 ...
 
-point vec4. a
-point vec4. b
-point vec4. c
-point vec4. d
+point vec4. a;
+point vec4. b;
+point vec4. c;
+point vec4. d;
 ```
 
 It would use the same memory we allocated for `point`. Again, layouts are simply
@@ -324,7 +324,7 @@ Since bbb does not have types, you have to manually define the classification of
 parameter, both when declaring and calling a function. Example:
 ```asm
 sum: fn(a: m4 #int, b: m8 #sse) -> m8 #sse {
-    return a d+F b      // operators will be covered later
+    ret a d+F b         // operators will be covered later
                         // but this is just a sum of
                         // an int and a double value in C
 }
@@ -363,7 +363,7 @@ extern foo
 
 res: m(sizeof struct)
 
-res = call #struct foo(res: m(sizeof struct) #struct)
+res = call #struct foo(res: m(sizeof struct) #struct);
 ```
 
 Note the `#int #sse` part after the `layout` keyword. Here we describe each chuck,
@@ -445,10 +445,10 @@ Just allocate some stack memory and make a pointer to it:
 ```asm
 vla: m8        // int[]
 
-rsp -= 1024 * 4
-vla = []rsp
+rsp -= 1024 * 4;
+vla = []rsp:
 
-vla[4 * i]    // access element at index i
+vla[4 * i];   // access element at index i
 ```
 
 ### Return
@@ -509,7 +509,7 @@ res = a f+F b; // same because we copy 8 bytes
 res = a sq/f b;
 
 // 3. copying 1mb of memory
-ptr1[] m1000000=m1000000 ptr2[]
+ptr1[] m1000000=m1000000 ptr2[];
 ```
 
 Conversion operator `?` does not reinterpret memory; it creates a new value from the
@@ -518,7 +518,7 @@ given one.
 Another interesting operators are dereferencing and taking an address of a variable:
 ```asm
 ptr: m8
-ptr = call malloc(1024)
+ptr = call malloc(1024);
 
 // access the data of ptr
 ptr[];
@@ -564,12 +564,12 @@ if a < b {
 `loop` statement
 ```c
 i: m8
-i = 0
+i = 0:
 loop {
     if i >= 1000 {
         break
     }
-    i++
+    i++;
 }
 ```
 
@@ -586,7 +586,7 @@ if error {
 ...
 
 label cleanup:
-    call clear()
+    call clear():
     ret
 ```
 
