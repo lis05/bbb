@@ -64,12 +64,12 @@ arg3: m8
 res: m8
 ...
 %nasm
-    mov rax, qword %syscall_num
-    mov rdi, qword %arg1
-    mov rsi, qword %arg2
-    mov rdx, qword %arg3
+    mov rax, qword [%syscall_num]
+    mov rdi, qword [%arg1]
+    mov rsi, qword [%arg2]
+    mov rdx, qword [%arg3]
     syscall
-    mov qword %res, rax
+    mov qword [%res], rax
 %endnasm
 ...
 ret res
@@ -610,8 +610,8 @@ var: m8
 
 %nasm
     rdseed rax   ; generate a random number
-    add rax, qword %seed
-    mov qword %foo, rax
-    mov qword g_var, rax
+    add rax, qword [%seed]
+    mov qword [%foo], rax
+    mov qword [g_var], rax
 %end
 ```

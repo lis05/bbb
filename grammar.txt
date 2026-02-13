@@ -127,9 +127,9 @@ function_declaration:
 //
 // nasm blocks can interract with bbb global and local variables by prepending them
 // with % symbol. such a variable name will later be replaced with the location of
-// the variable. for example, local variable 'var' will make '%var' be replaced
-// with 'qword [rbp - 8]', and global variable 'g' will make '%g' be replaced with
-// 'qword [rel g]`.
+// the variable. for example, local variable 'var' will make '[%var]' be replaced
+// with '[rbp - 8]', and global variable 'g' will make '[%g]' be replaced with
+// '[rel g]`.
 nasm_block:
 	'%nasm'.*'%endnasm'
 
