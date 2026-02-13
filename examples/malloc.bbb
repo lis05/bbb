@@ -1,0 +1,19 @@
+// simple malloc usage example
+
+extern printf
+extern malloc
+extern free
+
+main: fn() {
+	data: m8
+	data = call malloc(1024*1024);
+
+	if data == 0 {
+		printf("Malloc failed\n");
+	}
+	else {
+		printf("Malloc succeeded\n");
+	}
+
+	free(data);
+}

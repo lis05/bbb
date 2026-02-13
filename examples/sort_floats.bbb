@@ -1,0 +1,70 @@
+// program that reads an array of floats from stdin,
+// sorts them, and prints them to stdout
+
+extern printf
+extern scanf
+
+sort: fn(arr, n) {
+	i: m8
+	ii: m8
+
+	i = 0;
+	loop {
+		if i >= n {
+			break
+		}
+
+		ii = i + 1;
+		loop {
+			if ii >= n {
+				break
+			}
+
+			if arr[4 * i] f>f arr[4 * ii] {
+				temp: m4
+				temp f=f arr[4 * i];
+				arr[4 * i] f=f arr[4 * ii];
+				arr[4 * ii] f=f arr[4 * i];
+			}
+
+			ii++;
+		}
+		i++;
+	}
+}
+
+main: fn(argc: m4, argv) {
+	n: m8
+	call printf("Input the number of floats to sort: ");
+	call scanf("%lld", []n);
+
+	rsp -= 4 * n;
+	rsp ^= 0xF; // fix stack misalignment
+
+	arr: m0
+	arr = rsp;
+
+	i: m8
+	i = 0;
+	loop {
+		if i == n {
+			break;
+		}
+
+		call scanf("%f", arr + 4 * i);
+		i++;
+	}
+
+	call sort(arr, n);
+
+	i = 0;
+	loop {
+		if i == n {
+			break;
+		}
+
+		call printf("%f", arr[4 * i] f?F); // printf converts floats to doubles
+		i++;
+	}
+}
+

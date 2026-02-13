@@ -274,7 +274,7 @@ You can declare functions in bbb; they will be put in the `.text` section.
 
 A function is essentially an address that contains code which can be called using the
 `call` instruction. Like in C, you can define a function that accepts some parameters
-and returns at most one value. 
+and returns at most one value.
 ```asm
 sum: fn(a, b) -> m8 {
     ret a + b
