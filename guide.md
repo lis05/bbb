@@ -9,7 +9,8 @@
     - [Local variables](#local-variables)
     - [Stack frame](#stack-frame)
     - [VLA](#vla)
-    - [Operators](#operators)
+  - [Operators](#operators)
+  - [NASM blocks](#nasm-blocks)
 
 # Introduction
 This document is a brief introduction to bbb programing.
@@ -520,7 +521,28 @@ var2: m8 // directly below var1
 // var2 is set to 5
 ```
 
+## NASM blocks
+Nasm blocks can only interact with bbb using variables. The compiler will substitute
+references to them with addresses local to `rbp` if you use local variables; global
+variables can be used by providing their name, as they will be defined as separate
+symbols.
 
+To use a variable `foo`, just write `%foo`:
+```asm
 
+// a global variable
+g_var: m8
 
+...
 
+// in some function
+seed: m8
+var: m8
+
+%nasm
+    rdseed rax   ; generate a random number
+    add rax, qword %seed
+    mov qword %foo, rax
+    mov qword g_var, rax
+%end
+```
