@@ -92,5 +92,5 @@ main: fn() {
 	call = call #regs snapshot();
 
 	printf("rax: %llu\n:, val regs. gpr gpr_regs. rax);
-	printf("float xmm5[2]: %f\n", [4 * 2](val regs. sse sse_regs. xmm5));
+	printf("float xmm5[2]: %f\n", [4 * 2](val regs. sse sse_regs. xmm5) f?F);
 }
