@@ -9,7 +9,9 @@
     - [Local variables](#local-variables)
     - [Stack frame](#stack-frame)
     - [VLA](#vla)
+    - [Return](#return)
   - [Operators](#operators)
+  - [Control flow](#control-flow)
   - [NASM blocks](#nasm-blocks)
 
 # Introduction
@@ -174,6 +176,22 @@ call printf("hello world!\n");
 
 Such extern declarations are simply copied to the output code, without any
 modifications.
+
+Another type of extern declaration (i am not sure if this is a good place to put
+these here) is nasm declaration. This notifies the compiler that the symbol will be
+defined somewhere in a `%nasm` block. It does not compiles into anything; it is
+simply a hint for the compiler:
+```asm
+%nasm
+    section .data
+        data dq 0
+%endnasm
+
+...
+
+nasm data
+data = 123
+```
 
 ## Layouts
 Layouts are similar to C structures, because both are just a collection of named
@@ -433,6 +451,16 @@ vla = []rsp
 vla[4 * i]    // access element at index i
 ```
 
+### Return
+To return a value, use `ret`:
+```asm
+...
+
+ret result
+```
+Note that the classification of the return value is specified in the function
+signature, not the return statement.
+
 ## Operators
 Operators in bbb are special: they have types. By default, everything is treated as a
 8-byte unsigned integer (m8). However, if you want to add 2 floats, you can specify
@@ -519,6 +547,47 @@ var2: m8 // directly below var1
 
 [-8]var1 = 5;
 // var2 is set to 5
+```
+
+## Control flow
+bbb has only basic constrol flow constructions.
+
+`if` statement (just like in C, with optional else part)
+```c
+if a < b {
+    ret a
+} else {
+    ret b
+}
+```
+
+`loop` statement
+```c
+i: m8
+i = 0
+loop {
+    if i >= 1000 {
+        break
+    }
+    i++
+}
+```
+
+`break` and `continue` - work just like in C
+
+You can also define labels and use `goto`:
+```c
+...
+
+if error {
+    goto cleanup
+}
+
+...
+
+label cleanup:
+    call clear()
+    ret
 ```
 
 ## NASM blocks

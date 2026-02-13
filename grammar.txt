@@ -109,9 +109,9 @@ layout_declaration:
 		(name ':' memory_length)+
 	'}'
 
-// will be converted 1:1 to nasm's 'extern name'
 extern_declaration:
-	'extern' name
+	'extern' name |
+	'nasm' name
 
 // function parameters are copied on the stack
 function_declaration:
