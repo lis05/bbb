@@ -1,0 +1,71 @@
+// solution for https://leetcode.com/problems/rotate-list/
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+
+ListNode: layout {
+    val: m4
+    _: m4
+    next: m8
+}
+
+rotateRight: fn(head, k: m4) -> m8 {
+    if head == 0 {
+        ret 0
+    }
+
+    ptr: m8
+
+    // find the number of nodes
+    ptr = head;
+    n: m8
+    n = 1;
+
+    loop {
+        if ptr ListNode-> next == 0 {
+            break
+        }
+        ptr = ptr ListNode-> next;
+        n++;
+    }
+
+    k sd%=sq n;
+    if k == 0 {
+        ret head
+    }
+
+    // find k-th node from the end and its parent
+    k sd= (n -sd k - 1) sq?sd;
+    ptr = head;
+    loop {
+        if k == 0 {
+            break
+        }
+        ptr = ptr ListNode-> next;
+        k--;
+    }
+
+    last: m8
+    last = ptr;
+
+    loop {
+        if last ListNode-> next == 0 {
+            break
+        }
+        last = last ListNode-> next;
+    }
+
+    newHead: m8
+    newHead = ptr ListNode-> next;
+
+    ptr ListNode->next = 0;
+
+    last ListNode-> next = head;
+
+    return newHead;
+}

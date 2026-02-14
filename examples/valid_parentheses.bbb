@@ -1,0 +1,56 @@
+// solution for https://leetcode.com/problems/valid-parentheses/
+
+extern strlen
+extern malloc
+extern free
+
+isValid: fn(str) -> m8 {
+    n: m8
+    n = call strlen(str);
+
+    i: m8
+    i = 0;
+
+    st: m8
+    st = call malloc(n);
+
+    st_i: m8
+    st_i = 0;
+
+    loop {
+        if i >= n {
+            break
+        }
+
+        c: m1
+        c b=b str[i];
+
+        if c b==b '(' || c b==b '{' || c b==b '[' {
+            st[st_i] b=b c;
+            st_i++;
+            goto valid;
+        }
+
+        if c b=b ')' && st_i > 0 && st[st_i - 1] b==b '(' {
+            st_i--;
+            goto valid;
+        }
+        else if c b=b '}' && st_i > 0 && st[st_i - 1] b==b '{' {
+            st_i--;
+            goto valid;
+        }
+        else if c b=b ']' && st_i > 0 && st[st_i - 1] b==b '[' {
+            st_i--;
+            goto valid;
+        }
+
+        call free(st);
+        ret 0
+
+    label valid:
+        i++;
+    }
+
+    call free(st);
+    ret st_i == 0;
+}
