@@ -10,6 +10,7 @@
     - [Stack frame](#stack-frame)
     - [VLA](#vla)
     - [Return](#return)
+    - [Preserve registers](#preserve-registers)
   - [Operators](#operators)
   - [Control flow](#control-flow)
   - [NASM blocks](#nasm-blocks)
@@ -72,7 +73,7 @@ res: m8
     mov qword [%res], rax
 %endnasm
 ...
-ret res
+ret res;
 ```
 
 # Program structure
@@ -89,7 +90,7 @@ compilation unit; the `global <symbol name>` will not be added in the assembly
 output.
 
 Global variables are always put in the `.bss` section. Functions are put in the
-`.data` section. Nasm blocks are put directly into the output; you have to say
+`.text` section. Nasm blocks are put directly into the output; you have to say
 what section it is yourself.
 
 The order in which objects are generated is really simple. Code for each element
@@ -277,7 +278,7 @@ A function is essentially an address that contains code which can be called usin
 and returns at most one value.
 ```asm
 sum: fn(a, b) -> m8 {
-    ret a + b
+    ret a + b;
 }
 ```
 
@@ -325,7 +326,7 @@ parameter, both when declaring and calling a function. You also should classify 
 return value, because otherwise it will be implicitly classified as `m8 #int`.
 ```asm
 sum: fn(a: m4 #int, b: m8 #sse) -> m8 #sse {
-    ret a d+F b         // operators will be covered later
+    ret a d+F b;        // operators will be covered later
                         // but this is just a sum of
                         // an int and a double value in C
 }
@@ -380,7 +381,7 @@ Should have mentioned that parameters and arguments are 8 bytes by default. You 
 specify their size by adding `: m16` or any other size after the argument:
 ```asm
 useless: fn(data: m1024) -> m1024 {
-    ret data
+    ret data;
 }
 
 ...
@@ -449,10 +450,25 @@ To return a value, use `ret`:
 ```asm
 ...
 
-ret result
+ret result;
 ```
 Note that the classification of the return value is specified in the function
 signature, not the return statement.
+
+### Preserve registers
+bbb compiler will use registers when trying to evaluate expressions. This will
+override their values, and you cannot reliably store anything in them. However, you
+can hint the compiler to avoid using some of the registers. The compiler will use
+other available registers, but if there is no other way than to use one of the
+avoided registers, an compilation error will be thrown.
+
+```asm
+foo: avoid r8 xmm5 fn() {
+    %nasm
+        mov r8, 15  ; stays safe until the end of foo
+    %endnasm
+}
+```
 
 ## Operators
 Operators in bbb are special: they have types. By default, everything is treated as a
@@ -548,9 +564,9 @@ bbb has only basic constrol flow constructions.
 `if` statement (just like in C, with optional else part)
 ```c
 if a < b {
-    ret a
+    ret a;
 } else {
-    ret b
+    ret b;
 }
 ```
 
@@ -580,7 +596,7 @@ if error {
 
 label cleanup:
     call clear():
-    ret
+    ret;
 ```
 
 ## NASM blocks
