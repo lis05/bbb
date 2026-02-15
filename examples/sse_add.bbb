@@ -1,6 +1,6 @@
 // program that sums up two arrays of integers using SSE instructions.
 
-sum: avoid r8 r9 r10 r11 fn(a, b, c, n) {
+sum: fn(a, b, c, n) {
 	i: m8
 
 	%nasm
@@ -10,23 +10,25 @@ sum: avoid r8 r9 r10 r11 fn(a, b, c, n) {
 		xor r11, r11
 	%endnasm
 
-	loop {
-		%nasm
-			mov qword [%i], r11
-		%endnasm
+	avoid r8, r9, r10, r11 {
+		loop {
+			%nasm
+				mov qword [%i], r11
+			%endnasm
 
-		if i + 7 >= n {
-			break
+			if i + 7 >= n {
+				break
+			}
+
+			%nasm
+				vmovups ymm0, [r8 + 4 * r11]
+				vmovups ymm1, [r9 + 4 * r11]
+				vpaddd ymm0, ymm0, ymm1
+				vmovups [r10 + 4 * r11], ymm0
+
+				add r11, 8
+			%endnasm
 		}
-
-		%nasm
-			vmovups ymm0, [r8 + 4 * r11]
-			vmovups ymm1, [r9 + 4 * r11]
-			vpaddd ymm0, ymm0, ymm1
-			vmovups [r10 + 4 * r11], ymm0
-
-			add r11, 8
-		%endnasm
 	}
 
 	loop {

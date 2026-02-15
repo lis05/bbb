@@ -115,17 +115,9 @@ extern_declaration:
 
 // function parameters are copied on the stack
 function_declaration:
-	name ':' visibility? avoided_registers? 'fn' '('
+	name ':' visibility? 'fn' '('
 		#list(name #ifany(':', memory_length? alignment? abi_class?))+
 	')' #ifany('->', memory_length? abi_class?) body
-
-// the compiler will try to avoid using these registers when compiling the function.
-// however, if it is not possible, a compile time error will be thrown.
-avoided_registers:
-	'avoid' (
-		'r(ax|bx|cx|dx|si|di|8|9|1[0-5])' |
-		'(xmm|ymm)([0-9]|1[0-5])'
-	)+
 
 // everything between %nasm and %endnasm is inserted in the output file.
 // this can be used in 2 places:
@@ -155,6 +147,8 @@ statement:
 	loop_statement |
 	break_statement |
 	ret_statement |
+	avoid_block |
+	preserve_block |
 	expression ';'
 	nasm_block
 
@@ -186,6 +180,15 @@ break_statement:
 
 ret_statement:
 	'ret' expression ';'?
+
+available_register
+	(
+		'r(ax|bx|cx|dx|si|di|8|9|1[0-5])' |
+		'(xmm|ymm)([0-9]|1[0-5])'
+	)
+
+avoid_block:
+	'avoid' #list(avoidable_register)+ body
 
 // operators do have precedence, but it will be specified later.
 // for now, assume standard C operator precedence.

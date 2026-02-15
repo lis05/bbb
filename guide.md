@@ -10,9 +10,9 @@
     - [Stack frame](#stack-frame)
     - [VLA](#vla)
     - [Return](#return)
-    - [Preserve registers](#preserve-registers)
   - [Operators](#operators)
   - [Control flow](#control-flow)
+  - [Avoiding registers](#avoiding-registers)
   - [NASM blocks](#nasm-blocks)
 
 # Introduction
@@ -455,21 +455,6 @@ ret result;
 Note that the classification of the return value is specified in the function
 signature, not the return statement.
 
-### Preserve registers
-bbb compiler will use registers when trying to evaluate expressions. This will
-override their values, and you cannot reliably store anything in them. However, you
-can hint the compiler to avoid using some of the registers. The compiler will use
-other available registers, but if there is no other way than to use one of the
-avoided registers, an compilation error will be thrown.
-
-```asm
-foo: avoid r8 xmm5 fn() {
-    %nasm
-        mov r8, 15  ; stays safe until the end of foo
-    %endnasm
-}
-```
-
 ## Operators
 Operators in bbb are special: they have types. By default, everything is treated as a
 8-byte unsigned integer (m8). However, if you want to add 2 floats, you can specify
@@ -598,6 +583,60 @@ label cleanup:
     call clear():
     ret;
 ```
+
+## Avoiding registers
+The compiler must use registers to evaluate expressions. For example, this code:
+```c
+if i > n {
+    ...
+}
+```
+
+Might get compiled into:
+```asm
+mov rax, qword [address of i]
+mov rcx, qword [address of n]
+cmp rax, rcx
+jg .if_block
+...
+
+.if_block:
+    ...
+```
+
+However, we might want to save some registers from being overwritten. An example is
+storing array pointers in registers to save on memory reads. However, the compiler
+may ruin their values by compiling bbb code into assembly code that uses those
+registers.
+
+To solve this issue, you can use the `avoid` block:
+```asm
+avoid rax, rbx {
+    ...
+}
+```
+
+The compiler will know that it should not use `rax` and `rcx` during codegen.
+Therefore, it will try to compile the code inside of the `avoid` block without using
+those registers. So, the `if` statement from above will compile into, for example:
+```asm
+mov r8, qword [address of i]
+mov r9, qword [address of n]
+cmp r8, r9
+jg .if_block
+...
+
+.if_block:
+    ...
+```
+
+However, if this is not possible (too many registers were avoided), a compile error
+will be thrown.
+
+Note: the `avoid` block does **NOT** guarantee that the avoided registers will keep
+their values througout the block. You might still overwrite them by calling
+functions (arguments go into registers like `rdi` and `xmm0`). To make sure you do
+not overwrite registers, use `push` / `pop` instructions inside of the nasm blocks.
 
 ## NASM blocks
 Nasm blocks can only interact with bbb using variables. The compiler will substitute
