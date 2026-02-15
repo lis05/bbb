@@ -1,0 +1,38 @@
+// program that sums up two arrays of integers using SSE instructions.
+
+sum: fn(a, b, c, n) {
+	i: alias reg
+	A: alias reg
+	B: alias reg
+	C: alias reg
+
+	i = 0;
+	A = a;
+	B = b;
+	C = c;
+
+	loop {
+		if i + 7 >= n {
+			break;
+		}
+
+		%nasm
+			vmovups ymm0, [%A + 4 * %i]
+			vmovups ymm1, [%B + 4 * %i]
+			vpaddd ymm0, ymm0, ymm1
+			vmovups [%C + 4 * %i], ymm0
+		%endnasm
+
+		i += 8;
+	}
+
+	loop {
+		if i == n {
+			break;
+		}
+
+		c[4 * i] d=d a[4 * i] d+d b[4 * i];
+		i++;
+	}
+}
+

@@ -7,6 +7,7 @@
   - [Functions](#functions)
     - [ABI calling conventions](#abi-calling-conventions)
     - [Local variables](#local-variables)
+    - [Register alias](#register-alias)
     - [Stack frame](#stack-frame)
     - [VLA](#vla)
     - [Return](#return)
@@ -371,6 +372,26 @@ var1: m8
 var2: m16 align32
 var3: m0   // references same memory as var2
 ```
+
+### Register alias
+Local variables can also be binded to registers, and not stack memory. Only general
+purpose registers can be used:
+```asm
+var: alias reg       // binds to some available register
+var: alias rbx       // binds to RBX
+```
+
+Such variables cannot be used in a 'address of' operator, since they do not have an
+address. Such variables can be used in nasm blocks, but they will be substituded by
+the register name: instead of `mov rax, [%i]` write `mov rax, %i` if `i` is an alias
+of some register.
+
+If you create an alias of a register, it will not be used by the compiler in code
+generated to evaluate expressions: you don't need to use the `avoid` block (will be
+explained later).
+
+If an alias cannot be created due to the lack of available registers, a
+compile time error will be thrown.
 
 ### Stack frame
 Should have mentioned that parameters and arguments are 8 bytes by default. You can
