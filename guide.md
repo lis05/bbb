@@ -82,12 +82,9 @@ other declarations (in case of bbb - `extern` is the only declaration at the
 moment). There are no macros yet - not sure if they will ever be added. Another
 element of a program may be a top-level nasm block.
 
-Global variables and function are by default global - meaning they are
-accessible from other compilation units. This is implemented by adding `global
-<symbol name>` to the assembly output directly above the symbol. However, in bbb
-you can add `static` to the declaration of a symbol, and it will be local to the
-compilation unit; the `global <symbol name>` will not be added in the assembly
-output.
+Global variables and function are by default static - meaning they are not
+accessible from other compilation units. To change this, mark the symbol as 'global',
+which will add `global <symbol name> to the assembly output directly above.
 
 Global variables are always put in the `.bss` section. Functions are put in the
 `.text` section. Nasm blocks are put directly into the output; you have to say
@@ -140,10 +137,9 @@ var: m8
 ```
 
 This declares a 8-byte variable with the name `var` which will be declared
-global in the assembly output. To make it static (and local to the current
-compilation unit) add `static` after the colon:
+global in the assembly output. To make it global (visible outside this unit):
 ```asm
-var: static m8
+var: global m8
 ```
 
 `m8` is the length that the variable occupies. Remember, there are no types, so
@@ -369,7 +365,7 @@ classified as `int`.
 ### Local variables
 Variables can be allocated on the stack in the same manner global variables function.
 However, symbols are not created for local variables, and you cannot make them
-`static`. Local variables simply allocate space on the stack:
+`global`. Local variables simply allocate space on the stack:
 ```asm
 var1: m8
 var2: m16 align32

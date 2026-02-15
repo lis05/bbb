@@ -50,11 +50,9 @@ program:
 layout_sizeof:
 	'sizeof' name
 
-// static - makes the symbol local to the current source file.
-// default is global, which adds nasm's 'global name' before every global
-// variable / function.
+// global - makes the symbol visible from outside of this compilation unit.
 visibility:
-	'static'
+	'global'
 
 // specifies length of a memory region. can be zero, which essentially allows
 // multiple variables to share the same memory.
