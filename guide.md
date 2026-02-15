@@ -605,13 +605,13 @@ jg .if_block
 ```
 
 However, we might want to save some registers from being overwritten. An example is
-storing array pointers in registers to save on memory reads. However, the compiler
+storing array pointers in registers to save on memory reads. The compiler
 may ruin their values by compiling bbb code into assembly code that uses those
 registers.
 
 To solve this issue, you can use the `avoid` block:
 ```asm
-avoid rax, rbx {
+avoid rax, rcx {
     ...
 }
 ```
