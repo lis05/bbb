@@ -11,13 +11,13 @@ sort: fn(arr, n) {
 	i = 0;
 	loop {
 		if i >= n {
-			break
+			break;
 		}
 
 		ii = i + 1;
 		loop {
 			if ii >= n {
-				break
+				break;
 			}
 
 			if arr[4 * i] f>f arr[4 * ii] {

@@ -16,7 +16,7 @@ ListNode: layout {
 
 rotateRight: fn(head, k: m4) -> m8 {
     if head == 0 {
-        ret 0
+        ret 0;
     }
 
     ptr: m8
@@ -28,7 +28,7 @@ rotateRight: fn(head, k: m4) -> m8 {
 
     loop {
         if ptr ListNode-> next == 0 {
-            break
+            break;
         }
         ptr = ptr ListNode-> next;
         n++;
@@ -36,7 +36,7 @@ rotateRight: fn(head, k: m4) -> m8 {
 
     k sd%=sq n;
     if k == 0 {
-        ret head
+        ret head;
     }
 
     // find k-th node from the end and its parent
@@ -44,7 +44,7 @@ rotateRight: fn(head, k: m4) -> m8 {
     ptr = head;
     loop {
         if k == 0 {
-            break
+            break;
         }
         ptr = ptr ListNode-> next;
         k--;
@@ -55,7 +55,7 @@ rotateRight: fn(head, k: m4) -> m8 {
 
     loop {
         if last ListNode-> next == 0 {
-            break
+            break;
         }
         last = last ListNode-> next;
     }

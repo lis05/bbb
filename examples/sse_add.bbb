@@ -17,7 +17,7 @@ sum: fn(a, b, c, n) {
 			%endnasm
 
 			if i + 7 >= n {
-				break
+				break;
 			}
 
 			%nasm
@@ -33,7 +33,7 @@ sum: fn(a, b, c, n) {
 
 	loop {
 		if i == n {
-			break
+			break;
 		}
 
 		c[4 * i] d=d a[4 * i] d+d b[4 * i];

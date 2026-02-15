@@ -19,7 +19,7 @@ isValid: fn(str) -> m8 {
 
     loop {
         if i >= n {
-            break
+            break;
         }
 
         c: m1
@@ -45,9 +45,9 @@ isValid: fn(str) -> m8 {
         }
 
         call free(st);
-        ret 0
+        ret 0;
 
-    label valid:
+    valid:
         i++;
     }
 

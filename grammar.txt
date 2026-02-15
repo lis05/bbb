@@ -165,21 +165,21 @@ if_statement:
 
 // will be translated to nasm's 'name:'
 label_declaration:
-	'label name ':'
+	name ':'
 
 // labels can be from different functions, but its risky
 goto_statement:
-	'goto' name
+	'goto' name ';'
 
 loop_statement:
 	'loop' body
 
 break_statement:
-	'break' |
-	'continue'
+	'break' ';'|
+	'continue' ';'
 
 ret_statement:
-	'ret' expression ';'?
+	'ret' expression ';'
 
 available_register
 	(

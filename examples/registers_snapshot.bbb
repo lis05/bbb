@@ -84,7 +84,7 @@ snapshot: fn() -> m(sizeof regs) {
 		movups [%res + 368], xmm15
 	%endnasm
 
-	ret res
+	ret res;
 }
 
 main: fn() {

@@ -191,7 +191,7 @@ simply a hint for the compiler:
 ...
 
 nasm data
-data = 123
+data = 123;
 ```
 
 ## Layouts
@@ -386,7 +386,7 @@ useless: fn(data: m1024) -> m1024 {
 
 ...
 
-res = useless(data)
+res = useless(data);
 ```
 
 Note that values bigger than 16 bytes are passed by reference.
@@ -561,7 +561,7 @@ i: m8
 i = 0:
 loop {
     if i >= 1000 {
-        break
+        break;
     }
     i++;
 }
@@ -574,12 +574,12 @@ You can also define labels and use `goto`:
 ...
 
 if error {
-    goto cleanup
+    goto cleanup;
 }
 
 ...
 
-label cleanup:
+cleanup:
     call clear():
     ret;
 ```
