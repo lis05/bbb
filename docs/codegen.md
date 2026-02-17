@@ -49,11 +49,10 @@ Lets call:
 - SSE registers - unnamed `XR0` - `XR15`
 - Constants calculated at compile time / other compile time things - `<...>`
 - Arguments of operators - `arg0` - ...
-- Interpret 8-byte val as T - `reint(val, T)`. Only if required.
 - Convert between types - `conv(val, T, U)`. Only if required.
 - GPR / SSE register - `S0` - `S15`
 - Operator nasm code - `op(arg1, arg2, ...)`
-- Transfer of RAW binary from S1 to S2 - `move(S1) -> S2`. Option / can be ommited if
+- Transfer of RAW binary from S1 to S2 of type T- `move(S1, T) -> S2`. Option / can be ommited if
   possible.
 - Location (rbp - X, address, register alias) - `L0` ...
 - Stronger / weaker between types - `weaker(T,U)` / `stronger(T,U)`
@@ -133,9 +132,6 @@ has to be cast to the "stronger" type. The supported casts are:
 - `ub,uw,ud,uq` -> `f,F`. Similar implementation, but special care is taken when
   addressing the sign.
 
-### About reinterpretation
-`reint(val ,T)` is used in case we need to load raw memory into XMM registers.
-
 ### Basic, trivial operators (rvalues)
 All these operators emit a little different code for operands of different types.
 However, the types always have to be the same AFTER CONVERSION.
@@ -148,7 +144,7 @@ rvalue arg0
 
 g_eval:
     g_eval(arg0) -> S0
-    reint(S0, T) -> S1
+    move(S0, T) -> S1
     op(S1) -> S2
 ```
 
@@ -163,10 +159,10 @@ rvalue arg1
 
 g_eval:
     g_eval(arg0) -> S0
-    reint(S0, T) -> S1
+    move(S0, T) -> S1
     conv(S1, weaker(T,U), stronger(T,U)) -> S2
     g_eval(arg1) -> S3
-    reint(S3, U) -> S4
+    move(S3, U) -> S4
     conv(S4, weaker(T,U), stronger(T,U)) -> S5
     op(S2, S5) -> S6
 ```
@@ -190,9 +186,9 @@ rvalue arg0
 
 g_eval:
     g_eval(arg0) -> S0
-    move(S0) -> S1 ; if a move is required, like S0 being RAX and S1 being XMM0
+    move(S0, T) -> S1 ; if a move is required, like S0 being RAX and S1 being XMM0
     ; code that converts from S1 of type T to S2 of type U
-    move(S2) -> R0
+    move(S2, q) -> R0
 ```
 
 ##### Layout access (avalue)
@@ -224,7 +220,7 @@ avalue arg1: value
 
 g_eval:
     g_eval(arg0) -> S0
-    move(S0) -> R0
+    move(S0, q) -> R0
     g_loc(arg1) -> L0
     lea R1, [L0 + R0] ; part 'L0 + ' may be ommited if offset is zero.
 ```
@@ -239,15 +235,15 @@ rvalue arg1: offset
 
 g_eval:
     g_eval(arg0) -> S0
-    move(S0) -> R0
+    move(S0, q) -> R0
     g_eval(arg1) -> S1
-    move(S1) -> R1
+    move(S1, q) -> R1
     mov R2, qword [R0 + R1]
 g_addr:
     g_eval(arg0) -> S0
-    move(S0) -> R0
+    move(S0, q) -> R0
     g_eval(arg1) -> S1
-    move(S1) -> R1
+    move(S1, q) -> R1
     lea R2, [R0 + R1]
 g_loc:
     ; same as g_addr
@@ -268,14 +264,14 @@ rvalue arg1
 go_eval:
     g_loc(arg0) -> L0
     g_eval(arg1) -> S0
-    reint(S0, U) -> S1
+    move(S0, U) -> S1
     op(L0, S1) -> S2; writes. takes into consideration types T and U
 go_addr:
     ; doesnt have
 go_loc:
     g_loc(arg0) -> L0
     g_eval(arg1) -> S0
-    reint(S0, U) -> S1
+    move(S0, U) -> S1
     op(L0, S1) -> S2; writes. takes into consideration types T and U
     ; result is L0
 ```
