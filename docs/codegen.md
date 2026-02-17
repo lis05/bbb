@@ -28,12 +28,14 @@ Lets call:
 - SSE registers - unnamed `XR0` - `XR15`
 - Constants calculated at compile time / other compile time things - `<...>`
 - Arguments of operators - `arg0` - ...
-- Conversion between types - `conv(val, T1, T2)`. Only if required.
+- Interpret 8-byte val as T - `reint(val, T)`. Only if required.
+- Convert between types - `conv(val, T, U)`. Only if required.
 - GPR / SSE register - `S0` - `S15`
 - Operator nasm code - `op(arg1, arg2, ...)`
-- Transfer from S1 to S2 - `move(S1) -> S2`. Option / can be ommited if
+- Transfer of RAW binary from S1 to S2 - `move(S1) -> S2`. Option / can be ommited if
   possible.
 - Location (rbp - X, address, register alias) - `L0` ...
+- Stronger / weaker between types - `weaker(T,U)` / `stronger(T,U)`
 
 ## Semantic analysis
 This phase is required to determine the type of each expression
@@ -110,35 +112,83 @@ has to be cast to the "stronger" type. The supported casts are:
 - `ub,uw,ud,uq` -> `f,F`. Similar implementation, but special care is taken when
   addressing the sign.
 
+### About reinterpretation
+`reint(val ,T)` is used in case we need to load raw memory into XMM registers.
+
 ### Basic, trivial operators (rvalues)
 All these operators emit a little different code for operands of different types.
 However, the types always have to be the same AFTER CONVERSION.
 
 #### Unary operators
-For unary operators, codegen is rather simple. All of unary operators are rvalues,
+For unary operators, codegen is rather simple. Almost all of unary operators are rvalues,
 and for them:
 ```asm
+rvalue arg0
+
 g_eval:
     g_eval(arg0) -> S0
-    conv(S0, q, T) -> S1
+    reint(S0, T) -> S1
     op(S1) -> S2
 ```
 
+The rest will be covered later.
+
 #### Binary operators
 For binary operators, codegen is simple too. Most of bunary operators are rvalues,
-and for them:
+and for them (assuming `arg0 T op U arg1`):
 ```asm
+rvalue arg0
+rvalue arg1
+
 g_eval:
     g_eval(arg0) -> S0
-    conv(S0, q, T) -> S1
-    g_eval(arg1) -> S2
-    conv(S2, q, T) -> S3
-    op(S1, S3) -> S4
+    reint(S0, T) -> S1
+    conv(S1, weaker(T,U), stronger(T,U)) -> S2
+    g_eval(arg1) -> S3
+    reint(S3, U) -> S4
+    conv(S4, weaker(T,U), stronger(T,U)) -> S5
+    op(S2, S5) -> S6
 ```
 
 Other binary operators will be covered later.
 
 ### Special operators
+
+#### Unary operators
+
+##### Type cast (rvalue)
+Casts between different types, ALWAYS resulting in an `rvalue`.
+Has form of `value T?U`, and produces an `rvalue` with the value from converting
+`value` from type `T` into type `U`.
+
+Supported conversions: Any pair of: `b,sb,w,sw,d,sd,q,sq,f,F`.
+
+Implementation is not complicated but huge, so in general:
+```asm
+rvalue arg0
+
+g_eval:
+    g_eval(arg0) -> S0
+    move(S0) -> S1 ; if a move is required, like S0 being RAX and S1 being XMM0
+    ; code that converts from S1 of type T to S2 of type U
+    move(S2) -> R0
+```
+
+##### Layout access (avalue)
+`value layout. field` looks into the memory at the address of `value` offset by the
+offset of `field` specified by `layout`.
+```asm
+avalue arg0
+
+g_eval:
+    g_loc(arg0) -> L0
+    mov R0, qword [L0 + <offset of field>]
+g_addr:
+    g_loc(arg0) -> L0
+    lea R0, [L0 + <offset of field>]
+g_loc:
+    ; same as g_addr
+```
 
 #### Binary operators
 
@@ -148,17 +198,72 @@ put it here. To remind: `[offset]value` is equivalent to taking address of `valu
 and offsetting it by `offset`.
 
 ```asm
-arg0: offset
-arg1: value
+rvalue arg0: offset
+avalue arg1: value
 
 g_eval:
     g_eval(arg0) -> S0
     move(S0) -> R0
     g_loc(arg1) -> L0
-    mov R1, qword [L0 + R0] // part 'L0 + ' may be ommited if offset is zero.
+    lea R1, [L0 + R0] ; part 'L0 + ' may be ommited if offset is zero.
 ```
 
-#####
+##### Pointer dereference (avalue)
+Same as with address off: this is a binary operator. `value[offset]` is equivalent to
+looking in memory at the address of `value` offset by `offset`.
+
+```asm
+rvalue arg0: value
+rvalue arg1: offset
+
+g_eval:
+    g_eval(arg0) -> S0
+    move(S0) -> R0
+    g_eval(arg1) -> S1
+    move(S1) -> R1
+    mov R2, qword [R0 + R1]
+g_addr:
+    g_eval(arg0) -> S0
+    move(S0) -> R0
+    g_eval(arg1) -> S1
+    move(S1) -> R1
+    lea R2, [R0 + R1]
+g_loc:
+    ; same as g_addr
+```
+
+##### Assignment operator (lvalue)
+First of all, operators like `+=` will always be compiled as the pair of `+`, then
+`=`.
+
+Second, this operator is special as it can operate on memory blocks. However, the
+length of the memory blocks have to be the same.
+
+First, let's talk about version without memory blocks: `arg0 T=U arg1`
+```asm
+lvalue arg0
+rvalue arg1
+
+go_eval:
+    g_loc(arg0) -> L0
+    g_eval(arg1) -> S0
+    reint(S0, U) -> S1
+    op(L0, S1) -> S2; writes. takes into consideration types T and U
+go_addr:
+    ; doesnt have
+go_loc:
+    g_loc(arg0) -> L0
+    g_eval(arg1) -> S0
+    reint(S0, U) -> S1
+    op(L0, S1) -> S2; writes. takes into consideration types T and U
+    ; result is L0
+```
+
+### Function call
+This shit is hard, will explain later.
+
+
+
 
 
 
