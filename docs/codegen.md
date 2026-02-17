@@ -1,3 +1,24 @@
+- [Expressions](#expressions)
+- [Semantic analysis](#semantic-analysis)
+- [Codegen](#codegen)
+  - [Leaf expressions.](#leaf-expressions)
+    - [`name`](#name)
+    - [`literal`](#literal)
+  - [About operator type conversions](#about-operator-type-conversions)
+  - [About reinterpretation](#about-reinterpretation)
+  - [Basic, trivial operators (rvalues)](#basic-trivial-operators-rvalues)
+    - [Unary operators](#unary-operators)
+    - [Binary operators](#binary-operators)
+  - [Special operators](#special-operators)
+    - [Unary operators](#unary-operators-1)
+      - [Type cast (rvalue)](#type-cast-rvalue)
+      - [Layout access (avalue)](#layout-access-avalue)
+    - [Binary operators](#binary-operators-1)
+      - [Address of (rvalue)](#address-of-rvalue)
+      - [Pointer dereference (avalue)](#pointer-dereference-avalue)
+      - [Assignment operator (lvalue)](#assignment-operator-lvalue)
+  - [Function call](#function-call)
+
 # Expressions
 Expressions are split into 3 categories (types):
 1. Addressable - these expressions have a memory address. Think of variables, array\
