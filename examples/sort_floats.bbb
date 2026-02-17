@@ -38,11 +38,13 @@ main: fn(argc: m4, argv) {
 	call printf("Input the number of floats to sort: ");
 	call scanf("%lld", []n);
 
-	rsp -= 4 * n;
-	rsp ^= 0xF; // fix stack misalignment
+	stack: alias rsp
+
+	stack -= 4 * n;
+	stack ^= 0xF; // fix stack misalignment
 
 	arr: m0
-	arr = rsp;
+	arr = stack;
 
 	i: m8
 	i = 0;

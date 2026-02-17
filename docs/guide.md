@@ -447,17 +447,16 @@ by 8 bytes):
 If you don't want to make a stack frame for a function, sorry, you have to use nasm
 blocks.
 
-bbb exposes `rsp` and `rbp` registers. You can modify `rsp`, but `rbp` is readonly.
-Note that if you modify `rsp` you're responsible for all potential misalignment of
-the stack. Be careful.
-
 ### VLA
-Just allocate some stack memory and make a pointer to it:
+Just allocate some stack memory and make a pointer to it. To change rsp, create an
+alias for it.
+
 ```asm
 vla: m8        // int[]
 
-rsp -= 1024 * 4;
-vla = []rsp:
+stack: alias rsp
+stack -= 1024 * 4;
+vla = []stack;
 
 vla[4 * i];   // access element at index i
 ```
