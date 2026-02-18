@@ -6,7 +6,7 @@ Expressions are split into 2 categories:
 
 ## Location
 Location is a way to describe what an expression results in. It can be one of:
-- memory address stored in a GRP register
+- memory address
 - compile-time symbol
 - register name
 - rbp offset
@@ -232,6 +232,44 @@ g:
     res -> L(addr: v(L0))
 ```
 
+### Assignment
+`arg0 T = T arg1`
 
+Here, `T` is the memory length. It has to be the same on both sides of the
+assignment.
+
+For short memory blocks (up to 64 bytes), multiple `mov` instructions are generated.
+Example for `T = m16`:
+```asm
+type: lvalue
+arg0: lvalue+
+arg1: rvalue+
+
+g:
+    g(arg0) -> L0
+    g(arg1) -> L1
+    ; copy qword from a(L1) to a(L0)
+    ; copy qword from a(L1)+8 to a(L0)+8
+    res -> L0
+```
+
+For longer memory blocks (above 64 bytes), a loop will be used:
+```asm
+type: lvalue
+arg0: lvalue+
+arg1: rvalue+
+
+g:
+    g(arg0) -> L0
+    g(arg1) -> L1
+    xor R0, R0
+    .loop:
+        ; copy qword from a(L1)+R0 to a(L0)+R0
+        add R0, 8
+        cmp R0, <number of bytes to copy this way>
+        jnz .loop
+    ; now copy the rest of the bytes if the total amount
+    ; is not divisible by 8
+```
 
 # Statements

@@ -235,10 +235,10 @@ type_cast:
 	expression type '?' type
 
 binary_operator:
-	expression type? binary_op type? expression
+	expression type? binary_op type? expression |
+	expression memory_length? '=' memory_length? expression
 
 binary_op:
-    '=' | '+=' | '-=' | '*=' | '/=' | '%=' | '&=' | '|=' | '^=' | '<<=' | '>>=' |
     '+' | '-' | '*' | '/' | '%' | '&' | '|' | '^' | '<<' | '>>' |
     '==' | '!=' | '<' | '<=' | '>' | '>=' |
     '&&' | '||'
