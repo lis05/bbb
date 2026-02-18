@@ -149,7 +149,6 @@ statement:
 	break_statement |
 	ret_statement |
 	avoid_block |
-	preserve_block |
 	expression ';'
 	nasm_block
 
@@ -230,7 +229,6 @@ pointer_dereference:
 // a Name . b should be written as a Name. b
 layout_access:
 	expression name '.' name |
-	expression name '->' name
 
 // converts expression from first type to the second type
 type_cast:
