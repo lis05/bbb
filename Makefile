@@ -2,7 +2,7 @@ MAKEFLAGS += -r
 
 # compiler stuff
 CC := gcc
-CFLAGS := -Wall -Wextra -O2 -g
+CFLAGS := -Wall -Wextra -O2 -g -std=gnu11
 
 # linker stuff
 LD := gcc
@@ -26,6 +26,10 @@ HEADERS += $(wildcard src/common/*.h)
 SOURCES += $(wildcard src/*.c)
 OBJECTS += $(patsubst src/%.c,obj/%.o,$(wildcard src/*.c))
 
+# codegen
+SOURCES += $(wildcard src/codegen/*.c)
+OBJECTS += $(patsubst src/codegen/%.c,obj/codegen/%.o,$(wildcard src/codegen/*.c))
+
 # parser
 SOURCES += $(wildcard src/parser/*.c)
 OBJECTS += $(patsubst src/parser/%.c,obj/parser/%.o,$(wildcard src/parser/*.c))
@@ -42,6 +46,10 @@ $(BBB): $(OBJECTS) | obj build
 obj/%.o: src/%.c $(HEADERS) | obj
 	$(CC) $(CFLAGS) -c $< -o $@
 
+# codegen compilation
+obj/codegen/%.o: src/codegen/%.c $(HEADERS) | obj/codegen
+	$(CC) $(CFLAGS) -c $< -o $@
+
 # parser compilation
 obj/parser/%.o: src/parser/%.c $(HEADERS) | obj/parser
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -55,6 +63,9 @@ clean:
 	rm -rf obj build
 
 obj:
+	mkdir -p $@
+
+obj/codegen:
 	mkdir -p $@
 
 obj/parser:

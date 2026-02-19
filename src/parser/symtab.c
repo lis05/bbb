@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include "symtab.h"
-#include "../common/error.h"
+#include "../common/log.h"
 
 char **symtab;
 int symtab_len;
@@ -23,7 +23,7 @@ void symbol_init() {
 	symtab_cap = 200;
 	symtab = calloc(symtab_cap, sizeof(char*));
 	if (symtab == NULL) {
-		quit("Failed to init the symbol table.\n");
+		log_crit("Failed to init the symbol table.\n");
 	}
 }
 
@@ -38,12 +38,12 @@ const char *symbol(char *string) {
 		symtab_cap *= 2;
 		symtab = realloc(symtab, symtab_cap * sizeof(char*));
 		if (symtab == NULL) {
-			quit("Failed to resize the symbol table.\n");
+			log_crit("Failed to resize the symbol table.\n");
 		}
 	}
 
 	if ((symtab[symtab_len++] = strdup(string)) == NULL) {
-		quit("Failed to add a new symbol.\n");
+		log_crit("Failed to add a new symbol.\n");
 	}
 
 	return symtab[symtab_len - 1];
