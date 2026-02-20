@@ -8,3 +8,6 @@
 
 #define true ((uint8_t)1)
 #define false ((uint8_t)0)
+
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
+#define MAX(x, y) ((x) < (y) ? (y) : (x))

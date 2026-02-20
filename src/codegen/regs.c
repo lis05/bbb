@@ -35,40 +35,40 @@ static const struct sse_info _r_xmm13 = {"xmm13"};
 static const struct sse_info _r_xmm14 = {"xmm14"};
 static const struct sse_info _r_xmm15 = {"xmm15"};
 
-gpr_reg r_rax = &_r_rax;
-gpr_reg r_rbx = &_r_rbx;
-gpr_reg r_rcx = &_r_rcx;
-gpr_reg r_rdx = &_r_rdx;
-gpr_reg r_rdi = &_r_rdi;
-gpr_reg r_rsi = &_r_rsi;
-gpr_reg r_rsp = &_r_rsp;
-gpr_reg r_rbp = &_r_rbp;
-gpr_reg r_r8 = &_r_r8;
-gpr_reg r_r9 = &_r_r9;
-gpr_reg r_r10 = &_r_r10;
-gpr_reg r_r11 = &_r_r11;
-gpr_reg r_r12 = &_r_r12;
-gpr_reg r_r13 = &_r_r13;
-gpr_reg r_r14 = &_r_r14;
-gpr_reg r_r15 = &_r_r15;
-sse_reg r_xmm0 = &_r_xmm0;
-sse_reg r_xmm1 = &_r_xmm1;
-sse_reg r_xmm2 = &_r_xmm2;
-sse_reg r_xmm3 = &_r_xmm3;
-sse_reg r_xmm4 = &_r_xmm4;
-sse_reg r_xmm5 = &_r_xmm5;
-sse_reg r_xmm6 = &_r_xmm6;
-sse_reg r_xmm7 = &_r_xmm7;
-sse_reg r_xmm8 = &_r_xmm8;
-sse_reg r_xmm9 = &_r_xmm9;
-sse_reg r_xmm10 = &_r_xmm10;
-sse_reg r_xmm11 = &_r_xmm11;
-sse_reg r_xmm12 = &_r_xmm12;
-sse_reg r_xmm13 = &_r_xmm13;
-sse_reg r_xmm14 = &_r_xmm14;
-sse_reg r_xmm15 = &_r_xmm15;
+gpr_reg_t r_rax = &_r_rax;
+gpr_reg_t r_rbx = &_r_rbx;
+gpr_reg_t r_rcx = &_r_rcx;
+gpr_reg_t r_rdx = &_r_rdx;
+gpr_reg_t r_rdi = &_r_rdi;
+gpr_reg_t r_rsi = &_r_rsi;
+gpr_reg_t r_rsp = &_r_rsp;
+gpr_reg_t r_rbp = &_r_rbp;
+gpr_reg_t r_r8 = &_r_r8;
+gpr_reg_t r_r9 = &_r_r9;
+gpr_reg_t r_r10 = &_r_r10;
+gpr_reg_t r_r11 = &_r_r11;
+gpr_reg_t r_r12 = &_r_r12;
+gpr_reg_t r_r13 = &_r_r13;
+gpr_reg_t r_r14 = &_r_r14;
+gpr_reg_t r_r15 = &_r_r15;
+sse_reg_t r_xmm0 = &_r_xmm0;
+sse_reg_t r_xmm1 = &_r_xmm1;
+sse_reg_t r_xmm2 = &_r_xmm2;
+sse_reg_t r_xmm3 = &_r_xmm3;
+sse_reg_t r_xmm4 = &_r_xmm4;
+sse_reg_t r_xmm5 = &_r_xmm5;
+sse_reg_t r_xmm6 = &_r_xmm6;
+sse_reg_t r_xmm7 = &_r_xmm7;
+sse_reg_t r_xmm8 = &_r_xmm8;
+sse_reg_t r_xmm9 = &_r_xmm9;
+sse_reg_t r_xmm10 = &_r_xmm10;
+sse_reg_t r_xmm11 = &_r_xmm11;
+sse_reg_t r_xmm12 = &_r_xmm12;
+sse_reg_t r_xmm13 = &_r_xmm13;
+sse_reg_t r_xmm14 = &_r_xmm14;
+sse_reg_t r_xmm15 = &_r_xmm15;
 
-void gpr_pool_init(struct gpr_pool *pool) {
+void gpr_pool_init(struct gpr_pool_t *pool) {
     pool->items[0].reg = r_rax;
     pool->items[1].reg = r_rbx;
     pool->items[2].reg = r_rcx;
@@ -108,7 +108,7 @@ void gpr_pool_init(struct gpr_pool *pool) {
     gpr_pool_find(pool, r_r15)->abi_protected = true;
 }
 
-struct gpr_pool_item *gpr_pool_find_available(struct gpr_pool *pool) {
+struct gpr_pool_item_t *gpr_pool_find_available(struct gpr_pool_t *pool) {
     for (int i = 0; i < GPR_REGS; i++) {
         if (pool->items[i].available == true) {
             return &pool->items[i];
@@ -117,7 +117,7 @@ struct gpr_pool_item *gpr_pool_find_available(struct gpr_pool *pool) {
     return NULL;
 }
 
-struct gpr_pool_item *gpr_pool_find(struct gpr_pool *pool, gpr_reg reg) {
+struct gpr_pool_item_t *gpr_pool_find(struct gpr_pool_t *pool, gpr_reg_t reg) {
     for (int i = 0; i < GPR_REGS; i++) {
         if (pool->items[i].reg == reg) {
             return &pool->items[i];
@@ -126,17 +126,17 @@ struct gpr_pool_item *gpr_pool_find(struct gpr_pool *pool, gpr_reg reg) {
     return NULL;
 }
 
-void sse_pool_init(struct sse_pool *pool) {
-    pool->items[0].reg  = r_xmm0;
-    pool->items[1].reg  = r_xmm1;
-    pool->items[2].reg  = r_xmm2;
-    pool->items[3].reg  = r_xmm3;
-    pool->items[4].reg  = r_xmm4;
-    pool->items[5].reg  = r_xmm5;
-    pool->items[6].reg  = r_xmm6;
-    pool->items[7].reg  = r_xmm7;
-    pool->items[8].reg  = r_xmm8;
-    pool->items[9].reg  = r_xmm9;
+void sse_pool_init(struct sse_pool_t *pool) {
+    pool->items[0].reg = r_xmm0;
+    pool->items[1].reg = r_xmm1;
+    pool->items[2].reg = r_xmm2;
+    pool->items[3].reg = r_xmm3;
+    pool->items[4].reg = r_xmm4;
+    pool->items[5].reg = r_xmm5;
+    pool->items[6].reg = r_xmm6;
+    pool->items[7].reg = r_xmm7;
+    pool->items[8].reg = r_xmm8;
+    pool->items[9].reg = r_xmm9;
     pool->items[10].reg = r_xmm10;
     pool->items[11].reg = r_xmm11;
     pool->items[12].reg = r_xmm12;
@@ -152,7 +152,7 @@ void sse_pool_init(struct sse_pool *pool) {
     }
 }
 
-struct sse_pool_item *sse_pool_find_available(struct sse_pool *pool) {
+struct sse_pool_item_t *sse_pool_find_available(struct sse_pool_t *pool) {
     for (int i = 0; i < SSE_REGS; i++) {
         if (pool->items[i].available == true) {
             return &pool->items[i];
@@ -161,7 +161,7 @@ struct sse_pool_item *sse_pool_find_available(struct sse_pool *pool) {
     return NULL;
 }
 
-struct sse_pool_item *sse_pool_find(struct sse_pool *pool, sse_reg reg) {
+struct sse_pool_item_t *sse_pool_find(struct sse_pool_t *pool, sse_reg_t reg) {
     for (int i = 0; i < SSE_REGS; i++) {
         if (pool->items[i].reg == reg) {
             return &pool->items[i];
