@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "common/log.h"
-#include "parser/symtab.h"
+#include "common/common.h"
+#include "parser/token.h"
 
 static struct option const long_opts[] = {{"help", 0, NULL, 'h'}};
 
