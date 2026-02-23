@@ -1,0 +1,415 @@
+#pragma once
+
+#include "tfrag.h"
+
+struct program_node_t;
+struct visibility_node_t;
+struct memory_length_node_t;
+struct alignment_node_t;
+struct global_variable_declaration_node_t;
+struct chunk_class_node_t;
+struct abi_class_node_t;
+struct layout_declaration_items_node_t;
+struct layout_declaration_node_t;
+struct extern_declaration_node_t;
+struct function_declaration_arg_node_t;
+struct function_declaration_args_node_t;
+struct function_declaration_node_t;
+struct nasm_block_node_t;
+struct body_list_node_t;
+struct body_node_t;
+struct statement_node_t;
+struct variable_declaration_node_t;
+struct register_alias_node_t;
+struct if_statement_node_t;
+struct label_declaration_node_t;
+struct goto_statement_node_t;
+struct loop_statement_node_t;
+struct break_statement_node_t;
+struct ret_statement_node_t;
+struct avoid_block_regs_node_t;
+struct avoid_block_node_t;
+struct expression_node_t;
+struct operand_type_node_t;
+struct logical_or_node_t;
+struct logical_and_node_t;
+struct bitwise_or_node_t;
+struct bitwise_xor_node_t;
+struct bitwise_and_node_t;
+struct equality_node_t;
+struct relational_node_t;
+struct additive_node_t;
+struct multiplicative_node_t;
+struct prefix_op_node_t;
+struct cast_op_node_t;
+struct address_op_node_t;
+struct sizeof_op_node_t;
+struct tetriary_node_t;
+struct suffix_op_node_t;
+struct dereference_op_node_t;
+struct layout_access_op_node_t;
+struct secondary_node_t;
+struct primary_node_t;
+struct literal_node_t;
+struct type_node_t;
+struct name_node_t;
+
+struct program_node_t {
+    tfrag_t frag;
+    struct program_node_t *rest;
+    struct global_variable_declaration_node_t *gvar_decl;
+    struct layout_declaration_node_t *layout_decl;
+    struct extern_declaration_node_t *ext_decl;
+    struct function_declaration_node_t *fn_decl;
+    struct nasm_block_node_t *nasm_b;
+};
+
+struct visibility_node_t {
+    tfrag_t frag;
+    struct name_node_t *kw;
+};
+
+struct memory_length_node_t {
+    tfrag_t frag;
+    struct name_node_t *simple;
+    struct name_node_t *prefix;
+    struct name_node_t *open_brace;
+    struct name_node_t *sizeof_kw;
+    struct name_node_t *name;
+    struct name_node_t *closed_brace;
+};
+
+struct alignment_node_t {
+    tfrag_t frag;
+    struct name_node_t *simple;
+};
+
+struct global_variable_declaration_node_t {
+    tfrag_t frag;
+    struct name_node_t *name;
+    struct name_node_t *colon;
+    struct visibility_node_t *vis;
+    struct memory_length_node_t *mem_len;
+    struct alignment_node_t *align;
+};
+
+struct chunk_class_node_t {
+    tfrag_t frag;
+    struct name_node_t *kw;
+};
+
+struct abi_class_node_t {
+    tfrag_t frag;
+    struct chunk_class_node_t *chunk;
+    struct name_node_t *layout;
+};
+
+struct layout_declaration_items_node_t {
+    tfrag_t frag;
+    struct layout_declaration_items_node_t *rest;
+    struct name_node_t *name;
+    struct name_node_t *colon;
+    struct memory_length_node_t *mem_len;
+};
+
+struct layout_declaration_node_t {
+    tfrag_t frag;
+    struct name_node_t *name;
+    struct name_node_t *colon;
+    struct name_node_t *layout;
+    struct chunk_class_node_t *chunk1;
+    struct chunk_class_node_t *chunk2;
+    struct name_node_t *open_brace;
+    struct layout_declaration_items_node_t *items;
+    struct name_node_t *closed_brace;
+};
+
+struct extern_declaration_node_t {
+    tfrag_t frag;
+    struct name_node_t *kw;
+    struct name_node_t *name;
+};
+
+struct function_declaration_arg_node_t {
+    tfrag_t frag;
+    struct name_node_t *name;
+    struct name_node_t *colon;
+    struct memory_length_node_t *mem_len;
+    struct alignment_node_t *align;
+    struct abi_class_node_t *abi_class;
+};
+
+struct function_declaration_args_node_t {
+    tfrag_t frag;
+    struct function_declaration_args_node_t *rest;
+    struct name_node_t *comma;
+    struct function_declaration_arg_node_t *arg;
+};
+
+struct function_declaration_node_t {
+    tfrag_t frag;
+    struct name_node_t *name;
+    struct name_node_t *colon;
+    struct name_node_t *fn;
+    struct name_node_t *open_brace;
+    struct function_declarations_args_node;
+    struct name_node_t *closed_brace;
+    struct name_node_t *arrow;
+    struct memory_length_node_t *mem_len;
+    struct abi_class_node_t *abi_class;
+    struct body_node_t *body;
+};
+
+struct nasm_block_node_t {
+    tfrag_t frag;
+    struct name_node_t *block;
+};
+
+struct body_list_node_t {
+    tfrag_t frag;
+    struct body_list_node_t *rest;
+    struct statement_node_t *s;
+};
+
+struct body_node_t {
+    tfrag_t frag;
+    struct name_node_t *open_brace;
+    struct body_list_node_t *list;
+    struct name_node_t *closed_brace;
+};
+
+// this should use enum. but fuck you, i can do what i want
+struct statement_node_t {
+    tfrag_t frag;
+    struct variable_declaration_node_t *vdecl;
+    struct register_alias_node_t *alias;
+    struct extern_declaration_node_t *ext_decl;
+    struct if_statement_node_t *if_s;
+    struct label_declaration_node_t *label;
+    struct goto_statement_node_t *goto_s;
+    struct loop_statement_node_t *loop_s;
+    struct break_statement_node_t *break_s;
+    struct ret_statement_node_t *ret_s;
+    struct expression_node_t *expr;
+    struct name_node_t *semicolon;
+    struct nasm_block_node_t *nasm;
+};
+
+struct variable_declaration_node_t {
+    tfrag_t frag;
+    struct name_node_t *name;
+    struct name_node_t *colon;
+    struct memory_length_node_t *mem_len;
+    struct alignment_node_t *align;
+};
+
+struct register_alias_node_t {
+    tfrag_t frag;
+    struct name_node_t *name;
+    struct name_node_t *colon;
+    struct namde_node_t *alias;
+    struct name_node_t *reg;
+};
+
+struct if_statement_node_t {
+    tfrag_t frag;
+    struct name_node_t *kw;
+    struct expression_node_t *expr;
+    struct body_node_t *body;
+    struct name_node_t *else_kw;
+    struct body_node_t *else_body;
+};
+
+struct label_declaration_node_t {
+    tfrag_t frag;
+    struct name_node_t *name;
+    struct name_node_t *colon;
+};
+
+struct goto_statement_node_t {
+    tfrag_t frag;
+    struct name_node_t *kw;
+    struct name_node_t *name;
+    struct name_node_t *semicolon;
+};
+
+struct loop_statement_node_t {
+    tfrag_t frag;
+    struct name_node_t *kw;
+    struct body_node_t *body;
+};
+
+struct break_statement_node_t {
+    tfrag_t frag;
+    struct name_node_t *kw;
+    struct name_node_t *semicolon;
+};
+
+struct ret_statement_node_t {
+    tfrag_t frag;
+    struct name_node_t *kw;
+    struct expression_node_t *expr;
+    struct name_node_t *semicolon;
+};
+
+struct avoid_block_regs_node_t {
+    tfrag_t frag;
+    struct avoid_block_regs_node_t *rest;
+    struct name_node_t *comma;
+    struct name_node_t *reg;
+};
+
+struct avoid_block_node_t {
+    tfrag_t frag;
+    struct name_node_t *kw;
+    struct avoid_block_regs_node_t *regs;
+    struct body_node_t *body;
+};
+
+struct expression_node_t {
+    tfrag_t frag;
+    struct logical_or_node_t *arg1;
+    struct operand_type_node_t *t1;
+    struct name_node_t *op;
+    struct operand_type_node_t *t2;
+    struct expression_node_t *arg2;
+    struct logical_or_node_t *other;
+};
+
+struct operand_type_node_t {
+    tfrag_t frag;
+    struct name_node_t *type;
+    struct memory_length_node_t *mem_len;
+};
+
+struct logical_or_node_t {
+    tfrag_t frag;
+    struct logical_or_node_t *arg1;
+    struct operand_type_node_t *t1;
+    struct name_node_t *op;
+    struct operand_type_node_t *t2;
+    struct logical_and_node_t *arg2;
+    struct logical_and_node_t *other;
+};
+
+struct logical_and_node_t {
+    tfrag_t frag;
+    struct logical_and_node_t *arg1;
+    struct operand_type_node_t *t1;
+    struct name_node_t *op;
+    struct operand_type_node_t *t2;
+    struct bitwise_or_node_t *arg2;
+    struct bitwise_or_node_t *other;
+};
+
+struct bitwise_or_node_t {
+    tfrag_t frag;
+    struct bitwise_or_node_t *arg1;
+    struct operand_type_node_t *t1;
+    struct name_node_t *op;
+    struct operand_type_node_t *t2;
+    struct bitwise_xor_node_t *arg2;
+    struct bitwise_xor_node_t *other;
+};
+
+struct bitwise_xor_node_t {
+    tfrag_t frag;
+    struct bitwise_xor_node_t *arg1;
+    struct operand_type_node_t *t1;
+    struct name_node_t *op;
+    struct operand_type_node_t *t2;
+    struct bitwise_and_node_t *arg2;
+    struct bitwise_and_node_t *other;
+};
+
+struct bitwise_and_node_t {
+    tfrag_t frag;
+    struct bitwise_and_node_t *arg1;
+    struct operand_type_node_t *t1;
+    struct name_node_t *op;
+    struct operand_type_node_t *t2;
+    struct equality_node_t *arg2;
+    struct equality_node_t *other;
+};
+
+struct equality_node_t {
+    tfrag_t frag;
+    struct equality_node_t *arg1;
+    struct operand_type_node_t *t1;
+    struct name_node_t *op;
+    struct operand_type_node_t *t2;
+    struct relational_node_t *arg2;
+    struct relational_node_t *other;
+};
+
+struct relational_node_t {
+    tfrag_t frag;
+    struct relational_node_t *arg1;
+    struct operand_type_node_t *t1;
+    struct name_node_t *op;
+    struct operand_type_node_t *t2;
+    struct additive_node_t *arg2;
+    struct additive_node_t *other;
+};
+
+struct additive_node_t {
+    tfrag_t frag;
+    struct additive_node_t *arg1;
+    struct operand_type_node_t *t1;
+    struct name_node_t *op;
+    struct operand_type_node_t *t2;
+    struct multuplicative_node_t *arg2;
+    struct multuplicative_node_t *other;
+};
+
+struct multiplicative_node_t {
+    tfrag_t frag;
+    struct multiplicative_node_t *arg1;
+    struct operand_type_node_t *t1;
+    struct name_node_t *op;
+    struct operand_type_node_t *t2;
+    struct tetriary_node_t *arg2;
+    struct tetriary_node_t *other;
+};
+
+struct prefix_op_node_t {
+    tfrag_t frag;
+    struct name_node_t *op;
+    struct operand_type_node_t *type;
+    struct tetriary_node_t *arg;
+};
+
+struct cast_op_node_t {
+    tfrag_t frag;
+    struct tetriary_node_t *arg;
+    struct operand_type_node_t *from_type;
+    struct name_node_t *question;
+    struct operand_type_node_t *to_type;
+};
+
+struct address_op_node_t {
+    tfrag_t frag;
+    struct name_node_t *open_brace;
+    struct expression_node_t *offset;
+    struct name_node_t *closed_brace;
+    struct tetriary_node_t *arg;
+};
+
+struct sizeof_op_node_t {
+    tfrag_t frag;
+    struct name_node_t *kw;
+    struct name_node_t *name;
+};
+
+struct tetriary_node_t {
+    tfrag_t frag;
+    struct prefix_op_node_t *prefix_op;
+    struct cast_op_node_t *cast_op;
+    struct address_op_node_t *address_op;
+    struct sizeof_op_node_t *sizeof_op;
+    struct secondary_node_t *secondary;
+};
+
+
+
+

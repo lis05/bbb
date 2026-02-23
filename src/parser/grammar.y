@@ -43,7 +43,7 @@
 %token <node> RET
 %token <node> AVOID
 %token <node> ALIAS
-%token <node> RES
+%token <node> REG
 
 %token <node> LOGICAL_OR
 %token <node> LOGICAL_AND
@@ -109,9 +109,7 @@
 %type <node> avoid_block
 
 %type <node> expression
-%type <node> operand_memory_length
 %type <node> operand_type
-%type <node> assignment
 %type <node> logical_or
 %type <node> logical_and
 %type <node> bitwise_or
@@ -246,7 +244,7 @@ variable_declaration:
     ;
 
 register_alias:
-    NAME ':' ALIAS RES {}
+    NAME ':' ALIAS REG {}
     | NAME ':' ALIAS GP_REGISTER {}
     ;
 
@@ -286,23 +284,14 @@ avoid_block:
     ;
 
 expression:
-    assignment {}
-    ;
-
-operand_memory_length:
-    memory_length {}
-    | {}
+    logical_or operand_type '=' operand_type expression {}
+    | logical_or {}
     ;
 
 operand_type:
     TYPE {}
     | memory_length {}
     | {}
-    ;
-
-assignment:
-    logical_or operand_type '=' operand_type assignment {}
-    | logical_or {}
     ;
 
 logical_or:
@@ -357,24 +346,52 @@ multiplicative:
     | tetriary {}
     ;
 
-tetriary:
+prefix_op:
     INCREMENT operand_type tetriary {}
     | DECREMENT operand_type tetriary {}
     | '!' operand_type tetriary {}
     | '~' operand_type tetriary {}
-    | tetriary operand_type '?' operand_type {}
-    | '[' expression ']' tetriary {}
+    ;
+
+cast_op:
+    tetriary operand_type '?' operand_type {}
+    ;
+
+address_op:
+    '[' expression ']' tetriary {}
     | '[' ']' tetriary {}
-    | SIZEOF NAME {}
+    ;
+
+sizeof_op:
+    SIZEOF NAME {}
+    ;
+
+tetriary:
+    prefix_op {}
+    | cast_op {}
+    | address_op {}
+    | sizeof_op {}
     | secondary {}
     ;
 
-secondary:
+suffix_op:
     secondary operand_type INCREMENT {}
     | secondary operand_type DECREMENT {}
-    | secondary '[' expression ']' {}
+    ;
+
+dereference_op:
+    secondary '[' expression ']' {}
     | secondary '[' ']' {}
-    | secondary NAME '.' NAME {}
+    ;
+
+layout_access_op:
+    secondary NAME '.' NAME {}
+    ;
+
+secondary:
+    suffix_op {}
+    | dereference_op {}
+    | layout_access_op {}
     | primary {}
     ;
 
