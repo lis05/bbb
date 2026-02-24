@@ -4,6 +4,7 @@
 
 #include "common/common.h"
 #include "parser/token.h"
+#include "parser/ast.h"
 
 static struct option const long_opts[] = {{"help", 0, NULL, 'h'}};
 

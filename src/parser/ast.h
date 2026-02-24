@@ -152,7 +152,7 @@ struct function_declaration_node_t {
     struct name_node_t *colon;
     struct name_node_t *fn;
     struct name_node_t *open_brace;
-    struct function_declarations_args_node;
+    struct function_declarations_args_node *args;
     struct name_node_t *closed_brace;
     struct name_node_t *arrow;
     struct memory_length_node_t *mem_len;
@@ -403,13 +403,79 @@ struct sizeof_op_node_t {
 
 struct tetriary_node_t {
     tfrag_t frag;
-    struct prefix_op_node_t *prefix_op;
-    struct cast_op_node_t *cast_op;
-    struct address_op_node_t *address_op;
+    struct prefix_op_node_t *prefix;
+    struct cast_op_node_t *cast;
+    struct address_op_node_t *address;
     struct sizeof_op_node_t *sizeof_op;
     struct secondary_node_t *secondary;
 };
 
+struct suffix_op_node_t {
+    tfrag_t frag;
+    struct secondary_node_t *arg;
+    struct operand_type_node_t *type;
+    struct name_node_t *op;
+};
 
+struct dereference_op_node_t {
+    tfrag_t frag;
+    struct secondary_node_t *arg;
+    struct name_node_t *open_brace;
+    struct expression_node_t *offset;
+    struct name_node_t *close_brace;
+};
 
+struct layout_access_op {
+    tfrag_t frag;
+    struct secondary_node_t *arg;
+    struct name_node_t *layout;
+    struct name_node_t *dot;
+    struct name_node_t *field;
+};
 
+struct secondary_node_t {
+    tfrag_t frag;
+    struct suffix_op_node_t *suffix;
+    struct dereference_op_node_t *deref;
+    struct layout_access_op_node_t *layout_access;
+    struct primary_node_t *primary;
+};
+
+struct primary_node_t {
+    tfrag_t frag;
+    struct name_node_t *open_brace;
+    struct expression_node_t *expression;
+    struct name_node_t *close_brace;
+    struct literal_node_t *literal;
+};
+
+// o
+enum literal_type {
+    LIT_INT = 0,
+    LIT_UINT,
+    LIT_DOUBLE,
+    LIT_STRING,
+    LIT_NAME
+};
+
+struct literal_node_t {
+    tfrag_t frag;
+    enum literal_type type;
+    union {
+        int64_t int_lit;
+        uint64_t uint_lit;
+        double double_lit;
+        const char *string_lit;
+        struct name_node_t *name_lit;
+    };
+};
+
+struct type_node_t {
+    tfrag_t frag;
+    const char *type;
+};
+
+struct name_node_t {
+    tfrag_t frag;
+    const char *name;
+};
