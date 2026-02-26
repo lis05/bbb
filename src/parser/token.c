@@ -24,7 +24,7 @@ void tokens_init() {
 	}
 }
 
-const char *token_get(char *string) {
+const char *token_get(const char *string) {
 	for (int i = 0; i < tokens_len; i++) {
 		if (strcmp(string, tokens[i]) == 0) {
 			return tokens[i];
@@ -46,7 +46,7 @@ const char *token_get(char *string) {
 	return tokens[tokens_len - 1];
 }
 
-int token_exists(char *string) {
+int token_exists(const char *string) {
 	for (int i = 0; i < tokens_len; i++) {
 		if (strcmp(string, tokens[i]) == 0) {
 			return 1;

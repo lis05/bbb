@@ -62,6 +62,10 @@ obj/common/%.o: src/common/%.c $(HEADERS) | obj/common
 clean:
 	rm -rf obj build
 
+.PHONY: grammar
+grammar:
+	bison src/parser/rules.y --header=src/parser/rules.tab.h -o src/parser/rules.tab.c
+
 obj:
 	mkdir -p $@
 

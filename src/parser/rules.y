@@ -183,7 +183,7 @@ extern_declaration:
     ;
 
 function_declaration_arg:
-    NAME {} |
+    NAME {}
     | NAME ':' memory_length {}
     | NAME ':' alignment {}
     | NAME ':' abi_class {}
@@ -283,15 +283,14 @@ avoid_block:
     AVOID avoid_block_regs body {}
     ;
 
-expression:
-    logical_or operand_type '=' operand_type expression {}
-    | logical_or {}
-    ;
-
 operand_type:
     TYPE {}
     | memory_length {}
-    | {}
+    ;
+
+expression:
+    logical_or operand_type '=' operand_type expression {}
+    | logical_or {}
     ;
 
 logical_or:

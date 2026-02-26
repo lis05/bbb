@@ -2,6 +2,6 @@
 
 void tokens_init();
 
-const char *token_get(char *string);
+const char *token_get(const char *string);
 
-int token_exists(char *string);
+int token_exists(const char *string);
