@@ -425,7 +425,7 @@ struct dereference_op_node_t {
     struct name_node_t *close_brace;
 };
 
-struct layout_access_op {
+struct layout_access_op_node_t {
     tfrag_t frag;
     struct secondary_node_t *arg;
     struct name_node_t *layout;

@@ -1,9 +1,10 @@
 %{
-#include "../common/common.h"
-#include "ast.h"
-#include "parser.h"
-#include "tfrag.h"
-#include "token.h"
+    #include "../common/common.h"
+    #include "ast.h"
+    #include "parser.h"
+    #include "tfrag.h"
+    #include "token.h"
+    #include "rules.tab.h"
     extern void yyerror(const char *);
 
     // will be inited in parser_parse()
@@ -12,12 +13,56 @@
     tfrag_t cur_frag;
 
     // maintains cur_frag
-    static void count(const char *str);
+    static void count();
 
     static const char *parse_string(const char *data);
+
+    #define COUNT(frag) do {\
+        tfrag_t frag1 = cur_frag;\
+        count();\
+        tfrag_t frag2 = cur_frag;\
+        tfrag_combine(&frag, &frag1, &frag2);\
+        frag.token = token_get(yytext);\
+    } while (0)
+
+    #define ALLOC(t) ({\
+        t *res = (t*)malloc(sizeof(t));\
+        log_assert(res != NULL);\
+        *res = (t){0};\
+        res;\
+    })
+
+    #define NAME(frag, str) ({\
+        struct name_node_t *res = ALLOC(struct name_node_t);\
+        res->frag = (frag);\
+        res->name = token_get(str);\
+        res;\
+    })
 %}
 
+NAME                                    [a-zA-Z_][a-zA-Z_0-9]*
+
 %%
+
+"//".* {
+    count();
+}
+
+"/*"([^*]|\*+[^*/])*\*+"/" {
+    count();
+}
+
+"m"[0-9]* {
+    tfrag_t frag;
+    COUNT(frag);
+
+    struct memory_length_node_t *res = ALLOC(struct memory_length_node_t);
+    res->frag = frag;
+    res->prefix = NAME(frag, frag.token);
+
+    yylval.memory_length = res;
+    return MEMORY_LENGTH_SIMPLE;
+}
 
 %%
 static void count_char(char c) {
@@ -37,16 +82,18 @@ static void count_char(char c) {
     cur_frag.end_line = cur_frag.begin_line;
 }
 
-static void count(const char *str) {
-    while (str && !str != '\0') {
+static void count() {
+    const char *str = yytext;
+    while (*str != '\0') {
         count_char(*(str++));
     }
 }
 
 static const char *parse_string(const char *str) {
-    char *res = strdup(data);
+    char *res = strdup(str);
+    log_assert(res != NULL);
     int   res_i = 0;
-    char *ptr = str;
+    const char *ptr = str;
 
     log_assert(*(ptr++) == '\"');
     while (*ptr != '"') {

@@ -70,13 +70,14 @@
 #line 1 "src/parser/rules.y"
 
     #include "../common/common.h"
+    #include "ast.h"
     extern int yylex();
     extern int yyparse();
     extern FILE *yyin;
 
     void yyerror(const char *s);
 
-#line 80 "src/parser/rules.tab.c"
+#line 81 "src/parser/rules.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -224,8 +225,8 @@ enum yysymbol_kind_t
   YYSYMBOL_ret_statement = 117,            /* ret_statement  */
   YYSYMBOL_avoid_block_regs = 118,         /* avoid_block_regs  */
   YYSYMBOL_avoid_block = 119,              /* avoid_block  */
-  YYSYMBOL_expression = 120,               /* expression  */
-  YYSYMBOL_operand_type = 121,             /* operand_type  */
+  YYSYMBOL_operand_type = 120,             /* operand_type  */
+  YYSYMBOL_expression = 121,               /* expression  */
   YYSYMBOL_logical_or = 122,               /* logical_or  */
   YYSYMBOL_logical_and = 123,              /* logical_and  */
   YYSYMBOL_bitwise_or = 124,               /* bitwise_or  */
@@ -638,20 +639,20 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   130,   130,   131,   132,   133,   134,   135,   139,   143,
-     144,   148,   152,   153,   154,   155,   159,   160,   161,   165,
-     166,   170,   171,   175,   176,   177,   181,   182,   186,   187,
-     188,   189,   190,   191,   192,   193,   197,   198,   202,   203,
-     204,   205,   206,   207,   208,   209,   214,   218,   219,   223,
-     227,   228,   229,   230,   231,   232,   233,   234,   235,   236,
-     237,   238,   242,   243,   247,   248,   252,   253,   257,   261,
-     265,   269,   270,   274,   278,   279,   283,   287,   288,   292,
-     293,   297,   298,   302,   303,   307,   308,   312,   313,   317,
-     318,   322,   323,   324,   328,   329,   330,   331,   332,   336,
-     337,   338,   342,   343,   344,   345,   349,   350,   351,   352,
-     356,   360,   361,   365,   369,   370,   371,   372,   373,   377,
-     378,   382,   383,   387,   391,   392,   393,   394,   398,   399,
-     403,   404,   405,   406,   407
+       0,   181,   181,   182,   183,   184,   185,   186,   190,   194,
+     195,   199,   203,   204,   205,   206,   210,   211,   212,   216,
+     217,   221,   222,   226,   227,   228,   232,   233,   237,   238,
+     239,   240,   241,   242,   243,   244,   248,   249,   253,   254,
+     255,   256,   257,   258,   259,   260,   265,   269,   270,   274,
+     278,   279,   280,   281,   282,   283,   284,   285,   286,   287,
+     288,   289,   293,   294,   298,   299,   303,   304,   308,   312,
+     316,   320,   321,   325,   329,   330,   334,   338,   339,   343,
+     344,   348,   349,   353,   354,   358,   359,   363,   364,   368,
+     369,   373,   374,   375,   379,   380,   381,   382,   383,   387,
+     388,   389,   393,   394,   395,   396,   400,   401,   402,   403,
+     407,   411,   412,   416,   420,   421,   422,   423,   424,   428,
+     429,   433,   434,   438,   442,   443,   444,   445,   449,   450,
+     454,   455,   456,   457,   458
 };
 #endif
 
@@ -688,7 +689,7 @@ static const char *const yytname[] =
   "variable_declaration", "register_alias", "if_statement",
   "label_declaration", "goto_statement", "loop_statement",
   "break_statement", "ret_statement", "avoid_block_regs", "avoid_block",
-  "expression", "operand_type", "logical_or", "logical_and", "bitwise_or",
+  "operand_type", "expression", "logical_or", "logical_and", "bitwise_or",
   "bitwise_xor", "bitwise_and", "equality", "relational", "additive",
   "multiplicative", "prefix_op", "cast_op", "address_op", "sizeof_op",
   "tetriary", "suffix_op", "dereference_op", "layout_access_op",
@@ -760,10 +761,10 @@ static const yytype_uint8 yydefact[] =
       39,    40,   134,   130,   131,   132,   133,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,    49,     0,
        0,     0,    52,    61,    47,    50,    51,    53,    54,    55,
-      56,    57,    58,    59,     0,    78,    82,    84,    86,    88,
+      56,    57,    58,    59,     0,    80,    82,    84,    86,    88,
       90,    93,    98,   101,   114,   115,   116,   117,   105,   124,
      125,   126,   118,   127,   129,     0,     0,    41,    68,   134,
-       0,     0,    70,    71,    72,     0,    75,     0,    79,    80,
+       0,     0,    70,    71,    72,     0,    75,     0,    77,    78,
        0,     0,   113,     0,     0,     0,     0,     0,    60,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,    43,    44,     0,    62,    66,    69,    73,
@@ -773,7 +774,7 @@ static const yytype_uint8 yydefact[] =
      119,   120,    45,    65,    64,    63,     0,    74,   111,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,   110,   123,   121,    67,
-      81,    77,    83,    85,    87,    89,    91,    92,    96,    97,
+      81,    79,    83,    85,    87,    89,    91,    92,    96,    97,
       94,    95,    99,   100,   102,   103,   104
 };
 
@@ -782,7 +783,7 @@ static const yytype_int16 yypgoto[] =
 {
      -95,   -95,   -95,    71,   -15,   -95,    23,   -17,    33,   -95,
      211,   236,   247,   -95,   214,   -95,   -12,   -95,   -95,   -95,
-     -95,   -95,   -95,   -95,   -95,   -95,   -95,   -95,   -84,   -94,
+     -95,   -95,   -95,   -95,   -95,   -95,   -95,   -95,   -94,   -84,
      -95,    72,    76,    70,    73,    69,    14,     8,   -21,   -95,
      -95,   -95,   -95,   -66,   -95,   -95,   -95,   -95,   -95,   -95
 };
@@ -792,7 +793,7 @@ static const yytype_uint8 yydefgoto[] =
 {
        0,     1,    20,   149,    32,     7,    61,    62,    35,     8,
        9,    39,    40,    10,    11,    75,    65,   104,   105,   106,
-     107,   108,   109,   110,   111,   112,   147,   113,   114,   168,
+     107,   108,   109,   110,   111,   112,   147,   113,   168,   114,
      115,   116,   117,   118,   119,   120,   121,   122,   123,   124,
      125,   126,   127,   128,   129,   130,   131,   132,   133,   134
 };
@@ -887,20 +888,20 @@ static const yytype_uint8 yystos[] =
      108,   108,     3,     4,     5,     6,     7,    25,    27,    28,
       29,    30,    31,    32,    38,    39,    40,    68,    72,    86,
       87,    89,   102,   106,   109,   110,   111,   112,   113,   114,
-     115,   116,   117,   119,   120,   122,   123,   124,   125,   126,
+     115,   116,   117,   119,   121,   122,   123,   124,   125,   126,
      127,   128,   129,   130,   131,   132,   133,   134,   135,   136,
      137,   138,   139,   140,   141,    95,    99,   108,    70,     3,
-     120,     3,   108,    74,    74,   120,    18,   118,    12,    95,
-     121,   121,     3,   120,   121,   121,    90,   120,    74,   121,
-     121,   121,   121,   121,   121,   121,   121,   121,   121,     3,
-      89,   121,    99,   108,   108,    33,    95,   108,    74,    74,
+     121,     3,   108,    74,    74,   121,    18,   118,    12,    95,
+     120,   120,     3,   121,   120,   120,    90,   121,    74,   120,
+     120,   120,   120,   120,   120,   120,   120,   120,   120,     3,
+      89,   120,    99,   108,   108,    33,    95,   108,    74,    74,
       73,   108,   135,   135,    69,   135,   135,   135,    90,    35,
       75,    36,    76,    77,    78,    55,    56,    53,    54,    79,
-      80,    81,    82,    83,    84,    85,    88,    91,    90,   120,
-      38,    39,   108,    17,    34,    96,    26,    18,   135,   121,
-     121,   121,   121,   121,   121,   121,   121,   121,   121,   121,
-     121,   121,   121,   121,   121,   121,   121,     3,    90,   108,
-     123,   120,   124,   125,   126,   127,   128,   128,   129,   129,
+      80,    81,    82,    83,    84,    85,    88,    91,    90,   121,
+      38,    39,   108,    17,    34,    96,    26,    18,   135,   120,
+     120,   120,   120,   120,   120,   120,   120,   120,   120,   120,
+     120,   120,   120,   120,   120,   120,   120,     3,    90,   108,
+     123,   121,   124,   125,   126,   127,   128,   128,   129,   129,
      129,   129,   130,   130,   135,   135,   135
 };
 
@@ -933,7 +934,7 @@ static const yytype_int8 yyr2[] =
        9,    10,     8,    10,    10,    11,     1,     2,     0,     3,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        2,     1,     3,     4,     4,     4,     3,     5,     2,     3,
-       2,     2,     2,     3,     3,     1,     3,     5,     1,     1,
+       2,     2,     2,     3,     3,     1,     3,     1,     1,     5,
        1,     5,     1,     5,     1,     5,     1,     5,     1,     5,
        1,     5,     5,     1,     5,     5,     5,     5,     1,     5,
        5,     1,     5,     5,     5,     1,     3,     3,     3,     3,
@@ -1403,805 +1404,805 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* program: program global_variable_declaration  */
-#line 130 "src/parser/rules.y"
+#line 181 "src/parser/rules.y"
                                         {}
-#line 1409 "src/parser/rules.tab.c"
+#line 1410 "src/parser/rules.tab.c"
     break;
 
   case 3: /* program: program layout_declaration  */
-#line 131 "src/parser/rules.y"
+#line 182 "src/parser/rules.y"
                                  {}
-#line 1415 "src/parser/rules.tab.c"
+#line 1416 "src/parser/rules.tab.c"
     break;
 
   case 4: /* program: program extern_declaration  */
-#line 132 "src/parser/rules.y"
+#line 183 "src/parser/rules.y"
                                  {}
-#line 1421 "src/parser/rules.tab.c"
+#line 1422 "src/parser/rules.tab.c"
     break;
 
   case 5: /* program: program function_declaration  */
-#line 133 "src/parser/rules.y"
+#line 184 "src/parser/rules.y"
                                    {}
-#line 1427 "src/parser/rules.tab.c"
+#line 1428 "src/parser/rules.tab.c"
     break;
 
   case 6: /* program: program nasm_block  */
-#line 134 "src/parser/rules.y"
+#line 185 "src/parser/rules.y"
                          {}
-#line 1433 "src/parser/rules.tab.c"
+#line 1434 "src/parser/rules.tab.c"
     break;
 
   case 7: /* program: %empty  */
-#line 135 "src/parser/rules.y"
+#line 186 "src/parser/rules.y"
       {}
-#line 1439 "src/parser/rules.tab.c"
+#line 1440 "src/parser/rules.tab.c"
     break;
 
   case 8: /* visibility: GLOBAL  */
-#line 139 "src/parser/rules.y"
+#line 190 "src/parser/rules.y"
            {}
-#line 1445 "src/parser/rules.tab.c"
+#line 1446 "src/parser/rules.tab.c"
     break;
 
   case 9: /* memory_length: MEMORY_LENGTH_SIMPLE  */
-#line 143 "src/parser/rules.y"
+#line 194 "src/parser/rules.y"
                          {}
-#line 1451 "src/parser/rules.tab.c"
+#line 1452 "src/parser/rules.tab.c"
     break;
 
   case 10: /* memory_length: MEMORY_LENGTH_PREFIX '(' SIZEOF NAME ')'  */
-#line 144 "src/parser/rules.y"
+#line 195 "src/parser/rules.y"
                                                {}
-#line 1457 "src/parser/rules.tab.c"
+#line 1458 "src/parser/rules.tab.c"
     break;
 
   case 11: /* alignment: ALIGNMENT_SIMPLE  */
-#line 148 "src/parser/rules.y"
+#line 199 "src/parser/rules.y"
                      {}
-#line 1463 "src/parser/rules.tab.c"
+#line 1464 "src/parser/rules.tab.c"
     break;
 
   case 12: /* global_variable_declaration: NAME ':' memory_length  */
-#line 152 "src/parser/rules.y"
+#line 203 "src/parser/rules.y"
                            {}
-#line 1469 "src/parser/rules.tab.c"
+#line 1470 "src/parser/rules.tab.c"
     break;
 
   case 13: /* global_variable_declaration: NAME ':' visibility memory_length  */
-#line 153 "src/parser/rules.y"
+#line 204 "src/parser/rules.y"
                                         {}
-#line 1475 "src/parser/rules.tab.c"
+#line 1476 "src/parser/rules.tab.c"
     break;
 
   case 14: /* global_variable_declaration: NAME ':' memory_length alignment  */
-#line 154 "src/parser/rules.y"
+#line 205 "src/parser/rules.y"
                                        {}
-#line 1481 "src/parser/rules.tab.c"
+#line 1482 "src/parser/rules.tab.c"
     break;
 
   case 15: /* global_variable_declaration: NAME ':' visibility memory_length alignment  */
-#line 155 "src/parser/rules.y"
+#line 206 "src/parser/rules.y"
                                                   {}
-#line 1487 "src/parser/rules.tab.c"
+#line 1488 "src/parser/rules.tab.c"
     break;
 
   case 16: /* chunk_class: CHUNK_CLASS_MEM  */
-#line 159 "src/parser/rules.y"
+#line 210 "src/parser/rules.y"
                     {}
-#line 1493 "src/parser/rules.tab.c"
+#line 1494 "src/parser/rules.tab.c"
     break;
 
   case 17: /* chunk_class: CHUNK_CLASS_SSE  */
-#line 160 "src/parser/rules.y"
+#line 211 "src/parser/rules.y"
                       {}
-#line 1499 "src/parser/rules.tab.c"
+#line 1500 "src/parser/rules.tab.c"
     break;
 
   case 18: /* chunk_class: CHUNK_CLASS_INT  */
-#line 161 "src/parser/rules.y"
+#line 212 "src/parser/rules.y"
                       {}
-#line 1505 "src/parser/rules.tab.c"
+#line 1506 "src/parser/rules.tab.c"
     break;
 
   case 19: /* abi_class: chunk_class  */
-#line 165 "src/parser/rules.y"
+#line 216 "src/parser/rules.y"
                 {}
-#line 1511 "src/parser/rules.tab.c"
+#line 1512 "src/parser/rules.tab.c"
     break;
 
   case 20: /* abi_class: CHUNK_CLASS_LAYOUT  */
-#line 166 "src/parser/rules.y"
+#line 217 "src/parser/rules.y"
                          {}
-#line 1517 "src/parser/rules.tab.c"
+#line 1518 "src/parser/rules.tab.c"
     break;
 
   case 21: /* layout_declaration_items: layout_declaration_items NAME ':' memory_length  */
-#line 170 "src/parser/rules.y"
+#line 221 "src/parser/rules.y"
                                                     {}
-#line 1523 "src/parser/rules.tab.c"
+#line 1524 "src/parser/rules.tab.c"
     break;
 
   case 22: /* layout_declaration_items: NAME ':' memory_length  */
-#line 171 "src/parser/rules.y"
+#line 222 "src/parser/rules.y"
                              {}
-#line 1529 "src/parser/rules.tab.c"
+#line 1530 "src/parser/rules.tab.c"
     break;
 
   case 23: /* layout_declaration: NAME ':' LAYOUT '{' layout_declaration_items '}'  */
-#line 175 "src/parser/rules.y"
+#line 226 "src/parser/rules.y"
                                                      {}
-#line 1535 "src/parser/rules.tab.c"
+#line 1536 "src/parser/rules.tab.c"
     break;
 
   case 24: /* layout_declaration: NAME ':' LAYOUT chunk_class '{' layout_declaration_items '}'  */
-#line 176 "src/parser/rules.y"
+#line 227 "src/parser/rules.y"
                                                                    {}
-#line 1541 "src/parser/rules.tab.c"
+#line 1542 "src/parser/rules.tab.c"
     break;
 
   case 25: /* layout_declaration: NAME ':' LAYOUT chunk_class chunk_class '{' layout_declaration_items '}'  */
-#line 177 "src/parser/rules.y"
+#line 228 "src/parser/rules.y"
                                                                                {}
-#line 1547 "src/parser/rules.tab.c"
+#line 1548 "src/parser/rules.tab.c"
     break;
 
   case 26: /* extern_declaration: EXTERN NAME  */
-#line 181 "src/parser/rules.y"
+#line 232 "src/parser/rules.y"
                 {}
-#line 1553 "src/parser/rules.tab.c"
+#line 1554 "src/parser/rules.tab.c"
     break;
 
   case 27: /* extern_declaration: NASM NAME  */
-#line 182 "src/parser/rules.y"
+#line 233 "src/parser/rules.y"
                 {}
-#line 1559 "src/parser/rules.tab.c"
+#line 1560 "src/parser/rules.tab.c"
     break;
 
   case 28: /* function_declaration_arg: NAME  */
-#line 186 "src/parser/rules.y"
+#line 237 "src/parser/rules.y"
          {}
-#line 1565 "src/parser/rules.tab.c"
+#line 1566 "src/parser/rules.tab.c"
     break;
 
   case 29: /* function_declaration_arg: NAME ':' memory_length  */
-#line 187 "src/parser/rules.y"
+#line 238 "src/parser/rules.y"
                              {}
-#line 1571 "src/parser/rules.tab.c"
+#line 1572 "src/parser/rules.tab.c"
     break;
 
   case 30: /* function_declaration_arg: NAME ':' alignment  */
-#line 188 "src/parser/rules.y"
+#line 239 "src/parser/rules.y"
                          {}
-#line 1577 "src/parser/rules.tab.c"
+#line 1578 "src/parser/rules.tab.c"
     break;
 
   case 31: /* function_declaration_arg: NAME ':' abi_class  */
-#line 189 "src/parser/rules.y"
+#line 240 "src/parser/rules.y"
                          {}
-#line 1583 "src/parser/rules.tab.c"
+#line 1584 "src/parser/rules.tab.c"
     break;
 
   case 32: /* function_declaration_arg: NAME ':' memory_length alignment  */
-#line 190 "src/parser/rules.y"
+#line 241 "src/parser/rules.y"
                                        {}
-#line 1589 "src/parser/rules.tab.c"
+#line 1590 "src/parser/rules.tab.c"
     break;
 
   case 33: /* function_declaration_arg: NAME ':' memory_length abi_class  */
-#line 191 "src/parser/rules.y"
+#line 242 "src/parser/rules.y"
                                        {}
-#line 1595 "src/parser/rules.tab.c"
+#line 1596 "src/parser/rules.tab.c"
     break;
 
   case 34: /* function_declaration_arg: NAME ':' alignment abi_class  */
-#line 192 "src/parser/rules.y"
+#line 243 "src/parser/rules.y"
                                    {}
-#line 1601 "src/parser/rules.tab.c"
+#line 1602 "src/parser/rules.tab.c"
     break;
 
   case 35: /* function_declaration_arg: NAME ':' memory_length alignment abi_class  */
-#line 193 "src/parser/rules.y"
+#line 244 "src/parser/rules.y"
                                                  {}
-#line 1607 "src/parser/rules.tab.c"
+#line 1608 "src/parser/rules.tab.c"
     break;
 
   case 36: /* function_declaration_args: function_declaration_args ',' function_declaration_arg  */
-#line 197 "src/parser/rules.y"
+#line 248 "src/parser/rules.y"
                                                            {}
-#line 1613 "src/parser/rules.tab.c"
+#line 1614 "src/parser/rules.tab.c"
     break;
 
   case 37: /* function_declaration_args: function_declaration_arg  */
-#line 198 "src/parser/rules.y"
+#line 249 "src/parser/rules.y"
                                {}
-#line 1619 "src/parser/rules.tab.c"
+#line 1620 "src/parser/rules.tab.c"
     break;
 
   case 38: /* function_declaration: NAME ':' FN '(' function_declaration_args ')' body  */
-#line 202 "src/parser/rules.y"
+#line 253 "src/parser/rules.y"
                                                        {}
-#line 1625 "src/parser/rules.tab.c"
+#line 1626 "src/parser/rules.tab.c"
     break;
 
   case 39: /* function_declaration: NAME ':' FN '(' function_declaration_args ')' ARROW memory_length body  */
-#line 203 "src/parser/rules.y"
+#line 254 "src/parser/rules.y"
                                                                              {}
-#line 1631 "src/parser/rules.tab.c"
+#line 1632 "src/parser/rules.tab.c"
     break;
 
   case 40: /* function_declaration: NAME ':' FN '(' function_declaration_args ')' ARROW abi_class body  */
-#line 204 "src/parser/rules.y"
+#line 255 "src/parser/rules.y"
                                                                          {}
-#line 1637 "src/parser/rules.tab.c"
+#line 1638 "src/parser/rules.tab.c"
     break;
 
   case 41: /* function_declaration: NAME ':' FN '(' function_declaration_args ')' ARROW memory_length abi_class body  */
-#line 205 "src/parser/rules.y"
+#line 256 "src/parser/rules.y"
                                                                                        {}
-#line 1643 "src/parser/rules.tab.c"
+#line 1644 "src/parser/rules.tab.c"
     break;
 
   case 42: /* function_declaration: NAME ':' visibility FN '(' function_declaration_args ')' body  */
-#line 206 "src/parser/rules.y"
+#line 257 "src/parser/rules.y"
                                                                     {}
-#line 1649 "src/parser/rules.tab.c"
+#line 1650 "src/parser/rules.tab.c"
     break;
 
   case 43: /* function_declaration: NAME ':' visibility FN '(' function_declaration_args ')' ARROW memory_length body  */
-#line 207 "src/parser/rules.y"
+#line 258 "src/parser/rules.y"
                                                                                         {}
-#line 1655 "src/parser/rules.tab.c"
+#line 1656 "src/parser/rules.tab.c"
     break;
 
   case 44: /* function_declaration: NAME ':' visibility FN '(' function_declaration_args ')' ARROW abi_class body  */
-#line 208 "src/parser/rules.y"
+#line 259 "src/parser/rules.y"
                                                                                     {}
-#line 1661 "src/parser/rules.tab.c"
+#line 1662 "src/parser/rules.tab.c"
     break;
 
   case 45: /* function_declaration: NAME ':' visibility FN '(' function_declaration_args ')' ARROW memory_length abi_class body  */
-#line 210 "src/parser/rules.y"
+#line 261 "src/parser/rules.y"
                {}
-#line 1667 "src/parser/rules.tab.c"
+#line 1668 "src/parser/rules.tab.c"
     break;
 
   case 46: /* nasm_block: NASM_BLOCK  */
-#line 214 "src/parser/rules.y"
+#line 265 "src/parser/rules.y"
                {}
-#line 1673 "src/parser/rules.tab.c"
+#line 1674 "src/parser/rules.tab.c"
     break;
 
   case 47: /* body_list: body_list statement  */
-#line 218 "src/parser/rules.y"
+#line 269 "src/parser/rules.y"
                         {}
-#line 1679 "src/parser/rules.tab.c"
+#line 1680 "src/parser/rules.tab.c"
     break;
 
   case 48: /* body_list: %empty  */
-#line 219 "src/parser/rules.y"
+#line 270 "src/parser/rules.y"
       {}
-#line 1685 "src/parser/rules.tab.c"
+#line 1686 "src/parser/rules.tab.c"
     break;
 
   case 49: /* body: '{' body_list '}'  */
-#line 223 "src/parser/rules.y"
+#line 274 "src/parser/rules.y"
                       {}
-#line 1691 "src/parser/rules.tab.c"
+#line 1692 "src/parser/rules.tab.c"
     break;
 
   case 50: /* statement: variable_declaration  */
-#line 227 "src/parser/rules.y"
+#line 278 "src/parser/rules.y"
                          {}
-#line 1697 "src/parser/rules.tab.c"
+#line 1698 "src/parser/rules.tab.c"
     break;
 
   case 51: /* statement: register_alias  */
-#line 228 "src/parser/rules.y"
+#line 279 "src/parser/rules.y"
                      {}
-#line 1703 "src/parser/rules.tab.c"
+#line 1704 "src/parser/rules.tab.c"
     break;
 
   case 52: /* statement: extern_declaration  */
-#line 229 "src/parser/rules.y"
+#line 280 "src/parser/rules.y"
                          {}
-#line 1709 "src/parser/rules.tab.c"
+#line 1710 "src/parser/rules.tab.c"
     break;
 
   case 53: /* statement: if_statement  */
-#line 230 "src/parser/rules.y"
+#line 281 "src/parser/rules.y"
                    {}
-#line 1715 "src/parser/rules.tab.c"
+#line 1716 "src/parser/rules.tab.c"
     break;
 
   case 54: /* statement: label_declaration  */
-#line 231 "src/parser/rules.y"
+#line 282 "src/parser/rules.y"
                         {}
-#line 1721 "src/parser/rules.tab.c"
+#line 1722 "src/parser/rules.tab.c"
     break;
 
   case 55: /* statement: goto_statement  */
-#line 232 "src/parser/rules.y"
+#line 283 "src/parser/rules.y"
                      {}
-#line 1727 "src/parser/rules.tab.c"
+#line 1728 "src/parser/rules.tab.c"
     break;
 
   case 56: /* statement: loop_statement  */
-#line 233 "src/parser/rules.y"
+#line 284 "src/parser/rules.y"
                      {}
-#line 1733 "src/parser/rules.tab.c"
+#line 1734 "src/parser/rules.tab.c"
     break;
 
   case 57: /* statement: break_statement  */
-#line 234 "src/parser/rules.y"
+#line 285 "src/parser/rules.y"
                       {}
-#line 1739 "src/parser/rules.tab.c"
+#line 1740 "src/parser/rules.tab.c"
     break;
 
   case 58: /* statement: ret_statement  */
-#line 235 "src/parser/rules.y"
+#line 286 "src/parser/rules.y"
                     {}
-#line 1745 "src/parser/rules.tab.c"
+#line 1746 "src/parser/rules.tab.c"
     break;
 
   case 59: /* statement: avoid_block  */
-#line 236 "src/parser/rules.y"
+#line 287 "src/parser/rules.y"
                   {}
-#line 1751 "src/parser/rules.tab.c"
+#line 1752 "src/parser/rules.tab.c"
     break;
 
   case 60: /* statement: expression ';'  */
-#line 237 "src/parser/rules.y"
+#line 288 "src/parser/rules.y"
                      {}
-#line 1757 "src/parser/rules.tab.c"
+#line 1758 "src/parser/rules.tab.c"
     break;
 
   case 61: /* statement: nasm_block  */
-#line 238 "src/parser/rules.y"
+#line 289 "src/parser/rules.y"
                  {}
-#line 1763 "src/parser/rules.tab.c"
+#line 1764 "src/parser/rules.tab.c"
     break;
 
   case 62: /* variable_declaration: NAME ':' memory_length  */
-#line 242 "src/parser/rules.y"
+#line 293 "src/parser/rules.y"
                            {}
-#line 1769 "src/parser/rules.tab.c"
+#line 1770 "src/parser/rules.tab.c"
     break;
 
   case 63: /* variable_declaration: NAME ':' memory_length alignment  */
-#line 243 "src/parser/rules.y"
+#line 294 "src/parser/rules.y"
                                        {}
-#line 1775 "src/parser/rules.tab.c"
+#line 1776 "src/parser/rules.tab.c"
     break;
 
   case 64: /* register_alias: NAME ':' ALIAS REG  */
-#line 247 "src/parser/rules.y"
+#line 298 "src/parser/rules.y"
                        {}
-#line 1781 "src/parser/rules.tab.c"
+#line 1782 "src/parser/rules.tab.c"
     break;
 
   case 65: /* register_alias: NAME ':' ALIAS GP_REGISTER  */
-#line 248 "src/parser/rules.y"
+#line 299 "src/parser/rules.y"
                                  {}
-#line 1787 "src/parser/rules.tab.c"
+#line 1788 "src/parser/rules.tab.c"
     break;
 
   case 66: /* if_statement: IF expression body  */
-#line 252 "src/parser/rules.y"
+#line 303 "src/parser/rules.y"
                        {}
-#line 1793 "src/parser/rules.tab.c"
+#line 1794 "src/parser/rules.tab.c"
     break;
 
   case 67: /* if_statement: IF expression body ELSE body  */
-#line 253 "src/parser/rules.y"
+#line 304 "src/parser/rules.y"
                                  {}
-#line 1799 "src/parser/rules.tab.c"
+#line 1800 "src/parser/rules.tab.c"
     break;
 
   case 68: /* label_declaration: NAME ':'  */
-#line 257 "src/parser/rules.y"
+#line 308 "src/parser/rules.y"
              {}
-#line 1805 "src/parser/rules.tab.c"
+#line 1806 "src/parser/rules.tab.c"
     break;
 
   case 69: /* goto_statement: GOTO NAME ';'  */
-#line 261 "src/parser/rules.y"
+#line 312 "src/parser/rules.y"
                   {}
-#line 1811 "src/parser/rules.tab.c"
+#line 1812 "src/parser/rules.tab.c"
     break;
 
   case 70: /* loop_statement: LOOP body  */
-#line 265 "src/parser/rules.y"
+#line 316 "src/parser/rules.y"
               {}
-#line 1817 "src/parser/rules.tab.c"
+#line 1818 "src/parser/rules.tab.c"
     break;
 
   case 71: /* break_statement: BREAK ';'  */
-#line 269 "src/parser/rules.y"
+#line 320 "src/parser/rules.y"
               {}
-#line 1823 "src/parser/rules.tab.c"
+#line 1824 "src/parser/rules.tab.c"
     break;
 
   case 72: /* break_statement: CONTINUE ';'  */
-#line 270 "src/parser/rules.y"
+#line 321 "src/parser/rules.y"
                    {}
-#line 1829 "src/parser/rules.tab.c"
+#line 1830 "src/parser/rules.tab.c"
     break;
 
   case 73: /* ret_statement: RET expression ';'  */
-#line 274 "src/parser/rules.y"
+#line 325 "src/parser/rules.y"
                        {}
-#line 1835 "src/parser/rules.tab.c"
+#line 1836 "src/parser/rules.tab.c"
     break;
 
   case 74: /* avoid_block_regs: avoid_block_regs ',' REGISTER  */
-#line 278 "src/parser/rules.y"
+#line 329 "src/parser/rules.y"
                                   {}
-#line 1841 "src/parser/rules.tab.c"
+#line 1842 "src/parser/rules.tab.c"
     break;
 
   case 75: /* avoid_block_regs: REGISTER  */
-#line 279 "src/parser/rules.y"
+#line 330 "src/parser/rules.y"
                {}
-#line 1847 "src/parser/rules.tab.c"
+#line 1848 "src/parser/rules.tab.c"
     break;
 
   case 76: /* avoid_block: AVOID avoid_block_regs body  */
-#line 283 "src/parser/rules.y"
+#line 334 "src/parser/rules.y"
                                 {}
-#line 1853 "src/parser/rules.tab.c"
+#line 1854 "src/parser/rules.tab.c"
     break;
 
-  case 77: /* expression: logical_or operand_type '=' operand_type expression  */
-#line 287 "src/parser/rules.y"
-                                                        {}
-#line 1859 "src/parser/rules.tab.c"
-    break;
-
-  case 78: /* expression: logical_or  */
-#line 288 "src/parser/rules.y"
-                 {}
-#line 1865 "src/parser/rules.tab.c"
-    break;
-
-  case 79: /* operand_type: TYPE  */
-#line 292 "src/parser/rules.y"
+  case 77: /* operand_type: TYPE  */
+#line 338 "src/parser/rules.y"
          {}
-#line 1871 "src/parser/rules.tab.c"
+#line 1860 "src/parser/rules.tab.c"
     break;
 
-  case 80: /* operand_type: memory_length  */
-#line 293 "src/parser/rules.y"
+  case 78: /* operand_type: memory_length  */
+#line 339 "src/parser/rules.y"
                     {}
-#line 1877 "src/parser/rules.tab.c"
+#line 1866 "src/parser/rules.tab.c"
+    break;
+
+  case 79: /* expression: logical_or operand_type '=' operand_type expression  */
+#line 343 "src/parser/rules.y"
+                                                        {}
+#line 1872 "src/parser/rules.tab.c"
+    break;
+
+  case 80: /* expression: logical_or  */
+#line 344 "src/parser/rules.y"
+                 {}
+#line 1878 "src/parser/rules.tab.c"
     break;
 
   case 81: /* logical_or: logical_or operand_type LOGICAL_OR operand_type logical_and  */
-#line 297 "src/parser/rules.y"
+#line 348 "src/parser/rules.y"
                                                                 {}
-#line 1883 "src/parser/rules.tab.c"
+#line 1884 "src/parser/rules.tab.c"
     break;
 
   case 82: /* logical_or: logical_and  */
-#line 298 "src/parser/rules.y"
+#line 349 "src/parser/rules.y"
                   {}
-#line 1889 "src/parser/rules.tab.c"
+#line 1890 "src/parser/rules.tab.c"
     break;
 
   case 83: /* logical_and: logical_and operand_type LOGICAL_AND operand_type bitwise_or  */
-#line 302 "src/parser/rules.y"
+#line 353 "src/parser/rules.y"
                                                                  {}
-#line 1895 "src/parser/rules.tab.c"
+#line 1896 "src/parser/rules.tab.c"
     break;
 
   case 84: /* logical_and: bitwise_or  */
-#line 303 "src/parser/rules.y"
+#line 354 "src/parser/rules.y"
                  {}
-#line 1901 "src/parser/rules.tab.c"
+#line 1902 "src/parser/rules.tab.c"
     break;
 
   case 85: /* bitwise_or: bitwise_or operand_type '|' operand_type bitwise_xor  */
-#line 307 "src/parser/rules.y"
+#line 358 "src/parser/rules.y"
                                                          {}
-#line 1907 "src/parser/rules.tab.c"
+#line 1908 "src/parser/rules.tab.c"
     break;
 
   case 86: /* bitwise_or: bitwise_xor  */
-#line 308 "src/parser/rules.y"
+#line 359 "src/parser/rules.y"
                   {}
-#line 1913 "src/parser/rules.tab.c"
+#line 1914 "src/parser/rules.tab.c"
     break;
 
   case 87: /* bitwise_xor: bitwise_xor operand_type '^' operand_type bitwise_and  */
-#line 312 "src/parser/rules.y"
+#line 363 "src/parser/rules.y"
                                                           {}
-#line 1919 "src/parser/rules.tab.c"
+#line 1920 "src/parser/rules.tab.c"
     break;
 
   case 88: /* bitwise_xor: bitwise_and  */
-#line 313 "src/parser/rules.y"
+#line 364 "src/parser/rules.y"
                   {}
-#line 1925 "src/parser/rules.tab.c"
+#line 1926 "src/parser/rules.tab.c"
     break;
 
   case 89: /* bitwise_and: bitwise_and operand_type '&' operand_type equality  */
-#line 317 "src/parser/rules.y"
+#line 368 "src/parser/rules.y"
                                                        {}
-#line 1931 "src/parser/rules.tab.c"
+#line 1932 "src/parser/rules.tab.c"
     break;
 
   case 90: /* bitwise_and: equality  */
-#line 318 "src/parser/rules.y"
+#line 369 "src/parser/rules.y"
                {}
-#line 1937 "src/parser/rules.tab.c"
+#line 1938 "src/parser/rules.tab.c"
     break;
 
   case 91: /* equality: equality operand_type EQUALS operand_type relational  */
-#line 322 "src/parser/rules.y"
+#line 373 "src/parser/rules.y"
                                                          {}
-#line 1943 "src/parser/rules.tab.c"
+#line 1944 "src/parser/rules.tab.c"
     break;
 
   case 92: /* equality: equality operand_type NOT_EQUALS operand_type relational  */
-#line 323 "src/parser/rules.y"
+#line 374 "src/parser/rules.y"
                                                                {}
-#line 1949 "src/parser/rules.tab.c"
+#line 1950 "src/parser/rules.tab.c"
     break;
 
   case 93: /* equality: relational  */
-#line 324 "src/parser/rules.y"
+#line 375 "src/parser/rules.y"
                  {}
-#line 1955 "src/parser/rules.tab.c"
+#line 1956 "src/parser/rules.tab.c"
     break;
 
   case 94: /* relational: relational operand_type '<' operand_type additive  */
-#line 328 "src/parser/rules.y"
+#line 379 "src/parser/rules.y"
                                                       {}
-#line 1961 "src/parser/rules.tab.c"
+#line 1962 "src/parser/rules.tab.c"
     break;
 
   case 95: /* relational: relational operand_type '>' operand_type additive  */
-#line 329 "src/parser/rules.y"
+#line 380 "src/parser/rules.y"
                                                         {}
-#line 1967 "src/parser/rules.tab.c"
+#line 1968 "src/parser/rules.tab.c"
     break;
 
   case 96: /* relational: relational operand_type LESS_EQUAL operand_type additive  */
-#line 330 "src/parser/rules.y"
+#line 381 "src/parser/rules.y"
                                                                {}
-#line 1973 "src/parser/rules.tab.c"
+#line 1974 "src/parser/rules.tab.c"
     break;
 
   case 97: /* relational: relational operand_type GREATER_EQUAL operand_type additive  */
-#line 331 "src/parser/rules.y"
+#line 382 "src/parser/rules.y"
                                                                   {}
-#line 1979 "src/parser/rules.tab.c"
+#line 1980 "src/parser/rules.tab.c"
     break;
 
   case 98: /* relational: additive  */
-#line 332 "src/parser/rules.y"
+#line 383 "src/parser/rules.y"
                {}
-#line 1985 "src/parser/rules.tab.c"
+#line 1986 "src/parser/rules.tab.c"
     break;
 
   case 99: /* additive: additive operand_type '+' operand_type multiplicative  */
-#line 336 "src/parser/rules.y"
+#line 387 "src/parser/rules.y"
                                                           {}
-#line 1991 "src/parser/rules.tab.c"
+#line 1992 "src/parser/rules.tab.c"
     break;
 
   case 100: /* additive: additive operand_type '-' operand_type multiplicative  */
-#line 337 "src/parser/rules.y"
+#line 388 "src/parser/rules.y"
                                                             {}
-#line 1997 "src/parser/rules.tab.c"
+#line 1998 "src/parser/rules.tab.c"
     break;
 
   case 101: /* additive: multiplicative  */
-#line 338 "src/parser/rules.y"
+#line 389 "src/parser/rules.y"
                      {}
-#line 2003 "src/parser/rules.tab.c"
+#line 2004 "src/parser/rules.tab.c"
     break;
 
   case 102: /* multiplicative: multiplicative operand_type '*' operand_type tetriary  */
-#line 342 "src/parser/rules.y"
+#line 393 "src/parser/rules.y"
                                                           {}
-#line 2009 "src/parser/rules.tab.c"
+#line 2010 "src/parser/rules.tab.c"
     break;
 
   case 103: /* multiplicative: multiplicative operand_type '/' operand_type tetriary  */
-#line 343 "src/parser/rules.y"
+#line 394 "src/parser/rules.y"
                                                             {}
-#line 2015 "src/parser/rules.tab.c"
+#line 2016 "src/parser/rules.tab.c"
     break;
 
   case 104: /* multiplicative: multiplicative operand_type '%' operand_type tetriary  */
-#line 344 "src/parser/rules.y"
+#line 395 "src/parser/rules.y"
                                                             {}
-#line 2021 "src/parser/rules.tab.c"
+#line 2022 "src/parser/rules.tab.c"
     break;
 
   case 105: /* multiplicative: tetriary  */
-#line 345 "src/parser/rules.y"
+#line 396 "src/parser/rules.y"
                {}
-#line 2027 "src/parser/rules.tab.c"
+#line 2028 "src/parser/rules.tab.c"
     break;
 
   case 106: /* prefix_op: INCREMENT operand_type tetriary  */
-#line 349 "src/parser/rules.y"
+#line 400 "src/parser/rules.y"
                                     {}
-#line 2033 "src/parser/rules.tab.c"
+#line 2034 "src/parser/rules.tab.c"
     break;
 
   case 107: /* prefix_op: DECREMENT operand_type tetriary  */
-#line 350 "src/parser/rules.y"
+#line 401 "src/parser/rules.y"
                                       {}
-#line 2039 "src/parser/rules.tab.c"
+#line 2040 "src/parser/rules.tab.c"
     break;
 
   case 108: /* prefix_op: '!' operand_type tetriary  */
-#line 351 "src/parser/rules.y"
+#line 402 "src/parser/rules.y"
                                 {}
-#line 2045 "src/parser/rules.tab.c"
+#line 2046 "src/parser/rules.tab.c"
     break;
 
   case 109: /* prefix_op: '~' operand_type tetriary  */
-#line 352 "src/parser/rules.y"
+#line 403 "src/parser/rules.y"
                                 {}
-#line 2051 "src/parser/rules.tab.c"
+#line 2052 "src/parser/rules.tab.c"
     break;
 
   case 110: /* cast_op: tetriary operand_type '?' operand_type  */
-#line 356 "src/parser/rules.y"
+#line 407 "src/parser/rules.y"
                                            {}
-#line 2057 "src/parser/rules.tab.c"
+#line 2058 "src/parser/rules.tab.c"
     break;
 
   case 111: /* address_op: '[' expression ']' tetriary  */
-#line 360 "src/parser/rules.y"
+#line 411 "src/parser/rules.y"
                                 {}
-#line 2063 "src/parser/rules.tab.c"
+#line 2064 "src/parser/rules.tab.c"
     break;
 
   case 112: /* address_op: '[' ']' tetriary  */
-#line 361 "src/parser/rules.y"
+#line 412 "src/parser/rules.y"
                        {}
-#line 2069 "src/parser/rules.tab.c"
+#line 2070 "src/parser/rules.tab.c"
     break;
 
   case 113: /* sizeof_op: SIZEOF NAME  */
-#line 365 "src/parser/rules.y"
+#line 416 "src/parser/rules.y"
                 {}
-#line 2075 "src/parser/rules.tab.c"
+#line 2076 "src/parser/rules.tab.c"
     break;
 
   case 114: /* tetriary: prefix_op  */
-#line 369 "src/parser/rules.y"
+#line 420 "src/parser/rules.y"
               {}
-#line 2081 "src/parser/rules.tab.c"
+#line 2082 "src/parser/rules.tab.c"
     break;
 
   case 115: /* tetriary: cast_op  */
-#line 370 "src/parser/rules.y"
+#line 421 "src/parser/rules.y"
               {}
-#line 2087 "src/parser/rules.tab.c"
+#line 2088 "src/parser/rules.tab.c"
     break;
 
   case 116: /* tetriary: address_op  */
-#line 371 "src/parser/rules.y"
+#line 422 "src/parser/rules.y"
                  {}
-#line 2093 "src/parser/rules.tab.c"
+#line 2094 "src/parser/rules.tab.c"
     break;
 
   case 117: /* tetriary: sizeof_op  */
-#line 372 "src/parser/rules.y"
+#line 423 "src/parser/rules.y"
                 {}
-#line 2099 "src/parser/rules.tab.c"
+#line 2100 "src/parser/rules.tab.c"
     break;
 
   case 118: /* tetriary: secondary  */
-#line 373 "src/parser/rules.y"
+#line 424 "src/parser/rules.y"
                 {}
-#line 2105 "src/parser/rules.tab.c"
+#line 2106 "src/parser/rules.tab.c"
     break;
 
   case 119: /* suffix_op: secondary operand_type INCREMENT  */
-#line 377 "src/parser/rules.y"
+#line 428 "src/parser/rules.y"
                                      {}
-#line 2111 "src/parser/rules.tab.c"
+#line 2112 "src/parser/rules.tab.c"
     break;
 
   case 120: /* suffix_op: secondary operand_type DECREMENT  */
-#line 378 "src/parser/rules.y"
+#line 429 "src/parser/rules.y"
                                        {}
-#line 2117 "src/parser/rules.tab.c"
+#line 2118 "src/parser/rules.tab.c"
     break;
 
   case 121: /* dereference_op: secondary '[' expression ']'  */
-#line 382 "src/parser/rules.y"
+#line 433 "src/parser/rules.y"
                                  {}
-#line 2123 "src/parser/rules.tab.c"
+#line 2124 "src/parser/rules.tab.c"
     break;
 
   case 122: /* dereference_op: secondary '[' ']'  */
-#line 383 "src/parser/rules.y"
+#line 434 "src/parser/rules.y"
                         {}
-#line 2129 "src/parser/rules.tab.c"
+#line 2130 "src/parser/rules.tab.c"
     break;
 
   case 123: /* layout_access_op: secondary NAME '.' NAME  */
-#line 387 "src/parser/rules.y"
+#line 438 "src/parser/rules.y"
                             {}
-#line 2135 "src/parser/rules.tab.c"
+#line 2136 "src/parser/rules.tab.c"
     break;
 
   case 124: /* secondary: suffix_op  */
-#line 391 "src/parser/rules.y"
+#line 442 "src/parser/rules.y"
               {}
-#line 2141 "src/parser/rules.tab.c"
+#line 2142 "src/parser/rules.tab.c"
     break;
 
   case 125: /* secondary: dereference_op  */
-#line 392 "src/parser/rules.y"
+#line 443 "src/parser/rules.y"
                      {}
-#line 2147 "src/parser/rules.tab.c"
+#line 2148 "src/parser/rules.tab.c"
     break;
 
   case 126: /* secondary: layout_access_op  */
-#line 393 "src/parser/rules.y"
+#line 444 "src/parser/rules.y"
                        {}
-#line 2153 "src/parser/rules.tab.c"
+#line 2154 "src/parser/rules.tab.c"
     break;
 
   case 127: /* secondary: primary  */
-#line 394 "src/parser/rules.y"
+#line 445 "src/parser/rules.y"
               {}
-#line 2159 "src/parser/rules.tab.c"
+#line 2160 "src/parser/rules.tab.c"
     break;
 
   case 128: /* primary: '(' expression ')'  */
-#line 398 "src/parser/rules.y"
+#line 449 "src/parser/rules.y"
                        {}
-#line 2165 "src/parser/rules.tab.c"
+#line 2166 "src/parser/rules.tab.c"
     break;
 
   case 129: /* primary: literal  */
-#line 399 "src/parser/rules.y"
+#line 450 "src/parser/rules.y"
               {}
-#line 2171 "src/parser/rules.tab.c"
+#line 2172 "src/parser/rules.tab.c"
     break;
 
   case 130: /* literal: INT  */
-#line 403 "src/parser/rules.y"
+#line 454 "src/parser/rules.y"
         {}
-#line 2177 "src/parser/rules.tab.c"
+#line 2178 "src/parser/rules.tab.c"
     break;
 
   case 131: /* literal: UINT  */
-#line 404 "src/parser/rules.y"
+#line 455 "src/parser/rules.y"
            {}
-#line 2183 "src/parser/rules.tab.c"
+#line 2184 "src/parser/rules.tab.c"
     break;
 
   case 132: /* literal: DOUBLE  */
-#line 405 "src/parser/rules.y"
+#line 456 "src/parser/rules.y"
              {}
-#line 2189 "src/parser/rules.tab.c"
+#line 2190 "src/parser/rules.tab.c"
     break;
 
   case 133: /* literal: STRING  */
-#line 406 "src/parser/rules.y"
+#line 457 "src/parser/rules.y"
              {}
-#line 2195 "src/parser/rules.tab.c"
+#line 2196 "src/parser/rules.tab.c"
     break;
 
   case 134: /* literal: NAME  */
-#line 407 "src/parser/rules.y"
+#line 458 "src/parser/rules.y"
            {}
-#line 2201 "src/parser/rules.tab.c"
+#line 2202 "src/parser/rules.tab.c"
     break;
 
 
-#line 2205 "src/parser/rules.tab.c"
+#line 2206 "src/parser/rules.tab.c"
 
       default: break;
     }
@@ -2394,5 +2395,5 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 416 "src/parser/rules.y"
+#line 467 "src/parser/rules.y"
 

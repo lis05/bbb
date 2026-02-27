@@ -126,11 +126,61 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 10 "src/parser/rules.y"
+#line 11 "src/parser/rules.y"
 
-    ast_node_t *node;
+    struct program_node_t *program;
+    struct visibility_node_t *visibility;
+    struct memory_length_node_t *memory_length;
+    struct alignment_node_t *alignment;
+    struct global_variable_declaration_node_t *global_variable_declaration;
+    struct chunk_class_node_t *chunk_class;
+    struct abi_class_node_t *abi_class;
+    struct layout_declaration_items_node_t *layout_declaration_items;
+    struct layout_declaration_node_t *layout_declaration;
+    struct extern_declaration_node_t *extern_declaration;
+    struct function_declaration_arg_node_t *function_declaration_arg;
+    struct function_declaration_args_node_t *function_declaration_args;
+    struct function_declaration_node_t *function_declaration;
+    struct nasm_block_node_t *nasm_block;
+    struct body_list_node_t *body_list;
+    struct body_node_t *body;
+    struct statement_node_t *statement;
+    struct variable_declaration_node_t *variable_declaration;
+    struct register_alias_node_t *register_alias;
+    struct if_statement_node_t *if_statement;
+    struct label_declaration_node_t *label_declaration;
+    struct goto_statement_node_t *goto_statement;
+    struct loop_statement_node_t *loop_statement;
+    struct break_statement_node_t *break_statement;
+    struct ret_statement_node_t *ret_statement;
+    struct avoid_block_regs_node_t *avoid_block_regs;
+    struct avoid_block_node_t *avoid_block;
+    struct expression_node_t *expression;
+    struct operand_type_node_t *operand_type;
+    struct logical_or_node_t *logical_or;
+    struct logical_and_node_t *logical_and;
+    struct bitwise_or_node_t *bitwise_or;
+    struct bitwise_xor_node_t *bitwise_xor;
+    struct bitwise_and_node_t *bitwise_and;
+    struct equality_node_t *equality;
+    struct relational_node_t *relational;
+    struct additive_node_t *additive;
+    struct multiplicative_node_t *multiplicative;
+    struct prefix_op_node_t *prefix_op;
+    struct cast_op_node_t *cast_op;
+    struct address_op_node_t *address_op;
+    struct sizeof_op_node_t *sizeof_op;
+    struct tetriary_node_t *tetriary;
+    struct suffix_op_node_t *suffix_op;
+    struct dereference_op_node_t *dereference_op;
+    struct layout_access_op_node_t *layout_access_op;
+    struct secondary_node_t *secondary;
+    struct primary_node_t *primary;
+    struct literal_node_t *literal;
+    struct type_node_t *type;
+    struct name_node_t *name;
 
-#line 134 "src/parser/rules.tab.h"
+#line 184 "src/parser/rules.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

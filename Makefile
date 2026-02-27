@@ -64,7 +64,8 @@ clean:
 
 .PHONY: grammar
 grammar:
-	bison src/parser/rules.y --header=src/parser/rules.tab.h -o src/parser/rules.tab.c
+	bison -d -o src/parser/rules.tab.c src/parser/rules.y
+	flex --outfile=src/parser/lex.yy.c src/parser/rules.l
 
 obj:
 	mkdir -p $@
