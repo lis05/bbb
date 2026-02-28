@@ -1,5 +1,3 @@
-#pragma once
-
 #include "parser.h"
 
 void yyerror(const char *token) {

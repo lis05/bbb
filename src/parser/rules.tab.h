@@ -62,62 +62,62 @@ extern int yydebug;
     MEMORY_LENGTH_SIMPLE = 263,    /* MEMORY_LENGTH_SIMPLE  */
     MEMORY_LENGTH_PREFIX = 264,    /* MEMORY_LENGTH_PREFIX  */
     ALIGNMENT_SIMPLE = 265,        /* ALIGNMENT_SIMPLE  */
-    TYPE = 266,                    /* TYPE  */
-    CHUNK_CLASS_MEM = 267,         /* CHUNK_CLASS_MEM  */
-    CHUNK_CLASS_SSE = 268,         /* CHUNK_CLASS_SSE  */
-    CHUNK_CLASS_INT = 269,         /* CHUNK_CLASS_INT  */
-    CHUNK_CLASS_LAYOUT = 270,      /* CHUNK_CLASS_LAYOUT  */
-    GP_REGISTER = 271,             /* GP_REGISTER  */
-    REGISTER = 272,                /* REGISTER  */
-    GLOBAL = 273,                  /* GLOBAL  */
-    LAYOUT = 274,                  /* LAYOUT  */
-    EXTERN = 275,                  /* EXTERN  */
-    NASM = 276,                    /* NASM  */
-    FN = 277,                      /* FN  */
-    NASM_BLOCK = 278,              /* NASM_BLOCK  */
-    IF = 279,                      /* IF  */
-    ELSE = 280,                    /* ELSE  */
-    GOTO = 281,                    /* GOTO  */
-    LOOP = 282,                    /* LOOP  */
-    BREAK = 283,                   /* BREAK  */
-    CONTINUE = 284,                /* CONTINUE  */
-    RET = 285,                     /* RET  */
-    AVOID = 286,                   /* AVOID  */
-    ALIAS = 287,                   /* ALIAS  */
-    REG = 288,                     /* REG  */
-    LOGICAL_OR = 289,              /* LOGICAL_OR  */
-    LOGICAL_AND = 290,             /* LOGICAL_AND  */
-    ASSIGN = 291,                  /* "="  */
-    INCREMENT = 292,               /* INCREMENT  */
-    DECREMENT = 293,               /* DECREMENT  */
-    SIZEOF = 294,                  /* SIZEOF  */
-    PLUS = 295,                    /* "+"  */
-    MINUS = 296,                   /* "-"  */
-    MULTIPLY = 297,                /* "*"  */
-    DIVIDE = 298,                  /* "/"  */
-    REMAINDER = 299,               /* "%"  */
-    BITWISE_AND = 300,             /* "&"  */
-    BITWISE_OR = 301,              /* "|"  */
-    BITWISE_XOR = 302,             /* "^"  */
-    LOGICAL_NOT = 303,             /* "!"  */
-    BITWISE_NOT = 304,             /* "~"  */
-    LESS_THEN = 305,               /* "<"  */
-    GREATER_THEN = 306,            /* ">"  */
-    LESS_EQUAL = 307,              /* LESS_EQUAL  */
-    GREATER_EQUAL = 308,           /* GREATER_EQUAL  */
-    EQUALS = 309,                  /* EQUALS  */
-    NOT_EQUALS = 310,              /* NOT_EQUALS  */
-    ROB = 311,                     /* "("  */
-    RCB = 312,                     /* ")"  */
-    SOB = 313,                     /* "["  */
-    SCB = 314,                     /* "]"  */
-    COB = 315,                     /* "{"  */
-    CCB = 316,                     /* "}"  */
-    ARROW = 317,                   /* ARROW  */
-    COLON = 318,                   /* ":"  */
-    SEMICOLON = 319,               /* ";"  */
-    COMMA = 320,                   /* ","  */
-    DOT = 321                      /* "."  */
+    CHUNK_CLASS_MEM = 266,         /* CHUNK_CLASS_MEM  */
+    CHUNK_CLASS_SSE = 267,         /* CHUNK_CLASS_SSE  */
+    CHUNK_CLASS_INT = 268,         /* CHUNK_CLASS_INT  */
+    CHUNK_CLASS_LAYOUT = 269,      /* CHUNK_CLASS_LAYOUT  */
+    GP_REGISTER = 270,             /* GP_REGISTER  */
+    REGISTER = 271,                /* REGISTER  */
+    GLOBAL = 272,                  /* GLOBAL  */
+    LAYOUT = 273,                  /* LAYOUT  */
+    EXTERN = 274,                  /* EXTERN  */
+    NASM = 275,                    /* NASM  */
+    FN = 276,                      /* FN  */
+    NASM_BLOCK = 277,              /* NASM_BLOCK  */
+    IF = 278,                      /* IF  */
+    ELSE = 279,                    /* ELSE  */
+    GOTO = 280,                    /* GOTO  */
+    LOOP = 281,                    /* LOOP  */
+    BREAK = 282,                   /* BREAK  */
+    CONTINUE = 283,                /* CONTINUE  */
+    RET = 284,                     /* RET  */
+    AVOID = 285,                   /* AVOID  */
+    ALIAS = 286,                   /* ALIAS  */
+    REG = 287,                     /* REG  */
+    LOGICAL_OR = 288,              /* LOGICAL_OR  */
+    LOGICAL_AND = 289,             /* LOGICAL_AND  */
+    ASSIGN = 290,                  /* ASSIGN  */
+    INCREMENT = 291,               /* INCREMENT  */
+    DECREMENT = 292,               /* DECREMENT  */
+    SIZEOF = 293,                  /* SIZEOF  */
+    PLUS = 294,                    /* PLUS  */
+    MINUS = 295,                   /* MINUS  */
+    MULTIPLY = 296,                /* MULTIPLY  */
+    DIVIDE = 297,                  /* DIVIDE  */
+    REMAINDER = 298,               /* REMAINDER  */
+    BITWISE_AND = 299,             /* BITWISE_AND  */
+    BITWISE_OR = 300,              /* BITWISE_OR  */
+    BITWISE_XOR = 301,             /* BITWISE_XOR  */
+    LOGICAL_NOT = 302,             /* LOGICAL_NOT  */
+    BITWISE_NOT = 303,             /* BITWISE_NOT  */
+    LESS_THAN = 304,               /* LESS_THAN  */
+    GREATER_THAN = 305,            /* GREATER_THAN  */
+    LESS_EQUAL = 306,              /* LESS_EQUAL  */
+    GREATER_EQUAL = 307,           /* GREATER_EQUAL  */
+    EQUALS = 308,                  /* EQUALS  */
+    NOT_EQUALS = 309,              /* NOT_EQUALS  */
+    CAST = 310,                    /* CAST  */
+    ACCESS = 311,                  /* ACCESS  */
+    ROB = 312,                     /* "("  */
+    RCB = 313,                     /* ")"  */
+    SOB = 314,                     /* "["  */
+    SCB = 315,                     /* "]"  */
+    COB = 316,                     /* "{"  */
+    CCB = 317,                     /* "}"  */
+    ARROW = 318,                   /* ARROW  */
+    COLON = 319,                   /* ":"  */
+    SEMICOLON = 320,               /* ";"  */
+    COMMA = 321                    /* ","  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -129,19 +129,13 @@ union YYSTYPE
 #line 11 "src/parser/rules.y"
 
     struct program_node_t *program;
-    struct visibility_node_t *visibility;
-    struct memory_length_node_t *memory_length;
-    struct alignment_node_t *alignment;
     struct global_variable_declaration_node_t *global_variable_declaration;
-    struct chunk_class_node_t *chunk_class;
-    struct abi_class_node_t *abi_class;
     struct layout_declaration_items_node_t *layout_declaration_items;
     struct layout_declaration_node_t *layout_declaration;
     struct extern_declaration_node_t *extern_declaration;
     struct function_declaration_arg_node_t *function_declaration_arg;
     struct function_declaration_args_node_t *function_declaration_args;
     struct function_declaration_node_t *function_declaration;
-    struct nasm_block_node_t *nasm_block;
     struct body_list_node_t *body_list;
     struct body_node_t *body;
     struct statement_node_t *statement;
@@ -156,7 +150,6 @@ union YYSTYPE
     struct avoid_block_regs_node_t *avoid_block_regs;
     struct avoid_block_node_t *avoid_block;
     struct expression_node_t *expression;
-    struct operand_type_node_t *operand_type;
     struct logical_or_node_t *logical_or;
     struct logical_and_node_t *logical_and;
     struct bitwise_or_node_t *bitwise_or;
@@ -177,10 +170,9 @@ union YYSTYPE
     struct secondary_node_t *secondary;
     struct primary_node_t *primary;
     struct literal_node_t *literal;
-    struct type_node_t *type;
     struct name_node_t *name;
 
-#line 184 "src/parser/rules.tab.h"
+#line 176 "src/parser/rules.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

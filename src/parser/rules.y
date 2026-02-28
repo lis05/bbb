@@ -10,19 +10,13 @@
 
 %union {
     struct program_node_t *program;
-    struct visibility_node_t *visibility;
-    struct memory_length_node_t *memory_length;
-    struct alignment_node_t *alignment;
     struct global_variable_declaration_node_t *global_variable_declaration;
-    struct chunk_class_node_t *chunk_class;
-    struct abi_class_node_t *abi_class;
     struct layout_declaration_items_node_t *layout_declaration_items;
     struct layout_declaration_node_t *layout_declaration;
     struct extern_declaration_node_t *extern_declaration;
     struct function_declaration_arg_node_t *function_declaration_arg;
     struct function_declaration_args_node_t *function_declaration_args;
     struct function_declaration_node_t *function_declaration;
-    struct nasm_block_node_t *nasm_block;
     struct body_list_node_t *body_list;
     struct body_node_t *body;
     struct statement_node_t *statement;
@@ -37,7 +31,6 @@
     struct avoid_block_regs_node_t *avoid_block_regs;
     struct avoid_block_node_t *avoid_block;
     struct expression_node_t *expression;
-    struct operand_type_node_t *operand_type;
     struct logical_or_node_t *logical_or;
     struct logical_and_node_t *logical_and;
     struct bitwise_or_node_t *bitwise_or;
@@ -58,7 +51,6 @@
     struct secondary_node_t *secondary;
     struct primary_node_t *primary;
     struct literal_node_t *literal;
-    struct type_node_t *type;
     struct name_node_t *name;
 }
 
@@ -70,9 +62,8 @@
 %token <node> DOUBLE
 %token <node> STRING
 %token <node> MEMORY_LENGTH_SIMPLE
-%token <node> MEMORY_LENGTH_PREFIX 'm'
+%token <node> MEMORY_LENGTH_PREFIX
 %token <node> ALIGNMENT_SIMPLE
-%token <node> TYPE
 %token <node> CHUNK_CLASS_MEM
 %token <node> CHUNK_CLASS_SSE
 %token <node> CHUNK_CLASS_INT
@@ -98,26 +89,28 @@
 
 %token <node> LOGICAL_OR
 %token <node> LOGICAL_AND
-%token <node> ASSIGN "="
+%token <node> ASSIGN
 %token <node> INCREMENT
 %token <node> DECREMENT
 %token <node> SIZEOF
-%token <node> PLUS "+"
-%token <node> MINUS "-"
-%token <node> MULTIPLY "*"
-%token <node> DIVIDE "/"
-%token <node> REMAINDER "%"
-%token <node> BITWISE_AND "&"
-%token <node> BITWISE_OR "|"
-%token <node> BITWISE_XOR "^"
-%token <node> LOGICAL_NOT "!"
-%token <node> BITWISE_NOT "~"
-%token <node> LESS_THEN "<"
-%token <node> GREATER_THEN ">"
+%token <node> PLUS
+%token <node> MINUS
+%token <node> MULTIPLY
+%token <node> DIVIDE
+%token <node> REMAINDER
+%token <node> BITWISE_AND
+%token <node> BITWISE_OR
+%token <node> BITWISE_XOR
+%token <node> LOGICAL_NOT
+%token <node> BITWISE_NOT
+%token <node> LESS_THAN
+%token <node> GREATER_THAN
 %token <node> LESS_EQUAL
 %token <node> GREATER_EQUAL
 %token <node> EQUALS
 %token <node> NOT_EQUALS
+%token <node> CAST
+%token <node> ACCESS
 
 %token <node> ROB "("
 %token <node> RCB ")"
@@ -129,22 +122,15 @@
 %token <node> COLON ":"
 %token <node> SEMICOLON ";"
 %token <node> COMMA ","
-%token <node> DOT "."
 
 %type <node> program
-%type <node> visibility
-%type <node> memory_length
-%type <node> alignment
 %type <node> global_variable_declaration
-%type <node> chunk_class
-%type <node> abi_class
 %type <node> layout_declaration_items
 %type <node> layout_declaration
 %type <node> extern_declaration
 %type <node> function_declaration_arg
 %type <node> function_declaration_args
 %type <node> function_declaration
-%type <node> nasm_block
 %type <node> body_list
 %type <node> body
 %type <node> statement
@@ -160,7 +146,6 @@
 %type <node> avoid_block
 
 %type <node> expression
-%type <node> operand_type
 %type <node> logical_or
 %type <node> logical_and
 %type <node> bitwise_or
@@ -334,77 +319,72 @@ avoid_block:
     AVOID avoid_block_regs body {}
     ;
 
-operand_type:
-    TYPE {}
-    | memory_length {}
-    ;
-
 expression:
-    logical_or operand_type '=' operand_type expression {}
+    logical_or ASSIGN expression {}
     | logical_or {}
     ;
 
 logical_or:
-    logical_or operand_type LOGICAL_OR operand_type logical_and {}
+    logical_or LOGICAL_OR logical_and {}
     | logical_and {}
     ;
 
 logical_and:
-    logical_and operand_type LOGICAL_AND operand_type bitwise_or {}
+    logical_and LOGICAL_AND bitwise_or {}
     | bitwise_or {}
     ;
 
 bitwise_or:
-    bitwise_or operand_type '|' operand_type bitwise_xor {}
+    bitwise_or BITWISE_OR bitwise_xor {}
     | bitwise_xor {}
     ;
 
 bitwise_xor:
-    bitwise_xor operand_type '^' operand_type bitwise_and {}
+    bitwise_xor BITWISE_XOR bitwise_and {}
     | bitwise_and {}
     ;
 
 bitwise_and:
-    bitwise_and operand_type '&' operand_type equality {}
+    bitwise_and BITWISE_AND equality {}
     | equality {}
     ;
 
 equality:
-    equality operand_type EQUALS operand_type relational {}
-    | equality operand_type NOT_EQUALS operand_type relational {}
+    equality EQUALS relational {}
+    | equality NOT_EQUALS relational {}
     | relational {}
     ;
 
 relational:
-    relational operand_type '<' operand_type additive {}
-    | relational operand_type '>' operand_type additive {}
-    | relational operand_type LESS_EQUAL operand_type additive {}
-    | relational operand_type GREATER_EQUAL operand_type additive {}
+    relational LESS_THAN additive {}
+    | relational GREATER_THAN additive {}
+    | relational LESS_EQUAL additive {}
+    | relational GREATER_EQUAL additive {}
     | additive {}
     ;
 
 additive:
-    additive operand_type '+' operand_type multiplicative {}
-    | additive operand_type '-' operand_type multiplicative {}
+    additive PLUS multiplicative {}
+    | additive MINUS multiplicative {}
     | multiplicative {}
     ;
 
 multiplicative:
-    multiplicative operand_type '*' operand_type tetriary {}
-    | multiplicative operand_type '/' operand_type tetriary {}
-    | multiplicative operand_type '%' operand_type tetriary {}
+    multiplicative MULTIPLY tetriary {}
+    | multiplicative DIVIDE tetriary {}
+    | multiplicative REMAINDER tetriary {}
     | tetriary {}
     ;
 
 prefix_op:
-    INCREMENT operand_type tetriary {}
-    | DECREMENT operand_type tetriary {}
-    | '!' operand_type tetriary {}
-    | '~' operand_type tetriary {}
+    INCREMENT tetriary {}
+    | DECREMENT tetriary {}
+    | LOGICAL_NOT tetriary {}
+    | BITWISE_NOT tetriary {}
     ;
 
 cast_op:
-    tetriary operand_type '?' operand_type {}
+    tetriary CAST {}
     ;
 
 address_op:
@@ -425,8 +405,8 @@ tetriary:
     ;
 
 suffix_op:
-    secondary operand_type INCREMENT {}
-    | secondary operand_type DECREMENT {}
+    secondary INCREMENT {}
+    | secondary DECREMENT {}
     ;
 
 dereference_op:
@@ -435,7 +415,7 @@ dereference_op:
     ;
 
 layout_access_op:
-    secondary NAME '.' NAME {}
+    secondary ACCESS NAME {}
     ;
 
 secondary:

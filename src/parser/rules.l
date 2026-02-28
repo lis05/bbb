@@ -38,31 +38,54 @@
         res->name = token_get(str);\
         res;\
     })
+
+    #define RET_NAME(ret_code) do {\
+        tfrag_t frag;\
+        COUNT(frag);\
+        yylval.name = NAME(frag, frag.token);\
+        return ret_code;\
+    } while(0)
 %}
 
 NAME                                    [a-zA-Z_][a-zA-Z_0-9]*
+GP_REGISTER                             r([abcd]x|si|di|sp|bp|[8-9]|1[0-5])
+REGISTER                                ({GP_REGISTER}|xmm([0-9]|1[0-5]))
+MEM_LEN_S                               "m"[0-9]+
+MEM_LEN_P                               "m(sizeof "{NAME}")"
+TYPE                                    (s?[bwdq]|[fF])
+OP_TYPE                                 ({TYPE}|{MEM_LEN_S}|{MEM_LEN_P})
 
 %%
 
-"//".* {
-    count();
-}
+"//".*                                  { count(); }
+"/*"([^*]|\*+[^*/])*\*+"/"              { count(); }
+{MEM_LEN_S}                             { RET_NAME(MEMORY_LENGTH_SIMPLE); }
+"m"                                     { RET_NAME(MEMORY_LENGTH_PREFIX); }
+"align"[1-9][0-9]*                      { RET_NAME(ALIGNMENT_SIMPLE); }
+"#mem"                                  { RET_NAME(CHUNK_CLASS_MEM); }
+"#sse"                                  { RET_NAME(CHUNK_CLASS_SSE); }
+"#int"                                  { RET_NAME(CHUNK_CLASS_INT); }
+"#"{NAME}                               { RET_NAME(CHUNK_CLASS_LAYOUT); }
+{GP_REGISTER}                           { RET_NAME(GP_REGISTER); }
+{REGISTER}                              { RET_NAME(REGISTER); }
+"global"                                { RET_NAME(GLOBAL); }
+"layout"                                { RET_NAME(LAYOUT); }
+"extern"                                { RET_NAME(EXTERN); }
+"nasm"                                  { RET_NAME(NASM); }
+"fn"                                    { RET_NAME(FN); }
+"%nasm"(.|\n)*"%endnasm"                { RET_NAME(NASM_BLOCK); }
+"if"                                    { RET_NAME(IF); }
+"else"                                  { RET_NAME(ELSE); }
+"goto"                                  { RET_NAME(GOTO); }
+"loop"                                  { RET_NAME(LOOP); }
+"break"                                 { RET_NAME(BREAK); }
+"continue"                              { RET_NAME(CONTINUE); }
+"ret"                                   { RET_NAME(RET); }
+"avoid"                                 { RET_NAME(AVOID); }
+"alias"                                 { RET_NAME(ALIAS); }
+"reg"                                   { RET_NAME(REG); }
 
-"/*"([^*]|\*+[^*/])*\*+"/" {
-    count();
-}
 
-"m"[0-9]* {
-    tfrag_t frag;
-    COUNT(frag);
-
-    struct memory_length_node_t *res = ALLOC(struct memory_length_node_t);
-    res->frag = frag;
-    res->prefix = NAME(frag, frag.token);
-
-    yylval.memory_length = res;
-    return MEMORY_LENGTH_SIMPLE;
-}
 
 %%
 static void count_char(char c) {
