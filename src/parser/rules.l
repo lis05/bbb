@@ -84,8 +84,104 @@ OP_TYPE                                 ({TYPE}|{MEM_LEN_S}|{MEM_LEN_P})
 "avoid"                                 { RET_NAME(AVOID); }
 "alias"                                 { RET_NAME(ALIAS); }
 "reg"                                   { RET_NAME(REG); }
+"sizeof"                                { RET_NAME(SIZEOF); }
+{OP_TYPE}?"||"{OP_TYPE}?                { RET_NAME(LOGICAL_OR); }
+{OP_TYPE}?"&&"{OP_TYPE}?                { RET_NAME(LOGICAL_AND); }
+{OP_TYPE}?"++"{OP_TYPE}?                { RET_NAME(INCREMENT); }
+{OP_TYPE}?"--"{OP_TYPE}?                { RET_NAME(DECREMENT); }
+{OP_TYPE}?"+"{OP_TYPE}?                 { RET_NAME(PLUS); }
+{OP_TYPE}?"-"{OP_TYPE}?                 { RET_NAME(MINUS); }
+{OP_TYPE}?"*"{OP_TYPE}?                 { RET_NAME(MULTIPLY); }
+{OP_TYPE}?"/"{OP_TYPE}?                 { RET_NAME(DIVIDE); }
+{OP_TYPE}?"%"{OP_TYPE}?                 { RET_NAME(REMAINDER); }
+{OP_TYPE}?"&"{OP_TYPE}?                 { RET_NAME(BITWISE_AND); }
+{OP_TYPE}?"|"{OP_TYPE}?                 { RET_NAME(BITWISE_OR); }
+{OP_TYPE}?"^"{OP_TYPE}?                 { RET_NAME(BITWISE_XOR); }
+{OP_TYPE}?"!"{OP_TYPE}?                 { RET_NAME(LOGICAL_NOT); }
+{OP_TYPE}?"~"{OP_TYPE}?                 { RET_NAME(BITWISE_NOT); }
+{OP_TYPE}?"<="{OP_TYPE}?                { RET_NAME(LESS_EQUAL); }
+{OP_TYPE}?">="{OP_TYPE}?                { RET_NAME(GREATER_EQUAL); }
+{OP_TYPE}?"<"{OP_TYPE}?                 { RET_NAME(LESS_THAN); }
+{OP_TYPE}?">"{OP_TYPE}?                 { RET_NAME(GREATER_THAN); }
+{OP_TYPE}?"=="{OP_TYPE}?                { RET_NAME(EQUALS); }
+{OP_TYPE}?"!="{OP_TYPE}?                { RET_NAME(NOT_EQUALS); }
+{OP_TYPE}?"="{OP_TYPE}?                 { RET_NAME(ASSIGN); }
+{OP_TYPE}?"?"{OP_TYPE}?                 { RET_NAME(CAST); }
+{NAME}"."                               { RET_NAME(ACCESS); }
+"("                                     { RET_NAME(ROB); }
+")"                                     { RET_NAME(RCB); }
+"["                                     { RET_NAME(SOB); }
+"]"                                     { RET_NAME(SCB); }
+"{"                                     { RET_NAME(COB); }
+"}"                                     { RET_NAME(CCB); }
+"->"                                    { RET_NAME(ARROW); }
+":"                                     { RET_NAME(COLON); }
+";"                                     { RET_NAME(SEMICOLON); }
+","                                     { RET_NAME(COMMA); }
+\"([^\"\\]|\\.)*\"                      {
+    tfrag_t frag;
+    COUNT(frag);
+    struct literal_node_t *res = ALLOC(struct literal_node_t);
+    res->frag = frag;
+    res->type = LIT_STRING;
+    res->string_lit = parse_string(yytext);
+    yylval.literal = res;
+    return STRING;
+}
+[+-]?([0-9]*[.])?[0-9]+([eE][+-]?[0-9]+)? {
+    tfrag_t frag;
+    COUNT(frag);
+    struct literal_node_t *res = ALLOC(struct literal_node_t);
+    res->frag = frag;
+    res->type = LIT_DOUBLE;
+    res->double_lit = strtod(yytext, NULL);
+    yylval.literal = res;
+    return DOUBLE;
+}
+[+-](0x|0X|0)?[0-9a-fA-F]+ {
+    tfrag_t frag;
+    COUNT(frag);
+    struct literal_node_t *res = ALLOC(struct literal_node_t);
+    res->frag = frag;
+    res->type = LIT_INT;
 
+    char *ptr = yytext;
+    res->int_lit = strtol(yytext, &ptr, 0);
+    if (*ptr != '\0') {
+        yyerror("Invalid integer literal.");
+        exit(-1);
+    }
 
+    yylval.literal = res;
+    return INT;
+}
+(0x|0X|0)?[0-9a-fA-F]+ {
+    tfrag_t frag;
+    COUNT(frag);
+    struct literal_node_t *res = ALLOC(struct literal_node_t);
+    res->frag = frag;
+    res->type = LIT_UINT;
+
+    char *ptr = yytext;
+    res->uint_lit = strtoul(yytext, &ptr, 0);
+    if (*ptr != '\0') {
+        yyerror("Invalid unsigned integer literal.");
+        exit(-1);
+    }
+
+    yylval.literal = res;
+    return UINT;
+}
+{NAME} {
+    tfrag_t frag;
+    COUNT(frag);
+    struct literal_node_t *res = ALLOC(struct literal_node_t);
+    res->frag = frag;
+    res->type = LIT_NAME;
+    res->name_lit = frag.token;
+    yylval.literal = res;
+    return NAME;
+}
 
 %%
 static void count_char(char c) {

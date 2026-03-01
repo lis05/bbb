@@ -53,7 +53,7 @@ struct program_node_t {
     struct layout_declaration_node_t          *layout_decl;
     struct extern_declaration_node_t          *ext_decl;
     struct function_declaration_node_t        *fn_decl;
-    struct name_node_t                  *nasm_b;
+    struct name_node_t                        *nasm_b;
 };
 
 struct global_variable_declaration_node_t {
@@ -148,7 +148,7 @@ struct statement_node_t {
     struct ret_statement_node_t        *ret_s;
     struct expression_node_t           *expr;
     struct name_node_t                 *semicolon;
-    struct name_node_t           *nasm;
+    struct name_node_t                 *nasm;
 };
 
 struct variable_declaration_node_t {
@@ -387,11 +387,11 @@ struct literal_node_t {
     tfrag_t           frag;
     enum literal_type type;
     union {
-        int64_t             int_lit;
-        uint64_t            uint_lit;
-        double              double_lit;
-        const char         *string_lit;
-        struct name_node_t *name_lit;
+        int64_t     int_lit;
+        uint64_t    uint_lit;
+        double      double_lit;
+        const char *string_lit;
+        const char *name_lit;
     };
 };
 
