@@ -1,7 +1,38 @@
 #include "parser.h"
+#include "token.h"
 
 void yyerror(const char *token) {
     log_msg("Parser error: \n");
     log_msg("%s\n", token);
     exit(-1);
+}
+
+void parser_init() {
+}
+
+struct program_node_t *parsing_result;
+
+struct program_node_t *parser_parse(const char *filename) {
+    log_info("Starting parser on file: %s\n", filename);
+
+    extern FILE *yyin;
+    if ((yyin = fopen(filename, "r")) == NULL) {
+        log_error("Failed to open %s: %s\n", filename, strerror(errno));
+        return NULL;
+    }
+
+    tokens_init();
+
+    extern tfrag_t cur_frag;
+    tfrag_init(&cur_frag, NULL, filename, 0, 0, 0, 0, 0, 0);
+
+    extern int yyparse();
+    if (yyparse()) {
+        log_error("yyparse()\n");
+        return NULL;
+    }
+
+    fclose(yyin);
+
+    return parsing_result;
 }

@@ -41,6 +41,9 @@ OBJECTS += $(patsubst src/common/%.c,obj/common/%.o,$(wildcard src/common/*.c))
 # wow
 $(BBB): $(OBJECTS) | obj build
 	$(LD) $(LDFLAGS) $(LDLIBS) $^ -o $@
+	@echo ""
+	@echo "Compilation successfull!"
+	@echo ""
 
 # src compilation
 obj/%.o: src/%.c $(HEADERS) | obj

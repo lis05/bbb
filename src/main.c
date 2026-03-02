@@ -5,6 +5,7 @@
 #include "common/common.h"
 #include "parser/token.h"
 #include "parser/ast.h"
+#include "parser/parser.h"
 
 static struct option const long_opts[] = {{"help", 0, NULL, 'h'}};
 
@@ -69,12 +70,25 @@ int main(int argc, char **argv) {
         }
     }
 
+    if (source == NULL) {
+        log_msg("No source provided. Aborting.\n");
+        return -1;
+    }
+
     if (dest == NULL) {
         dest = "out.asm";
     }
 
 	log_debug("src: %s\n", source);
 	log_debug("dest: %s\n", dest);
+
+    parser_init();
+    struct program_node_t *prog = parser_parse(source);
+    if (prog == NULL) {
+        log_msg("Compilation did not succeed.\n");
+        log_msg("Aborting.\n");
+        return -1;
+    }
 
     return 0;
 }
