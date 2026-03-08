@@ -668,173 +668,521 @@ statement:
     ;
 
 variable_declaration:
-    NAME ':' memory_length {}
-    | NAME ':' memory_length alignment {}
+    NAME ':' memory_length {
+        $$ = ALLOC(struct variable_declaration_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->name = $1;
+        $$->colon = $2;
+        $$->mem_len = $3;
+    }
+    | NAME ':' memory_length alignment {
+        $$ = ALLOC(struct variable_declaration_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3, $4);
+        $$->name = $1;
+        $$->colon = $2;
+        $$->mem_len = $3;
+        $$->align = $4;
+    }
     ;
 
 register_alias:
-    NAME ':' ALIAS REG {}
-    | NAME ':' ALIAS GP_REGISTER {}
+    NAME ':' ALIAS REG {
+        $$ = ALLOC(struct register_alias_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3, $4);
+        $$->name = $1;
+        $$->colon = $2;
+        $$->alias = $3;
+        $$->reg = $4;
+    }
+    | NAME ':' ALIAS GP_REGISTER {
+        $$ = ALLOC(struct register_alias_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3, $4);
+        $$->name = $1;
+        $$->colon = $2;
+        $$->alias = $3;
+        $$->reg = $4;
+    }
     ;
 
 if_statement:
-    IF expression body {} |
-    IF expression body ELSE body {}
+    IF expression body {
+        $$ = ALLOC(struct if_statement_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->kw = $1;
+        $$->expr = $2;
+        $$->body = $3;
+    }
+    | IF expression body ELSE body {
+        $$ = ALLOC(struct if_statement_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3, $4, $5);
+        $$->kw = $1;
+        $$->expr = $2;
+        $$->body = $3;
+        $$->else_kw = $4;
+        $$->else_body = $5;
+    }
     ;
 
 label_declaration:
-    NAME ':' {}
+    NAME ':' {
+        $$ = ALLOC(struct label_declaration_node_t);
+        TFRAG_COMBINE($$, $1, $2);
+        $$->name = $1;
+        $$->colon = $2;
+    }
     ;
 
 goto_statement:
-    GOTO NAME ';' {}
+    GOTO NAME ';' {
+        $$ = ALLOC(struct goto_statement_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->kw = $1;
+        $$->name = $2;
+        $$->semicolon = $3;
+    }
     ;
 
 loop_statement:
-    LOOP body {}
+    LOOP body {
+        $$ = ALLOC(struct loop_statement_node_t);
+        TFRAG_COMBINE($$, $1, $2);
+        $$->kw = $1;
+        $$->body = $2;
+    }
     ;
 
 break_statement:
-    BREAK ';' {}
-    | CONTINUE ';' {}
+    BREAK ';' {
+        $$ = ALLOC(struct break_statement_node_t);
+        TFRAG_COMBINE($$, $1, $2);
+        $$->kw = $1;
+        $$->semicolon = $2;
+    }
+    | CONTINUE ';' {
+        $$ = ALLOC(struct break_statement_node_t);
+        TFRAG_COMBINE($$, $1, $2);
+        $$->kw = $1;
+        $$->semicolon = $2;
+    }
     ;
 
 ret_statement:
-    RET expression ';' {}
+    RET expression ';' {
+        $$ = ALLOC(struct ret_statement_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->kw = $1;
+        $$->expr = $2;
+        $$->semicolon = $3;
+    }
     ;
 
 avoid_block_regs:
-    avoid_block_regs ',' REGISTER {}
-    | REGISTER {}
+    avoid_block_regs ',' REGISTER {
+        $$ = ALLOC(struct avoid_block_regs_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->rest = $1;
+        $$->comma = $2;
+        $$->reg = $3;
+    }
+    | REGISTER {
+        $$ = ALLOC(struct avoid_block_regs_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->reg = $1;
+    }
     ;
 
 avoid_block:
-    AVOID avoid_block_regs body {}
+    AVOID avoid_block_regs body {
+        $$ = ALLOC(struct avoid_block_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->kw = $1;
+        $$->regs = $2;
+        $$->body = $3;
+    }
     ;
 
 expression:
-    logical_or ASSIGN expression {}
-    | logical_or {}
+    logical_or ASSIGN expression {
+        $$ = ALLOC(struct expression_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | logical_or {
+        $$ = ALLOC(struct expression_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->other = $1;
+    }
     ;
 
 logical_or:
-    logical_or LOGICAL_OR logical_and {}
-    | logical_and {}
+    logical_or LOGICAL_OR logical_and {
+        $$ = ALLOC(struct logical_or_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | logical_and {
+        $$ = ALLOC(struct logical_or_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->other = $1;
+    }
     ;
 
 logical_and:
-    logical_and LOGICAL_AND bitwise_or {}
-    | bitwise_or {}
+    logical_and LOGICAL_AND bitwise_or {
+        $$ = ALLOC(struct logical_and_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | bitwise_or {
+        $$ = ALLOC(struct logical_and_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->other = $1;
+    }
     ;
 
 bitwise_or:
-    bitwise_or BITWISE_OR bitwise_xor {}
-    | bitwise_xor {}
+    bitwise_or BITWISE_OR bitwise_xor {
+        $$ = ALLOC(struct bitwise_or_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | bitwise_xor {
+        $$ = ALLOC(struct bitwise_or_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->other = $1;
+    }
     ;
 
 bitwise_xor:
-    bitwise_xor BITWISE_XOR bitwise_and {}
-    | bitwise_and {}
+    bitwise_xor BITWISE_XOR bitwise_and {
+        $$ = ALLOC(struct bitwise_xor_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | bitwise_and {
+        $$ = ALLOC(struct bitwise_xor_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->other = $1;
+    }
     ;
 
 bitwise_and:
-    bitwise_and BITWISE_AND equality {}
-    | equality {}
+    bitwise_and BITWISE_AND equality {
+        $$ = ALLOC(struct bitwise_and_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | equality {
+        $$ = ALLOC(struct bitwise_and_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->other = $1;
+    }
     ;
 
 equality:
-    equality EQUALS relational {}
-    | equality NOT_EQUALS relational {}
-    | relational {}
+    equality EQUALS relational {
+        $$ = ALLOC(struct equality_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | equality NOT_EQUALS relational {
+        $$ = ALLOC(struct equality_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | relational {
+        $$ = ALLOC(struct equality_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->other = $1;
+    }
     ;
 
 relational:
-    relational LESS_THAN additive {}
-    | relational GREATER_THAN additive {}
-    | relational LESS_EQUAL additive {}
-    | relational GREATER_EQUAL additive {}
-    | additive {}
+    relational LESS_THAN additive {
+        $$ = ALLOC(struct relational_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | relational GREATER_THAN additive {
+        $$ = ALLOC(struct relational_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | relational LESS_EQUAL additive {
+        $$ = ALLOC(struct relational_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | relational GREATER_EQUAL additive {
+        $$ = ALLOC(struct relational_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | additive {
+        $$ = ALLOC(struct relational_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->other = $1;
+    }
     ;
 
 additive:
-    additive PLUS multiplicative {}
-    | additive MINUS multiplicative {}
-    | multiplicative {}
+    additive PLUS multiplicative {
+        $$ = ALLOC(struct additive_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | additive MINUS multiplicative {
+        $$ = ALLOC(struct additive_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | multiplicative {
+        $$ = ALLOC(struct additive_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->other = $1;
+    }
     ;
 
 multiplicative:
-    multiplicative MULTIPLY tetriary {}
-    | multiplicative DIVIDE tetriary {}
-    | multiplicative REMAINDER tetriary {}
-    | tetriary {}
+    multiplicative MULTIPLY tetriary {
+        $$ = ALLOC(struct multiplicative_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | multiplicative DIVIDE tetriary {
+        $$ = ALLOC(struct multiplicative_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | multiplicative REMAINDER tetriary {
+        $$ = ALLOC(struct multiplicative_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg1 = $1;
+        $$->op = $2;
+        $$->arg2 = $3;
+    }
+    | tetriary {
+        $$ = ALLOC(struct multiplicative_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->other = $1;
+    }
     ;
 
 prefix_op:
-    INCREMENT tetriary {}
-    | DECREMENT tetriary {}
-    | LOGICAL_NOT tetriary {}
-    | BITWISE_NOT tetriary {}
+    INCREMENT tetriary {
+        $$ = ALLOC(struct prefix_op_node_t);
+        TFRAG_COMBINE($$, $1, $2);
+        $$->op = $1;
+        $$->arg = $2;
+    }
+    | DECREMENT tetriary {
+        $$ = ALLOC(struct prefix_op_node_t);
+        TFRAG_COMBINE($$, $1, $2);
+        $$->op = $1;
+        $$->arg = $2;
+    }
+    | LOGICAL_NOT tetriary {
+        $$ = ALLOC(struct prefix_op_node_t);
+        TFRAG_COMBINE($$, $1, $2);
+        $$->op = $1;
+        $$->arg = $2;
+    }
+    | BITWISE_NOT tetriary {
+        $$ = ALLOC(struct prefix_op_node_t);
+        TFRAG_COMBINE($$, $1, $2);
+        $$->op = $1;
+        $$->arg = $2;
+    }
     ;
 
 cast_op:
-    tetriary CAST {}
+    tetriary CAST {
+        $$ = ALLOC(struct cast_op_node_t);
+        TFRAG_COMBINE($$, $1, $2);
+        $$->arg = $1;
+        $$->op = $2;
+    }
     ;
 
 address_op:
-    '[' expression ']' tetriary {}
-    | '[' ']' tetriary {}
+    '[' expression ']' tetriary {
+        $$ = ALLOC(struct address_op_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3, $4);
+        $$->open_brace = $1;
+        $$->offset = $2;
+        $$->closed_brace = $3;
+        $$->arg = $4;
+    }
+    | '[' ']' tetriary {
+        $$ = ALLOC(struct address_op_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->open_brace = $1;
+        $$->closed_brace = $2;
+        $$->arg = $3;
+    }
     ;
 
 sizeof_op:
-    SIZEOF NAME {}
+    SIZEOF NAME {
+        $$ = ALLOC(struct sizeof_op_node_t);
+        TFRAG_COMBINE($$, $1, $2);
+        $$->kw = $1;
+        $$->name = $2;
+    }
     ;
 
 tetriary:
-    prefix_op {}
-    | cast_op {}
-    | address_op {}
-    | sizeof_op {}
-    | secondary {}
+    prefix_op {
+        $$ = ALLOC(struct tetriary_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->prefix = $1;
+    }
+    | cast_op {
+        $$ = ALLOC(struct tetriary_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->cast = $1;
+    }
+    | address_op {
+        $$ = ALLOC(struct tetriary_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->address = $1;
+    }
+    | sizeof_op {
+        $$ = ALLOC(struct tetriary_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->sizeof_op = $1;
+    }
+    | secondary {
+        $$ = ALLOC(struct tetriary_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->secondary = $1;
+    }
     ;
 
 suffix_op:
-    secondary INCREMENT {}
-    | secondary DECREMENT {}
+    secondary INCREMENT {
+        $$ = ALLOC(struct suffix_op_node_t);
+        TFRAG_COMBINE($$, $1, $2);
+        $$->arg = $1;
+        $$->op = $2;
+    }
+    | secondary DECREMENT {
+        $$ = ALLOC(struct suffix_op_node_t);
+        TFRAG_COMBINE($$, $1, $2);
+        $$->arg = $1;
+        $$->op = $2;
+    }
     ;
 
 dereference_op:
-    secondary '[' expression ']' {}
-    | secondary '[' ']' {}
+    secondary '[' expression ']' {
+        $$ = ALLOC(struct dereference_op_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3, $4);
+        $$->arg = $1;
+        $$->open_brace = $2;
+        $$->offset = $3;
+        $$->close_brace = $4;
+    }
+    | secondary '[' ']' {
+        $$ = ALLOC(struct dereference_op_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg = $1;
+        $$->open_brace = $2;
+        $$->close_brace = $3;
+    }
     ;
 
 layout_access_op:
-    secondary ACCESS NAME {}
+    secondary ACCESS NAME {
+        $$ = ALLOC(struct layout_access_op_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg = $1;
+        $$->op = $2;
+        $$->field = $3;
+    }
     ;
 
 secondary:
-    suffix_op {}
-    | dereference_op {}
-    | layout_access_op {}
-    | primary {}
+    suffix_op {
+        $$ = ALLOC(struct secondary_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->suffix = $1;
+    }
+    | dereference_op {
+        $$ = ALLOC(struct secondary_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->deref = $1;
+    }
+    | layout_access_op {
+        $$ = ALLOC(struct secondary_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->layout_access = $1;
+    }
+    | primary {
+        $$ = ALLOC(struct secondary_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->primary = $1;
+    }
     ;
 
 primary:
-    '(' expression ')' {}
-    | literal {}
+    '(' expression ')' {
+        $$ = ALLOC(struct primary_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->open_brace = $1;
+        $$->expression = $2;
+        $$->close_brace = $3;
+    }
+    | literal {
+        $$ = ALLOC(struct primary_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->literal = $1;
+    }
     ;
 
 literal:
-    INT {}
-    | UINT {}
-    | DOUBLE {}
-    | STRING {}
-    | NAME {}
+    INT { $$ = $1; }
+    | UINT { $$ = $1; }
+    | DOUBLE { $$ = $1; }
+    | STRING { $$ = $1; }
+    | NAME {
+        $$ = ALLOC(struct literal_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->type = LIT_NAME;
+        $$->name_lit = $1;
+    }
     ;
-
-
-
-
-
-
 
 %%

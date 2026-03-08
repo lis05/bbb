@@ -1642,23 +1642,14 @@ YY_RULE_SETUP
 case 66:
 YY_RULE_SETUP
 #line 175 "src/parser/rules.l"
-{
-    tfrag_t frag;
-    COUNT(frag);
-    struct literal_node_t *res = ALLOC(struct literal_node_t);
-    res->frag = frag;
-    res->type = LIT_NAME;
-    res->name_lit = frag.token;
-    yylval.literal = res;
-    return NAME;
-}
+{ RET_NAME(NAME); }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 186 "src/parser/rules.l"
+#line 177 "src/parser/rules.l"
 ECHO;
 	YY_BREAK
-#line 1662 "src/parser/lex.yy.c"
+#line 1653 "src/parser/lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2663,7 +2654,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 186 "src/parser/rules.l"
+#line 177 "src/parser/rules.l"
 
 static void count_char(char c) {
     cur_frag.begin++;

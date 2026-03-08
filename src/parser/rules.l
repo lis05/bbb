@@ -172,16 +172,7 @@ OP_TYPE                                 ({TYPE}|{MEM_LEN_S}|{MEM_LEN_P})
     yylval.literal = res;
     return UINT;
 }
-{NAME} {
-    tfrag_t frag;
-    COUNT(frag);
-    struct literal_node_t *res = ALLOC(struct literal_node_t);
-    res->frag = frag;
-    res->type = LIT_NAME;
-    res->name_lit = frag.token;
-    yylval.literal = res;
-    return NAME;
-}
+{NAME} { RET_NAME(NAME); }
 
 %%
 static void count_char(char c) {

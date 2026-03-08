@@ -683,14 +683,14 @@ static const yytype_int16 yyrline[] =
      410,   417,   424,   432,   440,   448,   460,   467,   475,   486,
      499,   512,   526,   538,   552,   566,   585,   591,   597,   607,
      612,   617,   622,   627,   632,   637,   642,   647,   652,   657,
-     663,   671,   672,   676,   677,   681,   682,   686,   690,   694,
-     698,   699,   703,   707,   708,   712,   716,   717,   721,   722,
-     726,   727,   731,   732,   736,   737,   741,   742,   746,   747,
-     748,   752,   753,   754,   755,   756,   760,   761,   762,   766,
-     767,   768,   769,   773,   774,   775,   776,   780,   784,   785,
-     789,   793,   794,   795,   796,   797,   801,   802,   806,   807,
-     811,   815,   816,   817,   818,   822,   823,   827,   828,   829,
-     830,   831
+     663,   671,   678,   689,   697,   708,   715,   727,   736,   746,
+     755,   761,   770,   780,   787,   795,   805,   812,   820,   827,
+     835,   842,   850,   857,   865,   872,   880,   887,   895,   902,
+     909,   917,   924,   931,   938,   945,   953,   960,   967,   975,
+     982,   989,   996,  1004,  1010,  1016,  1022,  1031,  1040,  1048,
+    1058,  1067,  1072,  1077,  1082,  1087,  1095,  1101,  1110,  1118,
+    1128,  1138,  1143,  1148,  1153,  1161,  1168,  1176,  1177,  1178,
+    1179,  1180
 };
 #endif
 
@@ -2099,432 +2099,786 @@ yyreduce:
 
   case 61: /* variable_declaration: NAME ':' memory_length  */
 #line 671 "src/parser/rules.y"
-                           {}
-#line 2104 "src/parser/rules.tab.c"
-    break;
-
-  case 62: /* variable_declaration: NAME ':' memory_length alignment  */
-#line 672 "src/parser/rules.y"
-                                       {}
+                           {
+        (yyval.variable_declaration) = ALLOC(struct variable_declaration_node_t);
+        TFRAG_COMBINE((yyval.variable_declaration), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.variable_declaration)->name = (yyvsp[-2].name);
+        (yyval.variable_declaration)->colon = (yyvsp[-1].name);
+        (yyval.variable_declaration)->mem_len = (yyvsp[0].name);
+    }
 #line 2110 "src/parser/rules.tab.c"
     break;
 
+  case 62: /* variable_declaration: NAME ':' memory_length alignment  */
+#line 678 "src/parser/rules.y"
+                                       {
+        (yyval.variable_declaration) = ALLOC(struct variable_declaration_node_t);
+        TFRAG_COMBINE((yyval.variable_declaration), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.variable_declaration)->name = (yyvsp[-3].name);
+        (yyval.variable_declaration)->colon = (yyvsp[-2].name);
+        (yyval.variable_declaration)->mem_len = (yyvsp[-1].name);
+        (yyval.variable_declaration)->align = (yyvsp[0].name);
+    }
+#line 2123 "src/parser/rules.tab.c"
+    break;
+
   case 63: /* register_alias: NAME ':' ALIAS REG  */
-#line 676 "src/parser/rules.y"
-                       {}
-#line 2116 "src/parser/rules.tab.c"
+#line 689 "src/parser/rules.y"
+                       {
+        (yyval.register_alias) = ALLOC(struct register_alias_node_t);
+        TFRAG_COMBINE((yyval.register_alias), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.register_alias)->name = (yyvsp[-3].name);
+        (yyval.register_alias)->colon = (yyvsp[-2].name);
+        (yyval.register_alias)->alias = (yyvsp[-1].name);
+        (yyval.register_alias)->reg = (yyvsp[0].name);
+    }
+#line 2136 "src/parser/rules.tab.c"
     break;
 
   case 64: /* register_alias: NAME ':' ALIAS GP_REGISTER  */
-#line 677 "src/parser/rules.y"
-                                 {}
-#line 2122 "src/parser/rules.tab.c"
+#line 697 "src/parser/rules.y"
+                                 {
+        (yyval.register_alias) = ALLOC(struct register_alias_node_t);
+        TFRAG_COMBINE((yyval.register_alias), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.register_alias)->name = (yyvsp[-3].name);
+        (yyval.register_alias)->colon = (yyvsp[-2].name);
+        (yyval.register_alias)->alias = (yyvsp[-1].name);
+        (yyval.register_alias)->reg = (yyvsp[0].name);
+    }
+#line 2149 "src/parser/rules.tab.c"
     break;
 
   case 65: /* if_statement: IF expression body  */
-#line 681 "src/parser/rules.y"
-                       {}
-#line 2128 "src/parser/rules.tab.c"
+#line 708 "src/parser/rules.y"
+                       {
+        (yyval.if_statement) = ALLOC(struct if_statement_node_t);
+        TFRAG_COMBINE((yyval.if_statement), (yyvsp[-2].name), (yyvsp[-1].expression), (yyvsp[0].body));
+        (yyval.if_statement)->kw = (yyvsp[-2].name);
+        (yyval.if_statement)->expr = (yyvsp[-1].expression);
+        (yyval.if_statement)->body = (yyvsp[0].body);
+    }
+#line 2161 "src/parser/rules.tab.c"
     break;
 
   case 66: /* if_statement: IF expression body ELSE body  */
-#line 682 "src/parser/rules.y"
-                                 {}
-#line 2134 "src/parser/rules.tab.c"
+#line 715 "src/parser/rules.y"
+                                   {
+        (yyval.if_statement) = ALLOC(struct if_statement_node_t);
+        TFRAG_COMBINE((yyval.if_statement), (yyvsp[-4].name), (yyvsp[-3].expression), (yyvsp[-2].body), (yyvsp[-1].name), (yyvsp[0].body));
+        (yyval.if_statement)->kw = (yyvsp[-4].name);
+        (yyval.if_statement)->expr = (yyvsp[-3].expression);
+        (yyval.if_statement)->body = (yyvsp[-2].body);
+        (yyval.if_statement)->else_kw = (yyvsp[-1].name);
+        (yyval.if_statement)->else_body = (yyvsp[0].body);
+    }
+#line 2175 "src/parser/rules.tab.c"
     break;
 
   case 67: /* label_declaration: NAME ':'  */
-#line 686 "src/parser/rules.y"
-             {}
-#line 2140 "src/parser/rules.tab.c"
+#line 727 "src/parser/rules.y"
+             {
+        (yyval.label_declaration) = ALLOC(struct label_declaration_node_t);
+        TFRAG_COMBINE((yyval.label_declaration), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.label_declaration)->name = (yyvsp[-1].name);
+        (yyval.label_declaration)->colon = (yyvsp[0].name);
+    }
+#line 2186 "src/parser/rules.tab.c"
     break;
 
   case 68: /* goto_statement: GOTO NAME ';'  */
-#line 690 "src/parser/rules.y"
-                  {}
-#line 2146 "src/parser/rules.tab.c"
+#line 736 "src/parser/rules.y"
+                  {
+        (yyval.goto_statement) = ALLOC(struct goto_statement_node_t);
+        TFRAG_COMBINE((yyval.goto_statement), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.goto_statement)->kw = (yyvsp[-2].name);
+        (yyval.goto_statement)->name = (yyvsp[-1].name);
+        (yyval.goto_statement)->semicolon = (yyvsp[0].name);
+    }
+#line 2198 "src/parser/rules.tab.c"
     break;
 
   case 69: /* loop_statement: LOOP body  */
-#line 694 "src/parser/rules.y"
-              {}
-#line 2152 "src/parser/rules.tab.c"
+#line 746 "src/parser/rules.y"
+              {
+        (yyval.loop_statement) = ALLOC(struct loop_statement_node_t);
+        TFRAG_COMBINE((yyval.loop_statement), (yyvsp[-1].name), (yyvsp[0].body));
+        (yyval.loop_statement)->kw = (yyvsp[-1].name);
+        (yyval.loop_statement)->body = (yyvsp[0].body);
+    }
+#line 2209 "src/parser/rules.tab.c"
     break;
 
   case 70: /* break_statement: BREAK ';'  */
-#line 698 "src/parser/rules.y"
-              {}
-#line 2158 "src/parser/rules.tab.c"
+#line 755 "src/parser/rules.y"
+              {
+        (yyval.break_statement) = ALLOC(struct break_statement_node_t);
+        TFRAG_COMBINE((yyval.break_statement), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.break_statement)->kw = (yyvsp[-1].name);
+        (yyval.break_statement)->semicolon = (yyvsp[0].name);
+    }
+#line 2220 "src/parser/rules.tab.c"
     break;
 
   case 71: /* break_statement: CONTINUE ';'  */
-#line 699 "src/parser/rules.y"
-                   {}
-#line 2164 "src/parser/rules.tab.c"
+#line 761 "src/parser/rules.y"
+                   {
+        (yyval.break_statement) = ALLOC(struct break_statement_node_t);
+        TFRAG_COMBINE((yyval.break_statement), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.break_statement)->kw = (yyvsp[-1].name);
+        (yyval.break_statement)->semicolon = (yyvsp[0].name);
+    }
+#line 2231 "src/parser/rules.tab.c"
     break;
 
   case 72: /* ret_statement: RET expression ';'  */
-#line 703 "src/parser/rules.y"
-                       {}
-#line 2170 "src/parser/rules.tab.c"
+#line 770 "src/parser/rules.y"
+                       {
+        (yyval.ret_statement) = ALLOC(struct ret_statement_node_t);
+        TFRAG_COMBINE((yyval.ret_statement), (yyvsp[-2].name), (yyvsp[-1].expression), (yyvsp[0].name));
+        (yyval.ret_statement)->kw = (yyvsp[-2].name);
+        (yyval.ret_statement)->expr = (yyvsp[-1].expression);
+        (yyval.ret_statement)->semicolon = (yyvsp[0].name);
+    }
+#line 2243 "src/parser/rules.tab.c"
     break;
 
   case 73: /* avoid_block_regs: avoid_block_regs ',' REGISTER  */
-#line 707 "src/parser/rules.y"
-                                  {}
-#line 2176 "src/parser/rules.tab.c"
+#line 780 "src/parser/rules.y"
+                                  {
+        (yyval.avoid_block_regs) = ALLOC(struct avoid_block_regs_node_t);
+        TFRAG_COMBINE((yyval.avoid_block_regs), (yyvsp[-2].avoid_block_regs), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.avoid_block_regs)->rest = (yyvsp[-2].avoid_block_regs);
+        (yyval.avoid_block_regs)->comma = (yyvsp[-1].name);
+        (yyval.avoid_block_regs)->reg = (yyvsp[0].name);
+    }
+#line 2255 "src/parser/rules.tab.c"
     break;
 
   case 74: /* avoid_block_regs: REGISTER  */
-#line 708 "src/parser/rules.y"
-               {}
-#line 2182 "src/parser/rules.tab.c"
+#line 787 "src/parser/rules.y"
+               {
+        (yyval.avoid_block_regs) = ALLOC(struct avoid_block_regs_node_t);
+        TFRAG_COMBINE((yyval.avoid_block_regs), (yyvsp[0].name));
+        (yyval.avoid_block_regs)->reg = (yyvsp[0].name);
+    }
+#line 2265 "src/parser/rules.tab.c"
     break;
 
   case 75: /* avoid_block: AVOID avoid_block_regs body  */
-#line 712 "src/parser/rules.y"
-                                {}
-#line 2188 "src/parser/rules.tab.c"
+#line 795 "src/parser/rules.y"
+                                {
+        (yyval.avoid_block) = ALLOC(struct avoid_block_node_t);
+        TFRAG_COMBINE((yyval.avoid_block), (yyvsp[-2].name), (yyvsp[-1].avoid_block_regs), (yyvsp[0].body));
+        (yyval.avoid_block)->kw = (yyvsp[-2].name);
+        (yyval.avoid_block)->regs = (yyvsp[-1].avoid_block_regs);
+        (yyval.avoid_block)->body = (yyvsp[0].body);
+    }
+#line 2277 "src/parser/rules.tab.c"
     break;
 
   case 76: /* expression: logical_or ASSIGN expression  */
-#line 716 "src/parser/rules.y"
-                                 {}
-#line 2194 "src/parser/rules.tab.c"
+#line 805 "src/parser/rules.y"
+                                 {
+        (yyval.expression) = ALLOC(struct expression_node_t);
+        TFRAG_COMBINE((yyval.expression), (yyvsp[-2].logical_or), (yyvsp[-1].name), (yyvsp[0].expression));
+        (yyval.expression)->arg1 = (yyvsp[-2].logical_or);
+        (yyval.expression)->op = (yyvsp[-1].name);
+        (yyval.expression)->arg2 = (yyvsp[0].expression);
+    }
+#line 2289 "src/parser/rules.tab.c"
     break;
 
   case 77: /* expression: logical_or  */
-#line 717 "src/parser/rules.y"
-                 {}
-#line 2200 "src/parser/rules.tab.c"
+#line 812 "src/parser/rules.y"
+                 {
+        (yyval.expression) = ALLOC(struct expression_node_t);
+        TFRAG_COMBINE((yyval.expression), (yyvsp[0].logical_or));
+        (yyval.expression)->other = (yyvsp[0].logical_or);
+    }
+#line 2299 "src/parser/rules.tab.c"
     break;
 
   case 78: /* logical_or: logical_or LOGICAL_OR logical_and  */
-#line 721 "src/parser/rules.y"
-                                      {}
-#line 2206 "src/parser/rules.tab.c"
+#line 820 "src/parser/rules.y"
+                                      {
+        (yyval.logical_or) = ALLOC(struct logical_or_node_t);
+        TFRAG_COMBINE((yyval.logical_or), (yyvsp[-2].logical_or), (yyvsp[-1].name), (yyvsp[0].logical_and));
+        (yyval.logical_or)->arg1 = (yyvsp[-2].logical_or);
+        (yyval.logical_or)->op = (yyvsp[-1].name);
+        (yyval.logical_or)->arg2 = (yyvsp[0].logical_and);
+    }
+#line 2311 "src/parser/rules.tab.c"
     break;
 
   case 79: /* logical_or: logical_and  */
-#line 722 "src/parser/rules.y"
-                  {}
-#line 2212 "src/parser/rules.tab.c"
+#line 827 "src/parser/rules.y"
+                  {
+        (yyval.logical_or) = ALLOC(struct logical_or_node_t);
+        TFRAG_COMBINE((yyval.logical_or), (yyvsp[0].logical_and));
+        (yyval.logical_or)->other = (yyvsp[0].logical_and);
+    }
+#line 2321 "src/parser/rules.tab.c"
     break;
 
   case 80: /* logical_and: logical_and LOGICAL_AND bitwise_or  */
-#line 726 "src/parser/rules.y"
-                                       {}
-#line 2218 "src/parser/rules.tab.c"
+#line 835 "src/parser/rules.y"
+                                       {
+        (yyval.logical_and) = ALLOC(struct logical_and_node_t);
+        TFRAG_COMBINE((yyval.logical_and), (yyvsp[-2].logical_and), (yyvsp[-1].name), (yyvsp[0].bitwise_or));
+        (yyval.logical_and)->arg1 = (yyvsp[-2].logical_and);
+        (yyval.logical_and)->op = (yyvsp[-1].name);
+        (yyval.logical_and)->arg2 = (yyvsp[0].bitwise_or);
+    }
+#line 2333 "src/parser/rules.tab.c"
     break;
 
   case 81: /* logical_and: bitwise_or  */
-#line 727 "src/parser/rules.y"
-                 {}
-#line 2224 "src/parser/rules.tab.c"
+#line 842 "src/parser/rules.y"
+                 {
+        (yyval.logical_and) = ALLOC(struct logical_and_node_t);
+        TFRAG_COMBINE((yyval.logical_and), (yyvsp[0].bitwise_or));
+        (yyval.logical_and)->other = (yyvsp[0].bitwise_or);
+    }
+#line 2343 "src/parser/rules.tab.c"
     break;
 
   case 82: /* bitwise_or: bitwise_or BITWISE_OR bitwise_xor  */
-#line 731 "src/parser/rules.y"
-                                      {}
-#line 2230 "src/parser/rules.tab.c"
+#line 850 "src/parser/rules.y"
+                                      {
+        (yyval.bitwise_or) = ALLOC(struct bitwise_or_node_t);
+        TFRAG_COMBINE((yyval.bitwise_or), (yyvsp[-2].bitwise_or), (yyvsp[-1].name), (yyvsp[0].bitwise_xor));
+        (yyval.bitwise_or)->arg1 = (yyvsp[-2].bitwise_or);
+        (yyval.bitwise_or)->op = (yyvsp[-1].name);
+        (yyval.bitwise_or)->arg2 = (yyvsp[0].bitwise_xor);
+    }
+#line 2355 "src/parser/rules.tab.c"
     break;
 
   case 83: /* bitwise_or: bitwise_xor  */
-#line 732 "src/parser/rules.y"
-                  {}
-#line 2236 "src/parser/rules.tab.c"
+#line 857 "src/parser/rules.y"
+                  {
+        (yyval.bitwise_or) = ALLOC(struct bitwise_or_node_t);
+        TFRAG_COMBINE((yyval.bitwise_or), (yyvsp[0].bitwise_xor));
+        (yyval.bitwise_or)->other = (yyvsp[0].bitwise_xor);
+    }
+#line 2365 "src/parser/rules.tab.c"
     break;
 
   case 84: /* bitwise_xor: bitwise_xor BITWISE_XOR bitwise_and  */
-#line 736 "src/parser/rules.y"
-                                        {}
-#line 2242 "src/parser/rules.tab.c"
+#line 865 "src/parser/rules.y"
+                                        {
+        (yyval.bitwise_xor) = ALLOC(struct bitwise_xor_node_t);
+        TFRAG_COMBINE((yyval.bitwise_xor), (yyvsp[-2].bitwise_xor), (yyvsp[-1].name), (yyvsp[0].bitwise_and));
+        (yyval.bitwise_xor)->arg1 = (yyvsp[-2].bitwise_xor);
+        (yyval.bitwise_xor)->op = (yyvsp[-1].name);
+        (yyval.bitwise_xor)->arg2 = (yyvsp[0].bitwise_and);
+    }
+#line 2377 "src/parser/rules.tab.c"
     break;
 
   case 85: /* bitwise_xor: bitwise_and  */
-#line 737 "src/parser/rules.y"
-                  {}
-#line 2248 "src/parser/rules.tab.c"
+#line 872 "src/parser/rules.y"
+                  {
+        (yyval.bitwise_xor) = ALLOC(struct bitwise_xor_node_t);
+        TFRAG_COMBINE((yyval.bitwise_xor), (yyvsp[0].bitwise_and));
+        (yyval.bitwise_xor)->other = (yyvsp[0].bitwise_and);
+    }
+#line 2387 "src/parser/rules.tab.c"
     break;
 
   case 86: /* bitwise_and: bitwise_and BITWISE_AND equality  */
-#line 741 "src/parser/rules.y"
-                                     {}
-#line 2254 "src/parser/rules.tab.c"
+#line 880 "src/parser/rules.y"
+                                     {
+        (yyval.bitwise_and) = ALLOC(struct bitwise_and_node_t);
+        TFRAG_COMBINE((yyval.bitwise_and), (yyvsp[-2].bitwise_and), (yyvsp[-1].name), (yyvsp[0].equality));
+        (yyval.bitwise_and)->arg1 = (yyvsp[-2].bitwise_and);
+        (yyval.bitwise_and)->op = (yyvsp[-1].name);
+        (yyval.bitwise_and)->arg2 = (yyvsp[0].equality);
+    }
+#line 2399 "src/parser/rules.tab.c"
     break;
 
   case 87: /* bitwise_and: equality  */
-#line 742 "src/parser/rules.y"
-               {}
-#line 2260 "src/parser/rules.tab.c"
+#line 887 "src/parser/rules.y"
+               {
+        (yyval.bitwise_and) = ALLOC(struct bitwise_and_node_t);
+        TFRAG_COMBINE((yyval.bitwise_and), (yyvsp[0].equality));
+        (yyval.bitwise_and)->other = (yyvsp[0].equality);
+    }
+#line 2409 "src/parser/rules.tab.c"
     break;
 
   case 88: /* equality: equality EQUALS relational  */
-#line 746 "src/parser/rules.y"
-                               {}
-#line 2266 "src/parser/rules.tab.c"
+#line 895 "src/parser/rules.y"
+                               {
+        (yyval.equality) = ALLOC(struct equality_node_t);
+        TFRAG_COMBINE((yyval.equality), (yyvsp[-2].equality), (yyvsp[-1].name), (yyvsp[0].relational));
+        (yyval.equality)->arg1 = (yyvsp[-2].equality);
+        (yyval.equality)->op = (yyvsp[-1].name);
+        (yyval.equality)->arg2 = (yyvsp[0].relational);
+    }
+#line 2421 "src/parser/rules.tab.c"
     break;
 
   case 89: /* equality: equality NOT_EQUALS relational  */
-#line 747 "src/parser/rules.y"
-                                     {}
-#line 2272 "src/parser/rules.tab.c"
+#line 902 "src/parser/rules.y"
+                                     {
+        (yyval.equality) = ALLOC(struct equality_node_t);
+        TFRAG_COMBINE((yyval.equality), (yyvsp[-2].equality), (yyvsp[-1].name), (yyvsp[0].relational));
+        (yyval.equality)->arg1 = (yyvsp[-2].equality);
+        (yyval.equality)->op = (yyvsp[-1].name);
+        (yyval.equality)->arg2 = (yyvsp[0].relational);
+    }
+#line 2433 "src/parser/rules.tab.c"
     break;
 
   case 90: /* equality: relational  */
-#line 748 "src/parser/rules.y"
-                 {}
-#line 2278 "src/parser/rules.tab.c"
+#line 909 "src/parser/rules.y"
+                 {
+        (yyval.equality) = ALLOC(struct equality_node_t);
+        TFRAG_COMBINE((yyval.equality), (yyvsp[0].relational));
+        (yyval.equality)->other = (yyvsp[0].relational);
+    }
+#line 2443 "src/parser/rules.tab.c"
     break;
 
   case 91: /* relational: relational LESS_THAN additive  */
-#line 752 "src/parser/rules.y"
-                                  {}
-#line 2284 "src/parser/rules.tab.c"
+#line 917 "src/parser/rules.y"
+                                  {
+        (yyval.relational) = ALLOC(struct relational_node_t);
+        TFRAG_COMBINE((yyval.relational), (yyvsp[-2].relational), (yyvsp[-1].name), (yyvsp[0].additive));
+        (yyval.relational)->arg1 = (yyvsp[-2].relational);
+        (yyval.relational)->op = (yyvsp[-1].name);
+        (yyval.relational)->arg2 = (yyvsp[0].additive);
+    }
+#line 2455 "src/parser/rules.tab.c"
     break;
 
   case 92: /* relational: relational GREATER_THAN additive  */
-#line 753 "src/parser/rules.y"
-                                       {}
-#line 2290 "src/parser/rules.tab.c"
+#line 924 "src/parser/rules.y"
+                                       {
+        (yyval.relational) = ALLOC(struct relational_node_t);
+        TFRAG_COMBINE((yyval.relational), (yyvsp[-2].relational), (yyvsp[-1].name), (yyvsp[0].additive));
+        (yyval.relational)->arg1 = (yyvsp[-2].relational);
+        (yyval.relational)->op = (yyvsp[-1].name);
+        (yyval.relational)->arg2 = (yyvsp[0].additive);
+    }
+#line 2467 "src/parser/rules.tab.c"
     break;
 
   case 93: /* relational: relational LESS_EQUAL additive  */
-#line 754 "src/parser/rules.y"
-                                     {}
-#line 2296 "src/parser/rules.tab.c"
+#line 931 "src/parser/rules.y"
+                                     {
+        (yyval.relational) = ALLOC(struct relational_node_t);
+        TFRAG_COMBINE((yyval.relational), (yyvsp[-2].relational), (yyvsp[-1].name), (yyvsp[0].additive));
+        (yyval.relational)->arg1 = (yyvsp[-2].relational);
+        (yyval.relational)->op = (yyvsp[-1].name);
+        (yyval.relational)->arg2 = (yyvsp[0].additive);
+    }
+#line 2479 "src/parser/rules.tab.c"
     break;
 
   case 94: /* relational: relational GREATER_EQUAL additive  */
-#line 755 "src/parser/rules.y"
-                                        {}
-#line 2302 "src/parser/rules.tab.c"
+#line 938 "src/parser/rules.y"
+                                        {
+        (yyval.relational) = ALLOC(struct relational_node_t);
+        TFRAG_COMBINE((yyval.relational), (yyvsp[-2].relational), (yyvsp[-1].name), (yyvsp[0].additive));
+        (yyval.relational)->arg1 = (yyvsp[-2].relational);
+        (yyval.relational)->op = (yyvsp[-1].name);
+        (yyval.relational)->arg2 = (yyvsp[0].additive);
+    }
+#line 2491 "src/parser/rules.tab.c"
     break;
 
   case 95: /* relational: additive  */
-#line 756 "src/parser/rules.y"
-               {}
-#line 2308 "src/parser/rules.tab.c"
+#line 945 "src/parser/rules.y"
+               {
+        (yyval.relational) = ALLOC(struct relational_node_t);
+        TFRAG_COMBINE((yyval.relational), (yyvsp[0].additive));
+        (yyval.relational)->other = (yyvsp[0].additive);
+    }
+#line 2501 "src/parser/rules.tab.c"
     break;
 
   case 96: /* additive: additive PLUS multiplicative  */
-#line 760 "src/parser/rules.y"
-                                 {}
-#line 2314 "src/parser/rules.tab.c"
+#line 953 "src/parser/rules.y"
+                                 {
+        (yyval.additive) = ALLOC(struct additive_node_t);
+        TFRAG_COMBINE((yyval.additive), (yyvsp[-2].additive), (yyvsp[-1].name), (yyvsp[0].multiplicative));
+        (yyval.additive)->arg1 = (yyvsp[-2].additive);
+        (yyval.additive)->op = (yyvsp[-1].name);
+        (yyval.additive)->arg2 = (yyvsp[0].multiplicative);
+    }
+#line 2513 "src/parser/rules.tab.c"
     break;
 
   case 97: /* additive: additive MINUS multiplicative  */
-#line 761 "src/parser/rules.y"
-                                    {}
-#line 2320 "src/parser/rules.tab.c"
+#line 960 "src/parser/rules.y"
+                                    {
+        (yyval.additive) = ALLOC(struct additive_node_t);
+        TFRAG_COMBINE((yyval.additive), (yyvsp[-2].additive), (yyvsp[-1].name), (yyvsp[0].multiplicative));
+        (yyval.additive)->arg1 = (yyvsp[-2].additive);
+        (yyval.additive)->op = (yyvsp[-1].name);
+        (yyval.additive)->arg2 = (yyvsp[0].multiplicative);
+    }
+#line 2525 "src/parser/rules.tab.c"
     break;
 
   case 98: /* additive: multiplicative  */
-#line 762 "src/parser/rules.y"
-                     {}
-#line 2326 "src/parser/rules.tab.c"
+#line 967 "src/parser/rules.y"
+                     {
+        (yyval.additive) = ALLOC(struct additive_node_t);
+        TFRAG_COMBINE((yyval.additive), (yyvsp[0].multiplicative));
+        (yyval.additive)->other = (yyvsp[0].multiplicative);
+    }
+#line 2535 "src/parser/rules.tab.c"
     break;
 
   case 99: /* multiplicative: multiplicative MULTIPLY tetriary  */
-#line 766 "src/parser/rules.y"
-                                     {}
-#line 2332 "src/parser/rules.tab.c"
+#line 975 "src/parser/rules.y"
+                                     {
+        (yyval.multiplicative) = ALLOC(struct multiplicative_node_t);
+        TFRAG_COMBINE((yyval.multiplicative), (yyvsp[-2].multiplicative), (yyvsp[-1].name), (yyvsp[0].tetriary));
+        (yyval.multiplicative)->arg1 = (yyvsp[-2].multiplicative);
+        (yyval.multiplicative)->op = (yyvsp[-1].name);
+        (yyval.multiplicative)->arg2 = (yyvsp[0].tetriary);
+    }
+#line 2547 "src/parser/rules.tab.c"
     break;
 
   case 100: /* multiplicative: multiplicative DIVIDE tetriary  */
-#line 767 "src/parser/rules.y"
-                                     {}
-#line 2338 "src/parser/rules.tab.c"
+#line 982 "src/parser/rules.y"
+                                     {
+        (yyval.multiplicative) = ALLOC(struct multiplicative_node_t);
+        TFRAG_COMBINE((yyval.multiplicative), (yyvsp[-2].multiplicative), (yyvsp[-1].name), (yyvsp[0].tetriary));
+        (yyval.multiplicative)->arg1 = (yyvsp[-2].multiplicative);
+        (yyval.multiplicative)->op = (yyvsp[-1].name);
+        (yyval.multiplicative)->arg2 = (yyvsp[0].tetriary);
+    }
+#line 2559 "src/parser/rules.tab.c"
     break;
 
   case 101: /* multiplicative: multiplicative REMAINDER tetriary  */
-#line 768 "src/parser/rules.y"
-                                        {}
-#line 2344 "src/parser/rules.tab.c"
+#line 989 "src/parser/rules.y"
+                                        {
+        (yyval.multiplicative) = ALLOC(struct multiplicative_node_t);
+        TFRAG_COMBINE((yyval.multiplicative), (yyvsp[-2].multiplicative), (yyvsp[-1].name), (yyvsp[0].tetriary));
+        (yyval.multiplicative)->arg1 = (yyvsp[-2].multiplicative);
+        (yyval.multiplicative)->op = (yyvsp[-1].name);
+        (yyval.multiplicative)->arg2 = (yyvsp[0].tetriary);
+    }
+#line 2571 "src/parser/rules.tab.c"
     break;
 
   case 102: /* multiplicative: tetriary  */
-#line 769 "src/parser/rules.y"
-               {}
-#line 2350 "src/parser/rules.tab.c"
+#line 996 "src/parser/rules.y"
+               {
+        (yyval.multiplicative) = ALLOC(struct multiplicative_node_t);
+        TFRAG_COMBINE((yyval.multiplicative), (yyvsp[0].tetriary));
+        (yyval.multiplicative)->other = (yyvsp[0].tetriary);
+    }
+#line 2581 "src/parser/rules.tab.c"
     break;
 
   case 103: /* prefix_op: INCREMENT tetriary  */
-#line 773 "src/parser/rules.y"
-                       {}
-#line 2356 "src/parser/rules.tab.c"
+#line 1004 "src/parser/rules.y"
+                       {
+        (yyval.prefix_op) = ALLOC(struct prefix_op_node_t);
+        TFRAG_COMBINE((yyval.prefix_op), (yyvsp[-1].name), (yyvsp[0].tetriary));
+        (yyval.prefix_op)->op = (yyvsp[-1].name);
+        (yyval.prefix_op)->arg = (yyvsp[0].tetriary);
+    }
+#line 2592 "src/parser/rules.tab.c"
     break;
 
   case 104: /* prefix_op: DECREMENT tetriary  */
-#line 774 "src/parser/rules.y"
-                         {}
-#line 2362 "src/parser/rules.tab.c"
+#line 1010 "src/parser/rules.y"
+                         {
+        (yyval.prefix_op) = ALLOC(struct prefix_op_node_t);
+        TFRAG_COMBINE((yyval.prefix_op), (yyvsp[-1].name), (yyvsp[0].tetriary));
+        (yyval.prefix_op)->op = (yyvsp[-1].name);
+        (yyval.prefix_op)->arg = (yyvsp[0].tetriary);
+    }
+#line 2603 "src/parser/rules.tab.c"
     break;
 
   case 105: /* prefix_op: LOGICAL_NOT tetriary  */
-#line 775 "src/parser/rules.y"
-                           {}
-#line 2368 "src/parser/rules.tab.c"
+#line 1016 "src/parser/rules.y"
+                           {
+        (yyval.prefix_op) = ALLOC(struct prefix_op_node_t);
+        TFRAG_COMBINE((yyval.prefix_op), (yyvsp[-1].name), (yyvsp[0].tetriary));
+        (yyval.prefix_op)->op = (yyvsp[-1].name);
+        (yyval.prefix_op)->arg = (yyvsp[0].tetriary);
+    }
+#line 2614 "src/parser/rules.tab.c"
     break;
 
   case 106: /* prefix_op: BITWISE_NOT tetriary  */
-#line 776 "src/parser/rules.y"
-                           {}
-#line 2374 "src/parser/rules.tab.c"
+#line 1022 "src/parser/rules.y"
+                           {
+        (yyval.prefix_op) = ALLOC(struct prefix_op_node_t);
+        TFRAG_COMBINE((yyval.prefix_op), (yyvsp[-1].name), (yyvsp[0].tetriary));
+        (yyval.prefix_op)->op = (yyvsp[-1].name);
+        (yyval.prefix_op)->arg = (yyvsp[0].tetriary);
+    }
+#line 2625 "src/parser/rules.tab.c"
     break;
 
   case 107: /* cast_op: tetriary CAST  */
-#line 780 "src/parser/rules.y"
-                  {}
-#line 2380 "src/parser/rules.tab.c"
+#line 1031 "src/parser/rules.y"
+                  {
+        (yyval.cast_op) = ALLOC(struct cast_op_node_t);
+        TFRAG_COMBINE((yyval.cast_op), (yyvsp[-1].tetriary), (yyvsp[0].name));
+        (yyval.cast_op)->arg = (yyvsp[-1].tetriary);
+        (yyval.cast_op)->op = (yyvsp[0].name);
+    }
+#line 2636 "src/parser/rules.tab.c"
     break;
 
   case 108: /* address_op: '[' expression ']' tetriary  */
-#line 784 "src/parser/rules.y"
-                                {}
-#line 2386 "src/parser/rules.tab.c"
+#line 1040 "src/parser/rules.y"
+                                {
+        (yyval.address_op) = ALLOC(struct address_op_node_t);
+        TFRAG_COMBINE((yyval.address_op), (yyvsp[-3].name), (yyvsp[-2].expression), (yyvsp[-1].name), (yyvsp[0].tetriary));
+        (yyval.address_op)->open_brace = (yyvsp[-3].name);
+        (yyval.address_op)->offset = (yyvsp[-2].expression);
+        (yyval.address_op)->closed_brace = (yyvsp[-1].name);
+        (yyval.address_op)->arg = (yyvsp[0].tetriary);
+    }
+#line 2649 "src/parser/rules.tab.c"
     break;
 
   case 109: /* address_op: '[' ']' tetriary  */
-#line 785 "src/parser/rules.y"
-                       {}
-#line 2392 "src/parser/rules.tab.c"
+#line 1048 "src/parser/rules.y"
+                       {
+        (yyval.address_op) = ALLOC(struct address_op_node_t);
+        TFRAG_COMBINE((yyval.address_op), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].tetriary));
+        (yyval.address_op)->open_brace = (yyvsp[-2].name);
+        (yyval.address_op)->closed_brace = (yyvsp[-1].name);
+        (yyval.address_op)->arg = (yyvsp[0].tetriary);
+    }
+#line 2661 "src/parser/rules.tab.c"
     break;
 
   case 110: /* sizeof_op: SIZEOF NAME  */
-#line 789 "src/parser/rules.y"
-                {}
-#line 2398 "src/parser/rules.tab.c"
+#line 1058 "src/parser/rules.y"
+                {
+        (yyval.sizeof_op) = ALLOC(struct sizeof_op_node_t);
+        TFRAG_COMBINE((yyval.sizeof_op), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.sizeof_op)->kw = (yyvsp[-1].name);
+        (yyval.sizeof_op)->name = (yyvsp[0].name);
+    }
+#line 2672 "src/parser/rules.tab.c"
     break;
 
   case 111: /* tetriary: prefix_op  */
-#line 793 "src/parser/rules.y"
-              {}
-#line 2404 "src/parser/rules.tab.c"
+#line 1067 "src/parser/rules.y"
+              {
+        (yyval.tetriary) = ALLOC(struct tetriary_node_t);
+        TFRAG_COMBINE((yyval.tetriary), (yyvsp[0].prefix_op));
+        (yyval.tetriary)->prefix = (yyvsp[0].prefix_op);
+    }
+#line 2682 "src/parser/rules.tab.c"
     break;
 
   case 112: /* tetriary: cast_op  */
-#line 794 "src/parser/rules.y"
-              {}
-#line 2410 "src/parser/rules.tab.c"
+#line 1072 "src/parser/rules.y"
+              {
+        (yyval.tetriary) = ALLOC(struct tetriary_node_t);
+        TFRAG_COMBINE((yyval.tetriary), (yyvsp[0].cast_op));
+        (yyval.tetriary)->cast = (yyvsp[0].cast_op);
+    }
+#line 2692 "src/parser/rules.tab.c"
     break;
 
   case 113: /* tetriary: address_op  */
-#line 795 "src/parser/rules.y"
-                 {}
-#line 2416 "src/parser/rules.tab.c"
+#line 1077 "src/parser/rules.y"
+                 {
+        (yyval.tetriary) = ALLOC(struct tetriary_node_t);
+        TFRAG_COMBINE((yyval.tetriary), (yyvsp[0].address_op));
+        (yyval.tetriary)->address = (yyvsp[0].address_op);
+    }
+#line 2702 "src/parser/rules.tab.c"
     break;
 
   case 114: /* tetriary: sizeof_op  */
-#line 796 "src/parser/rules.y"
-                {}
-#line 2422 "src/parser/rules.tab.c"
+#line 1082 "src/parser/rules.y"
+                {
+        (yyval.tetriary) = ALLOC(struct tetriary_node_t);
+        TFRAG_COMBINE((yyval.tetriary), (yyvsp[0].sizeof_op));
+        (yyval.tetriary)->sizeof_op = (yyvsp[0].sizeof_op);
+    }
+#line 2712 "src/parser/rules.tab.c"
     break;
 
   case 115: /* tetriary: secondary  */
-#line 797 "src/parser/rules.y"
-                {}
-#line 2428 "src/parser/rules.tab.c"
+#line 1087 "src/parser/rules.y"
+                {
+        (yyval.tetriary) = ALLOC(struct tetriary_node_t);
+        TFRAG_COMBINE((yyval.tetriary), (yyvsp[0].secondary));
+        (yyval.tetriary)->secondary = (yyvsp[0].secondary);
+    }
+#line 2722 "src/parser/rules.tab.c"
     break;
 
   case 116: /* suffix_op: secondary INCREMENT  */
-#line 801 "src/parser/rules.y"
-                        {}
-#line 2434 "src/parser/rules.tab.c"
+#line 1095 "src/parser/rules.y"
+                        {
+        (yyval.suffix_op) = ALLOC(struct suffix_op_node_t);
+        TFRAG_COMBINE((yyval.suffix_op), (yyvsp[-1].secondary), (yyvsp[0].name));
+        (yyval.suffix_op)->arg = (yyvsp[-1].secondary);
+        (yyval.suffix_op)->op = (yyvsp[0].name);
+    }
+#line 2733 "src/parser/rules.tab.c"
     break;
 
   case 117: /* suffix_op: secondary DECREMENT  */
-#line 802 "src/parser/rules.y"
-                          {}
-#line 2440 "src/parser/rules.tab.c"
+#line 1101 "src/parser/rules.y"
+                          {
+        (yyval.suffix_op) = ALLOC(struct suffix_op_node_t);
+        TFRAG_COMBINE((yyval.suffix_op), (yyvsp[-1].secondary), (yyvsp[0].name));
+        (yyval.suffix_op)->arg = (yyvsp[-1].secondary);
+        (yyval.suffix_op)->op = (yyvsp[0].name);
+    }
+#line 2744 "src/parser/rules.tab.c"
     break;
 
   case 118: /* dereference_op: secondary '[' expression ']'  */
-#line 806 "src/parser/rules.y"
-                                 {}
-#line 2446 "src/parser/rules.tab.c"
+#line 1110 "src/parser/rules.y"
+                                 {
+        (yyval.dereference_op) = ALLOC(struct dereference_op_node_t);
+        TFRAG_COMBINE((yyval.dereference_op), (yyvsp[-3].secondary), (yyvsp[-2].name), (yyvsp[-1].expression), (yyvsp[0].name));
+        (yyval.dereference_op)->arg = (yyvsp[-3].secondary);
+        (yyval.dereference_op)->open_brace = (yyvsp[-2].name);
+        (yyval.dereference_op)->offset = (yyvsp[-1].expression);
+        (yyval.dereference_op)->close_brace = (yyvsp[0].name);
+    }
+#line 2757 "src/parser/rules.tab.c"
     break;
 
   case 119: /* dereference_op: secondary '[' ']'  */
-#line 807 "src/parser/rules.y"
-                        {}
-#line 2452 "src/parser/rules.tab.c"
+#line 1118 "src/parser/rules.y"
+                        {
+        (yyval.dereference_op) = ALLOC(struct dereference_op_node_t);
+        TFRAG_COMBINE((yyval.dereference_op), (yyvsp[-2].secondary), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.dereference_op)->arg = (yyvsp[-2].secondary);
+        (yyval.dereference_op)->open_brace = (yyvsp[-1].name);
+        (yyval.dereference_op)->close_brace = (yyvsp[0].name);
+    }
+#line 2769 "src/parser/rules.tab.c"
     break;
 
   case 120: /* layout_access_op: secondary ACCESS NAME  */
-#line 811 "src/parser/rules.y"
-                          {}
-#line 2458 "src/parser/rules.tab.c"
+#line 1128 "src/parser/rules.y"
+                          {
+        (yyval.layout_access_op) = ALLOC(struct layout_access_op_node_t);
+        TFRAG_COMBINE((yyval.layout_access_op), (yyvsp[-2].secondary), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.layout_access_op)->arg = (yyvsp[-2].secondary);
+        (yyval.layout_access_op)->op = (yyvsp[-1].name);
+        (yyval.layout_access_op)->field = (yyvsp[0].name);
+    }
+#line 2781 "src/parser/rules.tab.c"
     break;
 
   case 121: /* secondary: suffix_op  */
-#line 815 "src/parser/rules.y"
-              {}
-#line 2464 "src/parser/rules.tab.c"
+#line 1138 "src/parser/rules.y"
+              {
+        (yyval.secondary) = ALLOC(struct secondary_node_t);
+        TFRAG_COMBINE((yyval.secondary), (yyvsp[0].suffix_op));
+        (yyval.secondary)->suffix = (yyvsp[0].suffix_op);
+    }
+#line 2791 "src/parser/rules.tab.c"
     break;
 
   case 122: /* secondary: dereference_op  */
-#line 816 "src/parser/rules.y"
-                     {}
-#line 2470 "src/parser/rules.tab.c"
+#line 1143 "src/parser/rules.y"
+                     {
+        (yyval.secondary) = ALLOC(struct secondary_node_t);
+        TFRAG_COMBINE((yyval.secondary), (yyvsp[0].dereference_op));
+        (yyval.secondary)->deref = (yyvsp[0].dereference_op);
+    }
+#line 2801 "src/parser/rules.tab.c"
     break;
 
   case 123: /* secondary: layout_access_op  */
-#line 817 "src/parser/rules.y"
-                       {}
-#line 2476 "src/parser/rules.tab.c"
+#line 1148 "src/parser/rules.y"
+                       {
+        (yyval.secondary) = ALLOC(struct secondary_node_t);
+        TFRAG_COMBINE((yyval.secondary), (yyvsp[0].layout_access_op));
+        (yyval.secondary)->layout_access = (yyvsp[0].layout_access_op);
+    }
+#line 2811 "src/parser/rules.tab.c"
     break;
 
   case 124: /* secondary: primary  */
-#line 818 "src/parser/rules.y"
-              {}
-#line 2482 "src/parser/rules.tab.c"
+#line 1153 "src/parser/rules.y"
+              {
+        (yyval.secondary) = ALLOC(struct secondary_node_t);
+        TFRAG_COMBINE((yyval.secondary), (yyvsp[0].primary));
+        (yyval.secondary)->primary = (yyvsp[0].primary);
+    }
+#line 2821 "src/parser/rules.tab.c"
     break;
 
   case 125: /* primary: '(' expression ')'  */
-#line 822 "src/parser/rules.y"
-                       {}
-#line 2488 "src/parser/rules.tab.c"
+#line 1161 "src/parser/rules.y"
+                       {
+        (yyval.primary) = ALLOC(struct primary_node_t);
+        TFRAG_COMBINE((yyval.primary), (yyvsp[-2].name), (yyvsp[-1].expression), (yyvsp[0].name));
+        (yyval.primary)->open_brace = (yyvsp[-2].name);
+        (yyval.primary)->expression = (yyvsp[-1].expression);
+        (yyval.primary)->close_brace = (yyvsp[0].name);
+    }
+#line 2833 "src/parser/rules.tab.c"
     break;
 
   case 126: /* primary: literal  */
-#line 823 "src/parser/rules.y"
-              {}
-#line 2494 "src/parser/rules.tab.c"
+#line 1168 "src/parser/rules.y"
+              {
+        (yyval.primary) = ALLOC(struct primary_node_t);
+        TFRAG_COMBINE((yyval.primary), (yyvsp[0].literal));
+        (yyval.primary)->literal = (yyvsp[0].literal);
+    }
+#line 2843 "src/parser/rules.tab.c"
     break;
 
   case 127: /* literal: INT  */
-#line 827 "src/parser/rules.y"
-        {}
-#line 2500 "src/parser/rules.tab.c"
+#line 1176 "src/parser/rules.y"
+        { (yyval.literal) = (yyvsp[0].literal); }
+#line 2849 "src/parser/rules.tab.c"
     break;
 
   case 128: /* literal: UINT  */
-#line 828 "src/parser/rules.y"
-           {}
-#line 2506 "src/parser/rules.tab.c"
+#line 1177 "src/parser/rules.y"
+           { (yyval.literal) = (yyvsp[0].literal); }
+#line 2855 "src/parser/rules.tab.c"
     break;
 
   case 129: /* literal: DOUBLE  */
-#line 829 "src/parser/rules.y"
-             {}
-#line 2512 "src/parser/rules.tab.c"
+#line 1178 "src/parser/rules.y"
+             { (yyval.literal) = (yyvsp[0].literal); }
+#line 2861 "src/parser/rules.tab.c"
     break;
 
   case 130: /* literal: STRING  */
-#line 830 "src/parser/rules.y"
-             {}
-#line 2518 "src/parser/rules.tab.c"
+#line 1179 "src/parser/rules.y"
+             { (yyval.literal) = (yyvsp[0].literal); }
+#line 2867 "src/parser/rules.tab.c"
     break;
 
   case 131: /* literal: NAME  */
-#line 831 "src/parser/rules.y"
-           {}
-#line 2524 "src/parser/rules.tab.c"
+#line 1180 "src/parser/rules.y"
+           {
+        (yyval.literal) = ALLOC(struct literal_node_t);
+        TFRAG_COMBINE((yyval.literal), (yyvsp[0].name));
+        (yyval.literal)->type = LIT_NAME;
+        (yyval.literal)->name_lit = (yyvsp[0].name);
+    }
+#line 2878 "src/parser/rules.tab.c"
     break;
 
 
-#line 2528 "src/parser/rules.tab.c"
+#line 2882 "src/parser/rules.tab.c"
 
       default: break;
     }
@@ -2717,5 +3071,5 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 840 "src/parser/rules.y"
+#line 1188 "src/parser/rules.y"
 

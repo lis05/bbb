@@ -162,11 +162,11 @@ struct variable_declaration_node_t {
 };
 
 struct register_alias_node_t {
-    tfrag_t              frag;
-    struct name_node_t  *name;
-    struct name_node_t  *colon;
+    tfrag_t             frag;
+    struct name_node_t *name;
+    struct name_node_t *colon;
     struct name_node_t *alias;
-    struct name_node_t  *reg;
+    struct name_node_t *reg;
 };
 
 struct if_statement_node_t {
@@ -292,8 +292,8 @@ struct additive_node_t {
     tfrag_t                       frag;
     struct additive_node_t       *arg1;
     struct name_node_t           *op;
-    struct multuplicative_node_t *arg2;
-    struct multuplicative_node_t *other;
+    struct multiplicative_node_t *arg2;
+    struct multiplicative_node_t *other;
 };
 
 struct multiplicative_node_t {
@@ -389,11 +389,11 @@ struct literal_node_t {
     tfrag_t           frag;
     enum literal_type type;
     union {
-        int64_t     int_lit;
-        uint64_t    uint_lit;
-        double      double_lit;
-        const char *string_lit;
-        const char *name_lit;
+        int64_t             int_lit;
+        uint64_t            uint_lit;
+        double              double_lit;
+        const char         *string_lit;
+        struct name_node_t *name_lit;
     };
 };
 
