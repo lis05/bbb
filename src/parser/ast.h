@@ -108,17 +108,18 @@ struct function_declaration_args_node_t {
 };
 
 struct function_declaration_node_t {
-    tfrag_t                                 frag;
-    struct name_node_t                     *name;
-    struct name_node_t                     *colon;
-    struct name_node_t                     *fn;
-    struct name_node_t                     *open_brace;
-    struct function_declarations_args_node *args;
-    struct name_node_t                     *closed_brace;
-    struct name_node_t                     *arrow;
-    struct name_node_t                     *mem_len;
-    struct name_node_t                     *abi_class;
-    struct body_node_t                     *body;
+    tfrag_t                                  frag;
+    struct name_node_t                      *name;
+    struct name_node_t                      *colon;
+    struct name_node_t                      *vis;
+    struct name_node_t                      *fn;
+    struct name_node_t                      *open_brace;
+    struct function_declaration_args_node_t *args;
+    struct name_node_t                      *closed_brace;
+    struct name_node_t                      *arrow;
+    struct name_node_t                      *mem_len;
+    struct name_node_t                      *abi_class;
+    struct body_node_t                      *body;
 };
 
 struct body_list_node_t {
@@ -146,6 +147,7 @@ struct statement_node_t {
     struct loop_statement_node_t       *loop_s;
     struct break_statement_node_t      *break_s;
     struct ret_statement_node_t        *ret_s;
+    struct avoid_block_node_t          *avoid;
     struct expression_node_t           *expr;
     struct name_node_t                 *semicolon;
     struct name_node_t                 *nasm;
@@ -163,7 +165,7 @@ struct register_alias_node_t {
     tfrag_t              frag;
     struct name_node_t  *name;
     struct name_node_t  *colon;
-    struct namde_node_t *alias;
+    struct name_node_t *alias;
     struct name_node_t  *reg;
 };
 
