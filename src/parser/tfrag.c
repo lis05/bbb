@@ -22,15 +22,13 @@ void tfrag_combine(tfrag_t *res, tfrag_t *first, tfrag_t *second) {
     res->end_line = MAX(first->end_line, second->end_line);
 
     res->begin_col = first->begin_line < second->begin_line ? first->begin_col
-                                                            : second->begin_col;
-    if (first->begin_line == second->begin_line) {
-        res->begin_col = MIN(first->begin_col, second->begin_col);
-    }
+                     : first->begin_line > second->begin_line
+                         ? second->begin_col
+                         : MIN(first->begin_col, second->begin_col);
 
-    res->end_col =
-        first->end_line > second->end_line ? first->end_col : second->end_col;
-    if (first->end_line == second->end_line) {
-        res->end_col = MAX(first->end_col, second->end_col);
-    }
+    res->end_col = first->end_line > second->end_line ? first->end_col
+                   : first->end_line < second->end_line
+                       ? second->end_col
+                       : MAX(first->end_col, second->end_col);
 }
 

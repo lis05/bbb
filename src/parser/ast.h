@@ -401,3 +401,58 @@ struct name_node_t {
     tfrag_t     frag;
     const char *name;
 };
+
+void ast_print_program_node(struct program_node_t *node, int indent);
+void ast_print_global_variable_declaration_node(
+    struct global_variable_declaration_node_t *node, int indent);
+void ast_print_layout_declaration_items_node(
+    struct layout_declaration_items_node_t *node, int indent);
+void ast_print_layout_declaration_node(struct layout_declaration_node_t *node,
+                                       int                               indent);
+void ast_print_extern_declaration_node(struct extern_declaration_node_t *node,
+                                       int                               indent);
+void ast_print_function_declaration_arg_node(
+    struct function_declaration_arg_node_t *node, int indent);
+void ast_print_function_declaration_args_node(
+    struct function_declaration_args_node_t *node, int indent);
+void ast_print_function_declaration_node(struct function_declaration_node_t *node,
+                                         int                                 indent);
+void ast_print_body_list_node(struct body_list_node_t *node, int indent);
+void ast_print_body_node(struct body_node_t *node, int indent);
+void ast_print_statement_node(struct statement_node_t *node, int indent);
+void ast_print_variable_declaration_node(struct variable_declaration_node_t *node,
+                                         int                                 indent);
+void ast_print_register_alias_node(struct register_alias_node_t *node, int indent);
+void ast_print_if_statement_node(struct if_statement_node_t *node, int indent);
+void ast_print_label_declaration_node(struct label_declaration_node_t *node,
+                                      int                              indent);
+void ast_print_goto_statement_node(struct goto_statement_node_t *node, int indent);
+void ast_print_loop_statement_node(struct loop_statement_node_t *node, int indent);
+void ast_print_break_statement_node(struct break_statement_node_t *node, int indent);
+void ast_print_ret_statement_node(struct ret_statement_node_t *node, int indent);
+void ast_print_avoid_block_regs_node(struct avoid_block_regs_node_t *node,
+                                     int                             indent);
+void ast_print_avoid_block_node(struct avoid_block_node_t *node, int indent);
+void ast_print_expression_node(struct expression_node_t *node, int indent);
+void ast_print_logical_or_node(struct logical_or_node_t *node, int indent);
+void ast_print_logical_and_node(struct logical_and_node_t *node, int indent);
+void ast_print_bitwise_or_node(struct bitwise_or_node_t *node, int indent);
+void ast_print_bitwise_xor_node(struct bitwise_xor_node_t *node, int indent);
+void ast_print_bitwise_and_node(struct bitwise_and_node_t *node, int indent);
+void ast_print_equality_node(struct equality_node_t *node, int indent);
+void ast_print_relational_node(struct relational_node_t *node, int indent);
+void ast_print_additive_node(struct additive_node_t *node, int indent);
+void ast_print_multiplicative_node(struct multiplicative_node_t *node, int indent);
+void ast_print_prefix_op_node(struct prefix_op_node_t *node, int indent);
+void ast_print_cast_op_node(struct cast_op_node_t *node, int indent);
+void ast_print_address_op_node(struct address_op_node_t *node, int indent);
+void ast_print_sizeof_op_node(struct sizeof_op_node_t *node, int indent);
+void ast_print_tetriary_node(struct tetriary_node_t *node, int indent);
+void ast_print_suffix_op_node(struct suffix_op_node_t *node, int indent);
+void ast_print_dereference_op_node(struct dereference_op_node_t *node, int indent);
+void ast_print_layout_access_op_node(struct layout_access_op_node_t *node,
+                                     int                             indent);
+void ast_print_secondary_node(struct secondary_node_t *node, int indent);
+void ast_print_primary_node(struct primary_node_t *node, int indent);
+void ast_print_literal_node(struct literal_node_t *node, int indent);
+void ast_print_name_node(struct name_node_t *node, int indent);

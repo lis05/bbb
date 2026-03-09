@@ -9,7 +9,7 @@
 
 static struct option const long_opts[] = {{"help", 0, NULL, 'h'}};
 
-static const char *const short_opts = "-hov";
+static const char *const short_opts = "-hovp";
 
 static void print_help() {
     // clang-format off
@@ -22,6 +22,7 @@ static void print_help() {
 			"    -h, --help        print help\n"
 			"    -v                increase verbosity level\n"
 			"    -o FILE           set destination file\n"
+            "    -p                print parser output and stop\n"
 	);
     // clang-format on
 }
@@ -32,6 +33,7 @@ int main(int argc, char **argv) {
 	int verbosity = LOG_LEVEL_ERROR;
 
     int parse_dest = 0;
+    int print_parser = 0;
 
     opterr = 0;
     while ((short_option = getopt_long(argc, argv, short_opts, long_opts, 0)) !=
@@ -45,6 +47,9 @@ int main(int argc, char **argv) {
 			break;
         case 'o':
             parse_dest = 1;
+            continue;
+        case 'p':
+            print_parser = 1;
             continue;
         case '?':
             if (optopt) {
@@ -88,6 +93,13 @@ int main(int argc, char **argv) {
         log_msg("Compilation did not succeed.\n");
         log_msg("Aborting.\n");
         return -1;
+    }
+
+    if (print_parser) {
+        log_info("-p passed, printing parser output and exiting.\n");
+
+        ast_print_program_node(prog, 0);
+        return 0;
     }
 
     return 0;

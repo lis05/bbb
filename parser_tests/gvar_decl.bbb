@@ -1,0 +1,10 @@
+g: m0
+g: m1
+g: m100000
+g: m(sizeof layout)
+g: m0 align1024
+g: m(sizeof layout) align1024
+g: global m0
+g: global m(sizeof layout)
+g: global m123 align1024
+

@@ -64,6 +64,8 @@
         _TF_C3, _TF_C2, _TF_C1)(__VA_ARGS__)
 %}
 
+%define parse.error verbose
+
 %union {
     struct program_node_t *program;
     struct global_variable_declaration_node_t *global_variable_declaration;
@@ -168,16 +170,16 @@
 %token <name> CAST
 %token <name> ACCESS
 
-%token <name> ROB '('
-%token <name> RCB ')'
-%token <name> SOB '['
-%token <name> SCB ']'
-%token <name> COB '{'
-%token <name> CCB '}'
+%token <name> ROB "("
+%token <name> RCB ")"
+%token <name> SOB "["
+%token <name> SCB "]"
+%token <name> COB "{"
+%token <name> CCB "}"
 %token <name> ARROW
-%token <name> COLON ':'
-%token <name> SEMICOLON ';'
-%token <name> COMMA ','
+%token <name> COLON ":"
+%token <name> SEMICOLON ";"
+%token <name> COMMA ","
 
 %type <program> program
 %type <name> visibility
@@ -236,33 +238,39 @@ program:
         TFRAG_COMBINE($$, $1, $2);
         $$->rest = $1;
         $$->gvar_decl = $2;
+        parsing_result = $$;
     }
     | program layout_declaration {
         $$ = ALLOC(struct program_node_t);
         TFRAG_COMBINE($$, $1, $2);
         $$->rest = $1;
         $$->layout_decl = $2;
+        parsing_result = $$;
     }
     | program extern_declaration {
         $$ = ALLOC(struct program_node_t);
         TFRAG_COMBINE($$, $1, $2);
         $$->rest = $1;
         $$->ext_decl = $2;
+        parsing_result = $$;
     }
     | program function_declaration {
         $$ = ALLOC(struct program_node_t);
         TFRAG_COMBINE($$, $1, $2);
         $$->rest = $1;
         $$->fn_decl = $2;
+        parsing_result = $$;
     }
     | program NASM_BLOCK {
         $$ = ALLOC(struct program_node_t);
         TFRAG_COMBINE($$, $1, $2);
         $$->rest = $1;
         $$->nasm_b = $2;
+        parsing_result = $$;
     }
     | {
         $$ = ALLOC(struct program_node_t);
+        parsing_result = $$;
     }
     ;
 
@@ -280,14 +288,14 @@ alignment:
     ;
 
 global_variable_declaration:
-    NAME ':' memory_length {
+    NAME ":" memory_length {
         $$ = ALLOC(struct global_variable_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3);
         $$->name = $1;
         $$->colon = $2;
         $$->mem_len = $3;
     }
-    | NAME ':' visibility memory_length {
+    | NAME ":" visibility memory_length {
         $$ = ALLOC(struct global_variable_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4);
         $$->name = $1;
@@ -295,7 +303,7 @@ global_variable_declaration:
         $$->vis = $3;
         $$->mem_len = $4;
     }
-    | NAME ':' memory_length alignment {
+    | NAME ":" memory_length alignment {
         $$ = ALLOC(struct global_variable_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4);
         $$->name = $1;
@@ -303,7 +311,7 @@ global_variable_declaration:
         $$->mem_len = $3;
         $$->align = $4;
     }
-    | NAME ':' visibility memory_length alignment {
+    | NAME ":" visibility memory_length alignment {
         $$ = ALLOC(struct global_variable_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4, $5);
         $$->name = $1;
@@ -326,7 +334,7 @@ abi_class:
     ;
 
 layout_declaration_items:
-    layout_declaration_items NAME ':' memory_length {
+    layout_declaration_items NAME ":" memory_length {
         $$ = ALLOC(struct layout_declaration_items_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4);
         $$->rest = $1;
@@ -334,7 +342,7 @@ layout_declaration_items:
         $$->colon = $3;
         $$->mem_len = $4;
     }
-    | NAME ':' memory_length {
+    | NAME ":" memory_length {
         $$ = ALLOC(struct layout_declaration_items_node_t);
         TFRAG_COMBINE($$, $1, $2, $3);
         $$->name = $1;
@@ -344,7 +352,7 @@ layout_declaration_items:
     ;
 
 layout_declaration:
-    NAME ':' LAYOUT '{' layout_declaration_items '}' {
+    NAME ":" LAYOUT "{" layout_declaration_items "}" {
         $$ = ALLOC(struct layout_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4, $5, $6);
         $$->name = $1;
@@ -354,7 +362,7 @@ layout_declaration:
         $$->items = $5;
         $$->closed_brace = $6;
     }
-    | NAME ':' LAYOUT chunk_class '{' layout_declaration_items '}' {
+    | NAME ":" LAYOUT chunk_class "{" layout_declaration_items "}" {
         $$ = ALLOC(struct layout_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4, $5, $6, $7);
         $$->name = $1;
@@ -365,7 +373,7 @@ layout_declaration:
         $$->items = $6;
         $$->closed_brace = $7;
     }
-    | NAME ':' LAYOUT chunk_class chunk_class '{' layout_declaration_items '}' {
+    | NAME ":" LAYOUT chunk_class chunk_class "{" layout_declaration_items "}" {
         $$ = ALLOC(struct layout_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4, $5, $6, $7, $8);
         $$->name = $1;
@@ -400,28 +408,28 @@ function_declaration_arg:
         TFRAG_COMBINE($$, $1);
         $$->name = $1;
     }
-    | NAME ':' memory_length {
+    | NAME ":" memory_length {
         $$ = ALLOC(struct function_declaration_arg_node_t);
         TFRAG_COMBINE($$, $1, $2, $3);
         $$->name = $1;
         $$->colon = $2;
         $$->mem_len = $3;
     }
-    | NAME ':' alignment {
+    | NAME ":" alignment {
         $$ = ALLOC(struct function_declaration_arg_node_t);
         TFRAG_COMBINE($$, $1, $2, $3);
         $$->name = $1;
         $$->colon = $2;
         $$->align = $3;
     }
-    | NAME ':' abi_class {
+    | NAME ":" abi_class {
         $$ = ALLOC(struct function_declaration_arg_node_t);
         TFRAG_COMBINE($$, $1, $2, $3);
         $$->name = $1;
         $$->colon = $2;
         $$->abi_class = $3;
     }
-    | NAME ':' memory_length alignment {
+    | NAME ":" memory_length alignment {
         $$ = ALLOC(struct function_declaration_arg_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4);
         $$->name = $1;
@@ -429,7 +437,7 @@ function_declaration_arg:
         $$->mem_len = $3;
         $$->align = $4;
     }
-    | NAME ':' memory_length abi_class {
+    | NAME ":" memory_length abi_class {
         $$ = ALLOC(struct function_declaration_arg_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4);
         $$->name = $1;
@@ -437,7 +445,7 @@ function_declaration_arg:
         $$->mem_len = $3;
         $$->abi_class = $4;
     }
-    | NAME ':' alignment abi_class {
+    | NAME ":" alignment abi_class {
         $$ = ALLOC(struct function_declaration_arg_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4);
         $$->name = $1;
@@ -445,7 +453,7 @@ function_declaration_arg:
         $$->align = $3;
         $$->abi_class = $4;
     }
-    | NAME ':' memory_length alignment abi_class {
+    | NAME ":" memory_length alignment abi_class {
         $$ = ALLOC(struct function_declaration_arg_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4, $5);
         $$->name = $1;
@@ -457,7 +465,7 @@ function_declaration_arg:
     ;
 
 function_declaration_args:
-    function_declaration_args ',' function_declaration_arg {
+    function_declaration_args "," function_declaration_arg {
         $$ = ALLOC(struct function_declaration_args_node_t);
         TFRAG_COMBINE($$, $1, $2, $3);
         $$->rest = $1;
@@ -472,7 +480,7 @@ function_declaration_args:
     ;
 
 function_declaration:
-    NAME ':' FN '(' function_declaration_args ')' body {
+    NAME ":" FN "(" function_declaration_args ")" body {
         $$ = ALLOC(struct function_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4, $5, $6, $7);
         $$->name = $1;
@@ -483,7 +491,7 @@ function_declaration:
         $$->closed_brace = $6;
         $$->body = $7;
     }
-    | NAME ':' FN '(' function_declaration_args ')' ARROW memory_length body {
+    | NAME ":" FN "(" function_declaration_args ")" ARROW memory_length body {
         $$ = ALLOC(struct function_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4, $5, $6, $7, $8, $9);
         $$->name = $1;
@@ -496,7 +504,7 @@ function_declaration:
         $$->mem_len = $8;
         $$->body = $9;
     }
-    | NAME ':' FN '(' function_declaration_args ')' ARROW abi_class body {
+    | NAME ":" FN "(" function_declaration_args ")" ARROW abi_class body {
         $$ = ALLOC(struct function_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4, $5, $6, $7, $8, $9);
         $$->name = $1;
@@ -509,7 +517,7 @@ function_declaration:
         $$->abi_class = $8;
         $$->body = $9;
     }
-    | NAME ':' FN '(' function_declaration_args ')' ARROW memory_length abi_class body {
+    | NAME ":" FN "(" function_declaration_args ")" ARROW memory_length abi_class body {
         $$ = ALLOC(struct function_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
         $$->name = $1;
@@ -523,7 +531,7 @@ function_declaration:
         $$->abi_class = $9;
         $$->body = $10;
     }
-    | NAME ':' visibility FN '(' function_declaration_args ')' body {
+    | NAME ":" visibility FN "(" function_declaration_args ")" body {
         $$ = ALLOC(struct function_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4, $5, $6, $7, $8);
         $$->name = $1;
@@ -535,7 +543,7 @@ function_declaration:
         $$->closed_brace = $7;
         $$->body = $8;
     }
-    | NAME ':' visibility FN '(' function_declaration_args ')' ARROW memory_length body {
+    | NAME ":" visibility FN "(" function_declaration_args ")" ARROW memory_length body {
         $$ = ALLOC(struct function_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
         $$->name = $1;
@@ -549,7 +557,7 @@ function_declaration:
         $$->mem_len = $9;
         $$->body = $10;
     }
-    | NAME ':' visibility FN '(' function_declaration_args ')' ARROW abi_class body {
+    | NAME ":" visibility FN "(" function_declaration_args ")" ARROW abi_class body {
         $$ = ALLOC(struct function_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
         $$->name = $1;
@@ -563,7 +571,7 @@ function_declaration:
         $$->abi_class = $9;
         $$->body = $10;
     }
-    | NAME ':' visibility FN '(' function_declaration_args ')' ARROW memory_length
+    | NAME ":" visibility FN "(" function_declaration_args ")" ARROW memory_length
 abi_class body {
         $$ = ALLOC(struct function_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
@@ -594,7 +602,7 @@ body_list:
     ;
 
 body:
-    '{' body_list '}' {
+    "{" body_list "}" {
         $$ = ALLOC(struct body_node_t);
         TFRAG_COMBINE($$, $1, $2, $3);
         $$->open_brace = $1;
@@ -654,7 +662,7 @@ statement:
         TFRAG_COMBINE($$, $1);
         $$->avoid = $1;
     }
-    | expression ';' {
+    | expression ";" {
         $$ = ALLOC(struct statement_node_t);
         TFRAG_COMBINE($$, $1, $2);
         $$->expr = $1;
@@ -668,14 +676,14 @@ statement:
     ;
 
 variable_declaration:
-    NAME ':' memory_length {
+    NAME ":" memory_length {
         $$ = ALLOC(struct variable_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3);
         $$->name = $1;
         $$->colon = $2;
         $$->mem_len = $3;
     }
-    | NAME ':' memory_length alignment {
+    | NAME ":" memory_length alignment {
         $$ = ALLOC(struct variable_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4);
         $$->name = $1;
@@ -686,7 +694,7 @@ variable_declaration:
     ;
 
 register_alias:
-    NAME ':' ALIAS REG {
+    NAME ":" ALIAS REG {
         $$ = ALLOC(struct register_alias_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4);
         $$->name = $1;
@@ -694,7 +702,7 @@ register_alias:
         $$->alias = $3;
         $$->reg = $4;
     }
-    | NAME ':' ALIAS GP_REGISTER {
+    | NAME ":" ALIAS GP_REGISTER {
         $$ = ALLOC(struct register_alias_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4);
         $$->name = $1;
@@ -724,7 +732,7 @@ if_statement:
     ;
 
 label_declaration:
-    NAME ':' {
+    NAME ":" {
         $$ = ALLOC(struct label_declaration_node_t);
         TFRAG_COMBINE($$, $1, $2);
         $$->name = $1;
@@ -733,7 +741,7 @@ label_declaration:
     ;
 
 goto_statement:
-    GOTO NAME ';' {
+    GOTO NAME ";" {
         $$ = ALLOC(struct goto_statement_node_t);
         TFRAG_COMBINE($$, $1, $2, $3);
         $$->kw = $1;
@@ -752,13 +760,13 @@ loop_statement:
     ;
 
 break_statement:
-    BREAK ';' {
+    BREAK ";" {
         $$ = ALLOC(struct break_statement_node_t);
         TFRAG_COMBINE($$, $1, $2);
         $$->kw = $1;
         $$->semicolon = $2;
     }
-    | CONTINUE ';' {
+    | CONTINUE ";" {
         $$ = ALLOC(struct break_statement_node_t);
         TFRAG_COMBINE($$, $1, $2);
         $$->kw = $1;
@@ -767,7 +775,7 @@ break_statement:
     ;
 
 ret_statement:
-    RET expression ';' {
+    RET expression ";" {
         $$ = ALLOC(struct ret_statement_node_t);
         TFRAG_COMBINE($$, $1, $2, $3);
         $$->kw = $1;
@@ -777,7 +785,7 @@ ret_statement:
     ;
 
 avoid_block_regs:
-    avoid_block_regs ',' REGISTER {
+    avoid_block_regs "," REGISTER {
         $$ = ALLOC(struct avoid_block_regs_node_t);
         TFRAG_COMBINE($$, $1, $2, $3);
         $$->rest = $1;
@@ -1037,7 +1045,7 @@ cast_op:
     ;
 
 address_op:
-    '[' expression ']' tetriary {
+    "[" expression "]" tetriary {
         $$ = ALLOC(struct address_op_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4);
         $$->open_brace = $1;
@@ -1045,7 +1053,7 @@ address_op:
         $$->closed_brace = $3;
         $$->arg = $4;
     }
-    | '[' ']' tetriary {
+    | "[" "]" tetriary {
         $$ = ALLOC(struct address_op_node_t);
         TFRAG_COMBINE($$, $1, $2, $3);
         $$->open_brace = $1;
@@ -1107,7 +1115,7 @@ suffix_op:
     ;
 
 dereference_op:
-    secondary '[' expression ']' {
+    secondary "[" expression "]" {
         $$ = ALLOC(struct dereference_op_node_t);
         TFRAG_COMBINE($$, $1, $2, $3, $4);
         $$->arg = $1;
@@ -1115,7 +1123,7 @@ dereference_op:
         $$->offset = $3;
         $$->close_brace = $4;
     }
-    | secondary '[' ']' {
+    | secondary "[" "]" {
         $$ = ALLOC(struct dereference_op_node_t);
         TFRAG_COMBINE($$, $1, $2, $3);
         $$->arg = $1;
@@ -1158,7 +1166,7 @@ secondary:
     ;
 
 primary:
-    '(' expression ')' {
+    "(" expression ")" {
         $$ = ALLOC(struct primary_node_t);
         TFRAG_COMBINE($$, $1, $2, $3);
         $$->open_brace = $1;

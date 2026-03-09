@@ -1,9 +1,14 @@
 #include "parser.h"
+
 #include "token.h"
 
 void yyerror(const char *token) {
-    log_msg("Parser error: \n");
-    log_msg("%s\n", token);
+    extern tfrag_t error_frag;
+    log_msg("[== Parser error!\n");
+    log_msg("[== Happened in: %s, lines %zu-%zu, cols %zu-%zu, token: '%s'\n",
+            error_frag.filename, error_frag.begin_line, error_frag.end_line,
+            error_frag.begin_col, error_frag.end_col, error_frag.token);
+    log_msg("[== Bison error message: '%s'\n", token);
     exit(-1);
 }
 

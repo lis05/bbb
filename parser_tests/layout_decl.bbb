@@ -1,0 +1,31 @@
+x: layout {
+    f: m123
+}
+
+x: layout {
+    f: m123
+    f: m(sizeof layout)
+}
+
+x: layout {
+    f: m123
+    _: m1
+    _: m123
+    f: m0
+}
+
+x: layout #int {
+    f: m123
+}
+
+x: layout #sse {
+    f: m123
+}
+
+x: layout #mem {
+    f: m123
+}
+
+x: layout #sse #mem {
+    f: m123
+}

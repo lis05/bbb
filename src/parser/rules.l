@@ -11,6 +11,8 @@
     // both begin and end parts will be the same
     // so you (me) should take snapshots of it
     tfrag_t cur_frag;
+    // for errors
+    tfrag_t error_frag;
 
     // maintains cur_frag
     static void count();
@@ -23,6 +25,7 @@
         tfrag_t frag2 = cur_frag;\
         tfrag_combine(&frag, &frag1, &frag2);\
         frag.token = token_get(yytext);\
+        error_frag = frag;\
     } while (0)
 
     #define ALLOC(t) ({\
@@ -59,8 +62,8 @@ OP_TYPE                                 ({TYPE}|{MEM_LEN_S}|{MEM_LEN_P})
 
 "//".*                                  { count(); }
 "/*"([^*]|\*+[^*/])*\*+"/"              { count(); }
+{MEM_LEN_P}                             { RET_NAME(MEMORY_LENGTH_PREFIX); }
 {MEM_LEN_S}                             { RET_NAME(MEMORY_LENGTH_SIMPLE); }
-"m"                                     { RET_NAME(MEMORY_LENGTH_PREFIX); }
 "align"[1-9][0-9]*                      { RET_NAME(ALIGNMENT_SIMPLE); }
 "#mem"                                  { RET_NAME(CHUNK_CLASS_MEM); }
 "#sse"                                  { RET_NAME(CHUNK_CLASS_SSE); }
@@ -128,6 +131,7 @@ OP_TYPE                                 ({TYPE}|{MEM_LEN_S}|{MEM_LEN_P})
     yylval.literal = res;
     return STRING;
 }
+{NAME} { RET_NAME(NAME); }
 [+-]?([0-9]*[.])?[0-9]+([eE][+-]?[0-9]+)? {
     tfrag_t frag;
     COUNT(frag);
@@ -172,7 +176,8 @@ OP_TYPE                                 ({TYPE}|{MEM_LEN_S}|{MEM_LEN_P})
     yylval.literal = res;
     return UINT;
 }
-{NAME} { RET_NAME(NAME); }
+[ \t\r\n] { count(); }
+
 
 %%
 static void count_char(char c) {

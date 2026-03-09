@@ -108,16 +108,16 @@ extern int yydebug;
     NOT_EQUALS = 309,              /* NOT_EQUALS  */
     CAST = 310,                    /* CAST  */
     ACCESS = 311,                  /* ACCESS  */
-    ROB = 312,                     /* ROB  */
-    RCB = 313,                     /* RCB  */
-    SOB = 314,                     /* SOB  */
-    SCB = 315,                     /* SCB  */
-    COB = 316,                     /* COB  */
-    CCB = 317,                     /* CCB  */
+    ROB = 312,                     /* "("  */
+    RCB = 313,                     /* ")"  */
+    SOB = 314,                     /* "["  */
+    SCB = 315,                     /* "]"  */
+    COB = 316,                     /* "{"  */
+    CCB = 317,                     /* "}"  */
     ARROW = 318,                   /* ARROW  */
-    COLON = 319,                   /* COLON  */
-    SEMICOLON = 320,               /* SEMICOLON  */
-    COMMA = 321                    /* COMMA  */
+    COLON = 319,                   /* ":"  */
+    SEMICOLON = 320,               /* ";"  */
+    COMMA = 321                    /* ","  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -126,7 +126,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 67 "src/parser/rules.y"
+#line 69 "src/parser/rules.y"
 
     struct program_node_t *program;
     struct global_variable_declaration_node_t *global_variable_declaration;
