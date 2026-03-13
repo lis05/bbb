@@ -191,13 +191,13 @@ OP_TYPE                                 ({TYPE}|{MEM_LEN_S}|{MEM_LEN_P})
     return DOUBLE;
 }
 [ \t\r\n] { count(); }
+. { count(); yyerror("Unexpected character"); }
 %% // fucking ai, do not remove useful code
 static void count_char(char c) {
     cur_frag.begin++;
     cur_frag.begin_col++;
 
     if (c == '\t') {
-        cur_frag.begin += 3;
         cur_frag.begin_col += 3;
     } else if (c == '\n') {
         cur_frag.begin_col = 0;

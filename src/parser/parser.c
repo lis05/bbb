@@ -1,5 +1,5 @@
 #include "parser.h"
-
+#include "error.h"
 #include "token.h"
 
 void yyerror(const char *token) {
@@ -9,6 +9,7 @@ void yyerror(const char *token) {
             error_frag.filename, error_frag.begin_line, error_frag.end_line,
             error_frag.begin_col, error_frag.end_col, error_frag.token);
     log_msg("[== Bison error message: '%s'\n", token);
+    context_msg(&error_frag, "Parser error: %s\n", token);
     exit(-1);
 }
 
