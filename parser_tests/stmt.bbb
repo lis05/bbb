@@ -1,0 +1,27 @@
+a: fn() {
+    a: m8
+    a: m(sizeof a)
+    a: m8 align64
+
+    b: alias reg
+    b: alias rax
+
+    extern a
+    nasm a
+
+    if 0 {}
+    if 0 {} else {}
+
+    l:
+
+    goto l;
+
+    loop {}
+
+    break;
+    continue;
+
+    ret 0;
+
+    avoid rax, xmm8 {}
+}

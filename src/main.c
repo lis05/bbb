@@ -9,7 +9,7 @@
 
 static struct option const long_opts[] = {{"help", 0, NULL, 'h'}};
 
-static const char *const short_opts = "-hovp";
+static const char *const short_opts = "-hovpl";
 
 static void print_help() {
     // clang-format off
@@ -23,9 +23,12 @@ static void print_help() {
 			"    -v                increase verbosity level\n"
 			"    -o FILE           set destination file\n"
             "    -p                print parser output and stop\n"
+            "    -l                print lexemes\n"
 	);
     // clang-format on
 }
+
+int print_lexemes;
 
 int main(int argc, char **argv) {
     char  short_option;
@@ -51,6 +54,9 @@ int main(int argc, char **argv) {
         case 'p':
             print_parser = 1;
             continue;
+        case 'l':
+            print_lexemes = 1;
+            continue;
         case '?':
             if (optopt) {
                 log_crit("Unrecognized option: -%c\n", optopt);
@@ -61,11 +67,11 @@ int main(int argc, char **argv) {
             }
             break;
         case 1:
-            if (source == NULL) {
-                source = argv[optind - 1];
-            } else if (parse_dest && dest == NULL) {
+            if (parse_dest && dest == NULL) {
                 dest = argv[optind - 1];
-                parse_dest = 0;
+            }
+            else if (source == NULL) {
+                source = argv[optind - 1];
             } else {
                 log_crit("Invalid argument: %s\n", argv[optind - 1]);
             }

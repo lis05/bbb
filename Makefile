@@ -57,6 +57,12 @@ obj/codegen/%.o: src/codegen/%.c $(HEADERS) | obj/codegen
 obj/parser/%.o: src/parser/%.c $(HEADERS) | obj/parser
 	$(CC) $(CFLAGS) -c $< -o $@
 
+src/parser/rules.tab.c: src/parser/rules.y
+	bison -d -o src/parser/rules.tab.c src/parser/rules.y
+
+src/parser/lex.yy.c: src/parser/rules.l
+	flex --outfile=src/parser/lex.yy.c src/parser/rules.l
+
 # common compilation
 obj/common/%.o: src/common/%.c $(HEADERS) | obj/common
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -85,8 +91,20 @@ obj/common:
 build:
 	mkdir -p $@
 
+.PHONY: fresh
+fresh:
+	clear;
+	make clean
+	make grammar
+	make
+
 .PHONY: debug
 debug:
 	@echo SOURCES= $(SOURCES)
 	@echo OBJECTS= $(OBJECTS)
 	@echo HEADERS= $(HEADERS)
+
+.PHONY: pt
+pt: $(BBB)
+	./scripts/pt.sh $(BBB)
+

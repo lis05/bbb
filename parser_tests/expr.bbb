@@ -1,0 +1,44 @@
+f: fn() {
+    a = a;
+    a || a;
+    a && a;
+    a | a;
+    a ^ a;
+    a & a;
+    a == a;
+    a != a;
+    a < a;
+    a > a;
+    a <= a;
+    a >= a;
+    a + a;
+    a - a;
+    a * a;
+    a / a;
+    a % a;
+    ++ a;
+    -- a;
+    ! a;
+    ~ a;
+    a m8?m8;
+    [] a;
+    [a] a;
+    sizeof a;
+    a ++;
+    a --;
+    a [];
+    a [a];
+    a a. a;
+    (a);
+    (((a)));
+    0;
+    +0;
+    -0;
+    0.0;
+    "str";
+    a;
+
+    a + b * c - (~e * a);
+    [a + b]e layout. c layout. d layout. f;
+    (a d?F) layout. l m9?m10;
+}

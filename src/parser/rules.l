@@ -19,6 +19,11 @@
 
     static const char *parse_string(const char *data);
 
+    extern int print_lexemes;
+    #define PRINT(...) do {\
+        if (print_lexemes) printf(__VA_ARGS__);\
+    } while(0)
+
     #define COUNT(frag) do {\
         tfrag_t frag1 = cur_frag;\
         count();\
@@ -58,70 +63,76 @@ MEM_LEN_P                               "m(sizeof "{NAME}")"
 TYPE                                    (s?[bwdq]|[fF])
 OP_TYPE                                 ({TYPE}|{MEM_LEN_S}|{MEM_LEN_P})
 
+%x                                      NASM_BLOCK_STATE
 %%
 
-"//".*                                  { count(); }
-"/*"([^*]|\*+[^*/])*\*+"/"              { count(); }
-{MEM_LEN_P}                             { RET_NAME(MEMORY_LENGTH_PREFIX); }
-{MEM_LEN_S}                             { RET_NAME(MEMORY_LENGTH_SIMPLE); }
-"align"[1-9][0-9]*                      { RET_NAME(ALIGNMENT_SIMPLE); }
-"#mem"                                  { RET_NAME(CHUNK_CLASS_MEM); }
-"#sse"                                  { RET_NAME(CHUNK_CLASS_SSE); }
-"#int"                                  { RET_NAME(CHUNK_CLASS_INT); }
-"#"{NAME}                               { RET_NAME(CHUNK_CLASS_LAYOUT); }
-{GP_REGISTER}                           { RET_NAME(GP_REGISTER); }
-{REGISTER}                              { RET_NAME(REGISTER); }
-"global"                                { RET_NAME(GLOBAL); }
-"layout"                                { RET_NAME(LAYOUT); }
-"extern"                                { RET_NAME(EXTERN); }
-"nasm"                                  { RET_NAME(NASM); }
-"fn"                                    { RET_NAME(FN); }
-"%nasm"(.|\n)*"%endnasm"                { RET_NAME(NASM_BLOCK); }
-"if"                                    { RET_NAME(IF); }
-"else"                                  { RET_NAME(ELSE); }
-"goto"                                  { RET_NAME(GOTO); }
-"loop"                                  { RET_NAME(LOOP); }
-"break"                                 { RET_NAME(BREAK); }
-"continue"                              { RET_NAME(CONTINUE); }
-"ret"                                   { RET_NAME(RET); }
-"avoid"                                 { RET_NAME(AVOID); }
-"alias"                                 { RET_NAME(ALIAS); }
-"reg"                                   { RET_NAME(REG); }
-"sizeof"                                { RET_NAME(SIZEOF); }
-{OP_TYPE}?"||"{OP_TYPE}?                { RET_NAME(LOGICAL_OR); }
-{OP_TYPE}?"&&"{OP_TYPE}?                { RET_NAME(LOGICAL_AND); }
-{OP_TYPE}?"++"{OP_TYPE}?                { RET_NAME(INCREMENT); }
-{OP_TYPE}?"--"{OP_TYPE}?                { RET_NAME(DECREMENT); }
-{OP_TYPE}?"+"{OP_TYPE}?                 { RET_NAME(PLUS); }
-{OP_TYPE}?"-"{OP_TYPE}?                 { RET_NAME(MINUS); }
-{OP_TYPE}?"*"{OP_TYPE}?                 { RET_NAME(MULTIPLY); }
-{OP_TYPE}?"/"{OP_TYPE}?                 { RET_NAME(DIVIDE); }
-{OP_TYPE}?"%"{OP_TYPE}?                 { RET_NAME(REMAINDER); }
-{OP_TYPE}?"&"{OP_TYPE}?                 { RET_NAME(BITWISE_AND); }
-{OP_TYPE}?"|"{OP_TYPE}?                 { RET_NAME(BITWISE_OR); }
-{OP_TYPE}?"^"{OP_TYPE}?                 { RET_NAME(BITWISE_XOR); }
-{OP_TYPE}?"!"{OP_TYPE}?                 { RET_NAME(LOGICAL_NOT); }
-{OP_TYPE}?"~"{OP_TYPE}?                 { RET_NAME(BITWISE_NOT); }
-{OP_TYPE}?"<="{OP_TYPE}?                { RET_NAME(LESS_EQUAL); }
-{OP_TYPE}?">="{OP_TYPE}?                { RET_NAME(GREATER_EQUAL); }
-{OP_TYPE}?"<"{OP_TYPE}?                 { RET_NAME(LESS_THAN); }
-{OP_TYPE}?">"{OP_TYPE}?                 { RET_NAME(GREATER_THAN); }
-{OP_TYPE}?"=="{OP_TYPE}?                { RET_NAME(EQUALS); }
-{OP_TYPE}?"!="{OP_TYPE}?                { RET_NAME(NOT_EQUALS); }
-{OP_TYPE}?"="{OP_TYPE}?                 { RET_NAME(ASSIGN); }
-{OP_TYPE}?"?"{OP_TYPE}?                 { RET_NAME(CAST); }
-{NAME}"."                               { RET_NAME(ACCESS); }
-"("                                     { RET_NAME(ROB); }
-")"                                     { RET_NAME(RCB); }
-"["                                     { RET_NAME(SOB); }
-"]"                                     { RET_NAME(SCB); }
-"{"                                     { RET_NAME(COB); }
-"}"                                     { RET_NAME(CCB); }
-"->"                                    { RET_NAME(ARROW); }
-":"                                     { RET_NAME(COLON); }
-";"                                     { RET_NAME(SEMICOLON); }
-","                                     { RET_NAME(COMMA); }
+"//".*                                  { PRINT("[LINE-COMMENT]\n"); count(); }
+"/*"([^*]|\*+[^*/])*\*+"/"              { PRINT("[MULTILINE-COMMENT]\n"); count(); }
+{MEM_LEN_P}                             { PRINT("[MEMORY_LENGTH_PREFIX: '%s']\n", yytext); RET_NAME(MEMORY_LENGTH_PREFIX); }
+{MEM_LEN_S}                             { PRINT("[MEMORY_LENGTH_SIMPLE: '%s']\n", yytext); RET_NAME(MEMORY_LENGTH_SIMPLE); }
+"align"[1-9][0-9]* { PRINT("[ALIGNMENT_SIMPLE: '%s']\n", yytext); RET_NAME(ALIGNMENT_SIMPLE); }
+"#mem"                                  { PRINT("[CHUNK_CLASS_MEM]\n"); RET_NAME(CHUNK_CLASS_MEM); }
+"#sse"                                  { PRINT("[CHUNK_CLASS_SSE]\n"); RET_NAME(CHUNK_CLASS_SSE); }
+"#int"                                  { PRINT("[CHUNK_CLASS_INT]\n"); RET_NAME(CHUNK_CLASS_INT); }
+"#"{NAME}                               { PRINT("[CHUNK_CLASS_LAYOUT: '%s']\n", yytext); RET_NAME(CHUNK_CLASS_LAYOUT); }
+{GP_REGISTER}                           { PRINT("[GP_REGISTER: '%s']\n", yytext); RET_NAME(GP_REGISTER); }
+{REGISTER}                              { PRINT("[REGISTER: '%s']\n", yytext); RET_NAME(REGISTER); }
+"global"                                { PRINT("[GLOBAL]\n"); RET_NAME(GLOBAL); }
+"layout"                                { PRINT("[LAYOUT]\n"); RET_NAME(LAYOUT); }
+"extern"                                { PRINT("[EXTERN]\n"); RET_NAME(EXTERN); }
+"nasm"                                  { PRINT("[NASM]\n"); RET_NAME(NASM); }
+"fn"                                    { PRINT("[FN]\n"); RET_NAME(FN); }
+"%nasm"                                 { PRINT("[NASM_BLOCK_START]\n"); BEGIN(NASM_BLOCK_STATE); yymore(); }
+<NASM_BLOCK_STATE>{
+    "%endnasm"                          { PRINT("[NASM_BLOCK: '%s']\n", yytext); BEGIN(INITIAL); RET_NAME(NASM_BLOCK); }
+    .|\n                                { yymore(); }
+}
+"if"                                    { PRINT("[IF]\n"); RET_NAME(IF); }
+"else"                                  { PRINT("[ELSE]\n"); RET_NAME(ELSE); }
+"goto"                                  { PRINT("[GOTO]\n"); RET_NAME(GOTO); }
+"loop"                                  { PRINT("[LOOP]\n"); RET_NAME(LOOP); }
+"break"                                 { PRINT("[BREAK]\n"); RET_NAME(BREAK); }
+"continue"                              { PRINT("[CONTINUE]\n"); RET_NAME(CONTINUE); }
+"ret"                                   { PRINT("[RET]\n"); RET_NAME(RET); }
+"avoid"                                 { PRINT("[AVOID]\n"); RET_NAME(AVOID); }
+"alias"                                 { PRINT("[ALIAS]\n"); RET_NAME(ALIAS); }
+"reg"                                   { PRINT("[REG]\n"); RET_NAME(REG); }
+"sizeof"                                { PRINT("[SIZEOF]\n"); RET_NAME(SIZEOF); }
+{OP_TYPE}?"||"{OP_TYPE}?                { PRINT("[LOGICAL_OR: '%s']\n", yytext); RET_NAME(LOGICAL_OR); }
+{OP_TYPE}?"&&"{OP_TYPE}?                { PRINT("[LOGICAL_AND: '%s']\n", yytext); RET_NAME(LOGICAL_AND); }
+{OP_TYPE}?"++"{OP_TYPE}?                { PRINT("[INCREMENT: '%s']\n", yytext); RET_NAME(INCREMENT); }
+{OP_TYPE}?"--"{OP_TYPE}?                { PRINT("[DECREMENT: '%s']\n", yytext); RET_NAME(DECREMENT); }
+{OP_TYPE}?"+"{OP_TYPE}?                 { PRINT("[PLUS: '%s']\n", yytext); RET_NAME(PLUS); }
+{OP_TYPE}?"-"{OP_TYPE}?                 { PRINT("[MINUS: '%s']\n", yytext); RET_NAME(MINUS); }
+{OP_TYPE}?"*"{OP_TYPE}?                 { PRINT("[MULTIPLY: '%s']\n", yytext); RET_NAME(MULTIPLY); }
+{OP_TYPE}?"/"{OP_TYPE}?                 { PRINT("[DIVIDE: '%s']\n", yytext); RET_NAME(DIVIDE); }
+{OP_TYPE}?"%"{OP_TYPE}?                 { PRINT("[REMAINDER: '%s']\n", yytext); RET_NAME(REMAINDER); }
+{OP_TYPE}?"&"{OP_TYPE}?                 { PRINT("[BITWISE_AND: '%s']\n", yytext); RET_NAME(BITWISE_AND); }
+{OP_TYPE}?"|"{OP_TYPE}?                 { PRINT("[BITWISE_OR: '%s']\n", yytext); RET_NAME(BITWISE_OR); }
+{OP_TYPE}?"^"{OP_TYPE}?                 { PRINT("[BITWISE_XOR: '%s']\n", yytext); RET_NAME(BITWISE_XOR); }
+{OP_TYPE}?"!"{OP_TYPE}?                 { PRINT("[LOGICAL_NOT: '%s']\n", yytext); RET_NAME(LOGICAL_NOT); }
+{OP_TYPE}?"~"{OP_TYPE}?                 { PRINT("[BITWISE_NOT: '%s']\n", yytext); RET_NAME(BITWISE_NOT); }
+{OP_TYPE}?"<="{OP_TYPE}?                { PRINT("[LESS_EQUAL: '%s']\n", yytext); RET_NAME(LESS_EQUAL); }
+{OP_TYPE}?">="{OP_TYPE}?                { PRINT("[GREATER_EQUAL: '%s']\n", yytext); RET_NAME(GREATER_EQUAL); }
+{OP_TYPE}?"<"{OP_TYPE}?                 { PRINT("[LESS_THAN: '%s']\n", yytext); RET_NAME(LESS_THAN); }
+{OP_TYPE}?">"{OP_TYPE}?                 { PRINT("[GREATER_THAN: '%s']\n", yytext); RET_NAME(GREATER_THAN); }
+{OP_TYPE}?"=="{OP_TYPE}?                { PRINT("[EQUALS: '%s']\n", yytext); RET_NAME(EQUALS); }
+{OP_TYPE}?"!="{OP_TYPE}?                { PRINT("[NOT_EQUALS: '%s']\n", yytext); RET_NAME(NOT_EQUALS); }
+{OP_TYPE}?"="{OP_TYPE}?                 { PRINT("[ASSIGN: '%s']\n", yytext); RET_NAME(ASSIGN); }
+{OP_TYPE}"?"{OP_TYPE}                   { PRINT("[CAST: '%s']\n", yytext); RET_NAME(CAST); }
+{NAME}"."                               { PRINT("[ACCESS: '%s']\n", yytext); RET_NAME(ACCESS); }
+"("                                     { PRINT("[ROB]: (\n"); RET_NAME(ROB); }
+")"                                     { PRINT("[RCB]: )\n"); RET_NAME(RCB); }
+"["                                     { PRINT("[SOB]: [\n"); RET_NAME(SOB); }
+"]"                                     { PRINT("[SCB]: ]\n"); RET_NAME(SCB); }
+"{"                                     { PRINT("[COB]: {\n"); RET_NAME(COB); }
+"}"                                     { PRINT("[CCB]: }\n"); RET_NAME(CCB); }
+"->"                                    { PRINT("[ARROW]\n"); RET_NAME(ARROW); }
+":"                                     { PRINT("[COLON]\n"); RET_NAME(COLON); }
+";"                                     { PRINT("[SEMICOLON]\n"); RET_NAME(SEMICOLON); }
+","                                     { PRINT("[COMMA]\n"); RET_NAME(COMMA); }
 \"([^\"\\]|\\.)*\"                      {
+    PRINT("[STRING: '%s']\n", yytext);
     tfrag_t frag;
     COUNT(frag);
     struct literal_node_t *res = ALLOC(struct literal_node_t);
@@ -131,18 +142,9 @@ OP_TYPE                                 ({TYPE}|{MEM_LEN_S}|{MEM_LEN_P})
     yylval.literal = res;
     return STRING;
 }
-{NAME} { RET_NAME(NAME); }
-[+-]?([0-9]*[.])?[0-9]+([eE][+-]?[0-9]+)? {
-    tfrag_t frag;
-    COUNT(frag);
-    struct literal_node_t *res = ALLOC(struct literal_node_t);
-    res->frag = frag;
-    res->type = LIT_DOUBLE;
-    res->double_lit = strtod(yytext, NULL);
-    yylval.literal = res;
-    return DOUBLE;
-}
+{NAME} { PRINT("[NAME: '%s']\n", yytext); RET_NAME(NAME); }
 [+-](0x|0X|0)?[0-9a-fA-F]+ {
+    PRINT("[INT: '%s']\n", yytext);
     tfrag_t frag;
     COUNT(frag);
     struct literal_node_t *res = ALLOC(struct literal_node_t);
@@ -160,6 +162,7 @@ OP_TYPE                                 ({TYPE}|{MEM_LEN_S}|{MEM_LEN_P})
     return INT;
 }
 (0x|0X|0)?[0-9a-fA-F]+ {
+    PRINT("[UINT: '%s']\n", yytext);
     tfrag_t frag;
     COUNT(frag);
     struct literal_node_t *res = ALLOC(struct literal_node_t);
@@ -176,10 +179,19 @@ OP_TYPE                                 ({TYPE}|{MEM_LEN_S}|{MEM_LEN_P})
     yylval.literal = res;
     return UINT;
 }
+[+-]?([0-9]*[.])?[0-9]+([eE][+-]?[0-9]+)? {
+    PRINT("[DOUBLE: '%s']\n", yytext);
+    tfrag_t frag;
+    COUNT(frag);
+    struct literal_node_t *res = ALLOC(struct literal_node_t);
+    res->frag = frag;
+    res->type = LIT_DOUBLE;
+    res->double_lit = strtod(yytext, NULL);
+    yylval.literal = res;
+    return DOUBLE;
+}
 [ \t\r\n] { count(); }
-
-
-%%
+%% // fucking ai, do not remove useful code
 static void count_char(char c) {
     cur_frag.begin++;
     cur_frag.begin_col++;

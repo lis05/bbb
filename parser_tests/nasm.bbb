@@ -1,0 +1,5 @@
+%nasm mov eax, ebx %endnasm
+
+%nasm
+    mov eax, ebx
+%endnasm

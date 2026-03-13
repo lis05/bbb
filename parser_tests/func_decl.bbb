@@ -1,0 +1,4 @@
+a: fn() {}
+a: fn(a, b: m8, c: m(sizeof l), d: align1024 #sse, e: m8 align1024 #l) {}
+a: fn(a) -> #f {}
+a: fn(a) -> m8 #f {}

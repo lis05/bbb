@@ -477,6 +477,9 @@ function_declaration_args:
         TFRAG_COMBINE($$, $1);
         $$->arg = $1;
     }
+    | {
+        $$ = ALLOC(struct function_declaration_args_node_t);
+    }
     ;
 
 function_declaration:
@@ -792,7 +795,19 @@ avoid_block_regs:
         $$->comma = $2;
         $$->reg = $3;
     }
+    | avoid_block_regs "," GP_REGISTER {
+        $$ = ALLOC(struct avoid_block_regs_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->rest = $1;
+        $$->comma = $2;
+        $$->reg = $3;
+    }
     | REGISTER {
+        $$ = ALLOC(struct avoid_block_regs_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->reg = $1;
+    }
+    | GP_REGISTER {
         $$ = ALLOC(struct avoid_block_regs_node_t);
         TFRAG_COMBINE($$, $1);
         $$->reg = $1;

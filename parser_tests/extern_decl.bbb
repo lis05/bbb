@@ -1,0 +1,4 @@
+extern name
+extern name2
+nasm name
+nasm name2
