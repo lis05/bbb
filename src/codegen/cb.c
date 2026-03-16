@@ -17,7 +17,10 @@ void cb_add_front(cb_t *cb, int indent, const char *line) {
     part->lines[0].line = strdup(line);
     log_assert(part->lines[0].line != NULL);
 
+    int old_size = cb->size;
     cb_glue_front(cb, part);
+    log_assert(cb->size == old_size + 1);
+    free(part);
 }
 
 void cb_add_back(cb_t *cb, int indent, const char *line) {
@@ -30,7 +33,10 @@ void cb_add_back(cb_t *cb, int indent, const char *line) {
     part->lines[0].line = strdup(line);
     log_assert(part->lines[0].line != NULL);
 
+    int old_size = cb->size;
     cb_glue_back(cb, part);
+    log_assert(cb->size == old_size + 1);
+    free(part);
 }
 
 void cb_glue_front(cb_t *cb, cb_t *glue_me) {
@@ -76,3 +82,20 @@ void cb_destroy(cb_t *cb) {
     cb->size = cb->cap = 0;
 }
 
+cb_t cb_invalid() {
+    return (cb_t){-1, -1, NULL};
+}
+
+int cb_is_valid(cb_t *cb) {
+    return cb != NULL && cb->size != -1 && cb->cap != -1 && cb->lines != NULL;
+}
+
+void cb_print(FILE *fd, cb_t *cb) {
+    for (int i = 0; i < cb->size; i++) {
+        for (int ii = 0; ii < cb->lines[i].indent; ii++) {
+            fprintf(fd, " ");
+        }
+
+        fprintf(fd, "%s", cb->lines[i].line);
+    }
+}

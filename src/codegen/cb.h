@@ -20,6 +20,9 @@ void cb_add_back(cb_t *cb, int indent, const char *line);
 void cb_glue_front(cb_t *cb, cb_t *glue_me);
 void cb_glue_back(cb_t *cb, cb_t *glue_me);
 void cb_destroy(cb_t *cb); // does NOT free cb
+cb_t cb_invalid();
+int cb_is_valid(cb_t *cb);
+void cb_print(FILE *fd, cb_t *cb);
 
 
 

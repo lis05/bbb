@@ -2,14 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "codegen/gen.h"
 #include "common/common.h"
-#include "parser/token.h"
 #include "parser/ast.h"
 #include "parser/parser.h"
+#include "parser/token.h"
 
 static struct option const long_opts[] = {{"help", 0, NULL, 'h'}};
 
-static const char *const short_opts = "-hovpl";
+static const char *const short_opts = "-hoOvpPlc";  // fix -o
 
 static void print_help() {
     // clang-format off
@@ -22,19 +23,27 @@ static void print_help() {
 			"    -h, --help        print help\n"
 			"    -v                increase verbosity level\n"
 			"    -o FILE           set destination file\n"
+            "    -O                print output to stdout rather than a file\n"
             "    -p                print parser output and stop\n"
+            "    -P                print parser output\n"
             "    -l                print lexemes\n"
+            ""
+            "    -c                add explanatory comments to the generated nasm.\n"
 	);
     // clang-format on
 }
 
 int print_lexemes;
 
+int add_explanatory_comments;
+
 int main(int argc, char **argv) {
     char  short_option;
     char *source = NULL, *dest = NULL;
-	int verbosity = LOG_LEVEL_ERROR;
+    int   verbosity = LOG_LEVEL_ERROR;
 
+    int print_output = 0;
+    int stop_after_parser = 0;
     int parse_dest = 0;
     int print_parser = 0;
 
@@ -45,17 +54,27 @@ int main(int argc, char **argv) {
         case 'h':
             print_help();
             return 0;
-		case 'v':
-			set_log_level(++verbosity);
-			break;
+        case 'v':
+            set_log_level(++verbosity);
+            break;
         case 'o':
             parse_dest = 1;
             continue;
+        case 'O':
+            print_output = 1;
+            continue;
         case 'p':
+            print_parser = 1;
+            stop_after_parser = 1;
+            continue;
+        case 'P':
             print_parser = 1;
             continue;
         case 'l':
             print_lexemes = 1;
+            continue;
+        case 'c':
+            add_explanatory_comments = 1;
             continue;
         case '?':
             if (optopt) {
@@ -69,8 +88,7 @@ int main(int argc, char **argv) {
         case 1:
             if (parse_dest && dest == NULL) {
                 dest = argv[optind - 1];
-            }
-            else if (source == NULL) {
+            } else if (source == NULL) {
                 source = argv[optind - 1];
             } else {
                 log_crit("Invalid argument: %s\n", argv[optind - 1]);
@@ -90,11 +108,12 @@ int main(int argc, char **argv) {
         dest = "out.asm";
     }
 
-	log_debug("src: %s\n", source);
-	log_debug("dest: %s\n", dest);
+    log_debug("src: %s\n", source);
+    log_debug("dest: %s\n", dest);
 
     parser_init();
     struct program_node_t *prog = parser_parse(source);
+    log_info("Parser has finished.\n");
     if (prog == NULL) {
         log_msg("Compilation did not succeed.\n");
         log_msg("Aborting.\n");
@@ -102,11 +121,34 @@ int main(int argc, char **argv) {
     }
 
     if (print_parser) {
-        log_info("-p passed, printing parser output and exiting.\n");
-
         ast_print_program_node(prog, 0);
-        return 0;
+        if (stop_after_parser) {
+            return 0;
+        }
     }
 
+    FILE *out = NULL;
+    if (print_output) {
+        out = stdout;
+    } else if (dest != NULL) {
+        out = fopen(dest, "w");
+        if (out == NULL) {
+            log_msg("Failed to write output to %s: %s\n", dest, strerror(errno));
+            return -1;
+        }
+    }
+
+    cb_t res = gen(prog);
+    log_info("Codegen has finished.\n");
+    if (!cb_is_valid(&res)) {
+        log_msg("Codegen failed.\n");
+        return -1;
+    }
+
+    cb_print(out, &res);
+
+    if (out != stdout) {
+        fclose(out);
+    }
     return 0;
 }
