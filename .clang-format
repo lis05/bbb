@@ -1,0 +1,12 @@
+SortIncludes:                               true
+IncludeBlocks:                              Regroup
+BasedOnStyle:                               Google
+IndentWidth:                                4
+AccessModifierOffset:                       -4
+IndentCaseLabels:                           false
+AllowShortIfStatementsOnASingleLine:        false
+AllowShortBlocksOnASingleLine:              false
+AllowShortEnumsOnASingleLine:               false
+AllowShortFunctionsOnASingleLine:           false
+AlignConsecutiveDeclarations:               true
+ColumnLimit:                                85
