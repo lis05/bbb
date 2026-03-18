@@ -22,10 +22,10 @@ void context_msg(const tfrag_t *frag, const char *format, ...) {
     }
 
     if (frag->begin_line == frag->end_line) {
-        log_msg("\nIn %s:%zu, cols %zu..%zu\n", frag->filename, frag->begin_line + 1,
+        log_msg("In %s:%zu, cols %zu..%zu\n", frag->filename, frag->begin_line + 1,
                 frag->begin_col + 1, frag->end_col);
     } else {
-        log_msg("\nIn %s, lines %zu..%zu, cols %zu..%zu\n", frag->filename,
+        log_msg("In %s, lines %zu..%zu, cols %zu..%zu\n", frag->filename,
                 frag->begin_line + 1, frag->end_line + 1, frag->begin_col + 1,
                 frag->end_col);
     }
@@ -76,5 +76,7 @@ msg_print:
     va_start(args, format);
     vprintf(format, args);
     va_end(args);
+
+    printf("\n");
 }
 
