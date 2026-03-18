@@ -16,8 +16,19 @@ void context_msg(const tfrag_t *frag, const char *format, ...) {
         goto msg_print;
     }
 
-    if (fseek(fd, frag->begin, SEEK_SET) != 0) {
-        log_error("Failed to fseek on %s: %s\n", frag->filename, strerror(errno));
+    size_t line = 0;
+    while (line < frag->begin_line) {
+        char c = fgetc(fd);
+        if (c == EOF) {
+            break;
+        }
+        if (c == '\n') {
+            line++;
+        }
+    }
+
+    if (line != frag->begin_line) {
+        log_error("Failed to scroll.\n");
         goto msg_print;
     }
 
@@ -28,15 +39,13 @@ void context_msg(const tfrag_t *frag, const char *format, ...) {
         log_msg("In %s, lines %zu..%zu, cols %zu..%zu\n", frag->filename,
                 frag->begin_line + 1, frag->end_line + 1, frag->begin_col + 1,
                 frag->end_col);
+        // this might break things, but i dont care rn
     }
 
     log_msg(">>>     ");
 
-    size_t  actual_count = 0;
-    int64_t count = frag->end - frag->begin;
     while (true) {
         char c = fgetc(fd);
-        count--;
 
         if (c == EOF) {
             break;
@@ -44,9 +53,6 @@ void context_msg(const tfrag_t *frag, const char *format, ...) {
 
         if (c == '\t') {
             log_msg("    ");
-            if (count >= 0) {
-                actual_count += 4;
-            }
         } else if (c == '\n') {
             if (frag->end_line != frag->begin_line) {
                 log_msg("         (... and %zu more lines)\n",
@@ -55,14 +61,14 @@ void context_msg(const tfrag_t *frag, const char *format, ...) {
             break;
         } else {
             log_msg("%c", c);
-            if (count >= 0) {
-                actual_count++;
-            }
         }
     }
 
     log_msg("\n        ");
-    while (actual_count--) {
+    for (size_t i = 0; i < frag->begin_col; i++) {
+        log_msg(" ");
+    }
+    for (size_t i = 0; i < frag->end_col - frag->begin_col; i++) {
         log_msg("^");
     }
     log_msg("\n");
@@ -77,6 +83,6 @@ msg_print:
     vprintf(format, args);
     va_end(args);
 
-    printf("\n");
+    printf("\n\n");
 }
 

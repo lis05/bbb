@@ -5,15 +5,16 @@
 #include "settings.h"
 #include "util.h"
 
-#define EXPLAIN(cbref, indent, ...)                  \
-    do {                                             \
-        if (add_explanatory_comments) {              \
+#define EXPLAIN(cbref, indent, ...)                          \
+    do {                                                     \
+        if (add_explanatory_comments) {                      \
             cb_add_back(&(cbref), indent, "; " __VA_ARGS__); \
-        }                                            \
+        }                                                    \
     } while (0)
 
 static cb_t gen_program(int indent, const struct program_node_t *node);
-static cb_t gen_global_variable_decl(int indent, const struct global_variable_declaration_node_t *node);
+static cb_t gen_global_variable_decl(
+    int indent, const struct global_variable_declaration_node_t *node);
 static cb_t gen_extern_decl(int                                     indent,
                             const struct extern_declaration_node_t *node);
 
@@ -78,14 +79,15 @@ static cb_t gen_program(int indent, const struct program_node_t *node) {
     return res;
 }
 
-static cb_t gen_global_variable_decl(int indent, const struct global_variable_declaration_node_t *node) {
+static cb_t gen_global_variable_decl(
+    int indent, const struct global_variable_declaration_node_t *node) {
     log_debug("Entered with indent=%d\n", indent);
     log_assert(node != NULL);
 
     cb_t res;
     cb_init(&res);
 
-    int is_global = 0;
+    int    is_global = 0;
     size_t mem_len = 8;
     size_t align = 8;
 
@@ -93,13 +95,12 @@ static cb_t gen_global_variable_decl(int indent, const struct global_variable_de
         const char *vis = util_get_visibility(node->vis);
         if (vis != NULL && strcmp(vis, "global") == 0) {
             is_global = 1;
-        }
-        else {
+        } else {
             return cb_invalid();
         }
     }
     log_debug(" - global: %d\n", is_global);
-    
+
     if (node->mem_len != NULL && util_get_mem_len(node->mem_len, &mem_len)) {
         return cb_invalid();
     }
@@ -119,10 +120,11 @@ static cb_t gen_global_variable_decl(int indent, const struct global_variable_de
     cb_add_back(&res, indent + CB_TAB, "alignb %zu\n", align);
     cb_add_back(&res, indent + CB_TAB, "%s: resb %zu\n", node->name->name, mem_len);
     cb_add_back(&res, 0, "\n");
-    
+
     if (scope_has(&global_scope, node->name->name)) {
         log_debug(" - symbol already in the global scope.\n");
-        context_msg(&node->name->frag, "Error: the compiler is already aware of this symbol.");
+        context_msg(&node->name->frag,
+                    "Error: the compiler is already aware of this symbol.\n");
         return cb_invalid();
     }
 
@@ -160,7 +162,8 @@ static cb_t gen_extern_decl(int                                     indent,
 
         if (scope_has(&global_scope, node->name->name)) {
             log_debug(" - symbol already in the global scope.\n");
-            context_msg(&node->frag, "Note: dublicate extern/nasm declaration.\n");
+            context_msg(&node->frag,
+                        "Note: the compiler is already aware of this symbol.\n");
             return res;
         }
 
@@ -175,7 +178,8 @@ static cb_t gen_extern_decl(int                                     indent,
 
         if (scope_has(&global_scope, node->name->name)) {
             log_debug(" - symbol already in the global scope.\n");
-            context_msg(&node->frag, "Note: dublicate extern/nasm declaration.\n");
+            context_msg(&node->name->frag,
+                        "Note: the compiler is already aware of this symbol.\n");
             return res;
         }
 
