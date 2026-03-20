@@ -1,4 +1,5 @@
 #include "cb.h"
+#include <stdarg.h>
 
 void cb_init(cb_t *cb) {
     cb->size = 0;
@@ -7,14 +8,24 @@ void cb_init(cb_t *cb) {
     log_assert(cb->lines != NULL);
 }
 
-void cb_add_front(cb_t *cb, int indent, const char *line) {
+void cb_add_front(cb_t *cb, int indent, const char *format, ...) {
     cb_t *part = (cb_t *)malloc(sizeof(cb_t));
     log_assert(part != NULL);
+
+    char *line = NULL;
+    va_list list;
+    va_start(list, format);
+    if (vasprintf(&line, format, list) == -1) {
+        log_crit("Error vasprintf: %s\n", strerror(errno));
+        return; // should probably add error codes or smth
+    }
+    va_end(list);
+    log_assert(line != NULL);
 
     cb_init(part);
     part->size = 1;
     part->lines[0].indent = indent;
-    part->lines[0].line = strdup(line);
+    part->lines[0].line = line;
     log_assert(part->lines[0].line != NULL);
 
     int old_size = cb->size;
@@ -23,14 +34,24 @@ void cb_add_front(cb_t *cb, int indent, const char *line) {
     free(part);
 }
 
-void cb_add_back(cb_t *cb, int indent, const char *line) {
+void cb_add_back(cb_t *cb, int indent, const char *format, ...) {
     cb_t *part = (cb_t *)malloc(sizeof(cb_t));
     log_assert(part != NULL);
+
+    char *line = NULL;
+    va_list list;
+    va_start(list, format);
+    if (vasprintf(&line, format, list) == -1) {
+        log_crit("Error vasprintf: %s\n", strerror(errno));
+        return; // should probably add error codes or smth
+    }
+    va_end(list);
+    log_assert(line != NULL);
 
     cb_init(part);
     part->size = 1;
     part->lines[0].indent = indent;
-    part->lines[0].line = strdup(line);
+    part->lines[0].line = line;
     log_assert(part->lines[0].line != NULL);
 
     int old_size = cb->size;

@@ -3,6 +3,7 @@
 #include "../parser/error.h"
 #include "scope.h"
 #include "settings.h"
+#include "util.h"
 
 #define EXPLAIN(cbref, indent, msg)                  \
     do {                                             \
@@ -11,9 +12,10 @@
         }                                            \
     } while (0)
 
+static cb_t gen_program(int indent, const struct program_node_t *node);
+static cb_t gen_global_variable_decl(int indent, const struct global_variable_declaration_node_t *node);
 static cb_t gen_extern_decl(int                                     indent,
                             const struct extern_declaration_node_t *node);
-static cb_t gen_program(int indent, const struct program_node_t *node);
 
 struct scope_t global_scope;
 
@@ -54,7 +56,11 @@ static cb_t gen_program(int indent, const struct program_node_t *node) {
     }
 
     if (node->gvar_decl != NULL) {
-        // todo
+        cb_t other = gen_global_variable_decl(indent, node->gvar_decl);
+        if (!cb_is_valid(&other)) {
+            return other;
+        }
+        cb_glue_back(&res, &other);
     } else if (node->layout_decl != NULL) {
         // todo
     } else if (node->ext_decl != NULL) {
@@ -69,6 +75,50 @@ static cb_t gen_program(int indent, const struct program_node_t *node) {
         // todo
     }
 
+    return res;
+}
+
+static cb_t gen_global_variable_decl(int indent, const struct global_variable_declaration_node_t *node) {
+    log_debug("Entered with indent=%d\n", indent);
+    log_assert(node != NULL);
+
+    cb_t res;
+    cb_init(&res);
+
+    int is_global = 0;
+    size_t mem_len = 8;
+    size_t align = 8;
+
+    if (node->vis != NULL) {
+        const char *vis = util_get_visibility(node->vis);
+        if (vis != NULL && strcmp(vis, "global") == 0) {
+            is_global = 1;
+        }
+        else {
+            return cb_invalid();
+        }
+    }
+    log_debug(" - global: %d\n", is_global);
+    
+    if (node->mem_len != NULL && util_get_mem_len(node->mem_len, &mem_len)) {
+        return cb_invalid();
+    }
+    log_debug(" - mem_len: %zu\n", mem_len);
+
+    if (node->align != NULL && util_get_align(node->align, &align)) {
+        return cb_invalid();
+    }
+    log_debug(" - align: %zu\n", align);
+
+    EXPLAIN(res, indent, "This is a global variable.\n");
+    cb_add_back(&res, indent, "section .bss\n");
+    if (is_global == 1) {
+        cb_add_back(&res, indent + CB_TAB, "global %s\n", node->name->name);
+    }
+
+    cb_add_back(&res, indent + CB_TAB, "alignb %zu\n", align);
+    cb_add_back(&res, indent + CB_TAB, "%s: resb %zu\n", node->name->name, mem_len);
+    cb_add_back(&res, 0, "\n");
     return res;
 }
 

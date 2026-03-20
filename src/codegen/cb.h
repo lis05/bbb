@@ -15,8 +15,8 @@ typedef struct cblock_t {
 #define CB_TAB 4
 
 void cb_init(cb_t *cb);
-void cb_add_front(cb_t *cb, int indent, const char *line);
-void cb_add_back(cb_t *cb, int indent, const char *line);
+void cb_add_front(cb_t *cb, int indent, const char *format, ...);
+void cb_add_back(cb_t *cb, int indent, const char *format, ...);
 void cb_glue_front(cb_t *cb, cb_t *glue_me);
 void cb_glue_back(cb_t *cb, cb_t *glue_me);
 void cb_destroy(cb_t *cb); // does NOT free cb
