@@ -5,10 +5,10 @@
 #include "settings.h"
 #include "util.h"
 
-#define EXPLAIN(cbref, indent, msg)                  \
+#define EXPLAIN(cbref, indent, ...)                  \
     do {                                             \
         if (add_explanatory_comments) {              \
-            cb_add_back(&(cbref), indent, "; " msg); \
+            cb_add_back(&(cbref), indent, "; " __VA_ARGS__); \
         }                                            \
     } while (0)
 
@@ -110,7 +110,7 @@ static cb_t gen_global_variable_decl(int indent, const struct global_variable_de
     }
     log_debug(" - align: %zu\n", align);
 
-    EXPLAIN(res, indent, "This is a global variable.\n");
+    EXPLAIN(res, indent, "This is a global variable '%s'.\n", node->name->name);
     cb_add_back(&res, indent, "section .bss\n");
     if (is_global == 1) {
         cb_add_back(&res, indent + CB_TAB, "global %s\n", node->name->name);
@@ -119,6 +119,18 @@ static cb_t gen_global_variable_decl(int indent, const struct global_variable_de
     cb_add_back(&res, indent + CB_TAB, "alignb %zu\n", align);
     cb_add_back(&res, indent + CB_TAB, "%s: resb %zu\n", node->name->name, mem_len);
     cb_add_back(&res, 0, "\n");
+    
+    if (scope_has(&global_scope, node->name->name)) {
+        log_debug(" - symbol already in the global scope.\n");
+        context_msg(&node->name->frag, "Error: the compiler is already aware of this symbol.");
+        return cb_invalid();
+    }
+
+    struct location_t loc;
+    loc_init_symbol(&loc, node->name->name, 0);
+    log_debug(" - adding location to global scope.\n");
+    scope_add(&global_scope, node->name->name, loc);
+
     return res;
 }
 
@@ -132,11 +144,6 @@ static cb_t gen_extern_decl(int                                     indent,
 
     if (strcmp(node->kw->name, "extern") == 0) {
         log_debug("Generating extern declaration for '%s'\n", node->name->name);
-        if (scope_has(&global_scope, node->name->name)) {
-            log_debug(" - symbol already in the global scope.\n");
-            context_msg(&node->frag, "Note: dublicate extern/nasm declaration.\n");
-            return res;
-        }
 
         EXPLAIN(res, indent, "Extern daclaration.\n");
 
@@ -151,6 +158,12 @@ static cb_t gen_extern_decl(int                                     indent,
         cb_add_back(&res, indent, line);
         free(line);
 
+        if (scope_has(&global_scope, node->name->name)) {
+            log_debug(" - symbol already in the global scope.\n");
+            context_msg(&node->frag, "Note: dublicate extern/nasm declaration.\n");
+            return res;
+        }
+
         struct location_t loc;
         loc_init_symbol(&loc, node->name->name, 0);
         log_debug(" - adding location to global scope.\n");
@@ -159,6 +172,7 @@ static cb_t gen_extern_decl(int                                     indent,
         return res;
     } else if (strcmp(node->kw->name, "nasm") == 0) {
         log_debug("Generating nasm declaration\n");
+
         if (scope_has(&global_scope, node->name->name)) {
             log_debug(" - symbol already in the global scope.\n");
             context_msg(&node->frag, "Note: dublicate extern/nasm declaration.\n");
