@@ -10,7 +10,7 @@
 
 static struct option const long_opts[] = {{"help", 0, NULL, 'h'}};
 
-static const char *const short_opts = "-hoOvpPlc";  // fix -o
+static const char *const short_opts = "-hoOvpPlce";  // fix -o
 
 static void print_help() {
     // clang-format off
@@ -29,6 +29,7 @@ static void print_help() {
             "    -l                print lexemes\n"
             ""
             "    -c                add explanatory comments to the generated nasm.\n"
+            "    -e                messages print location in the source code.\n"
 	);
     // clang-format on
 }
@@ -36,6 +37,7 @@ static void print_help() {
 int print_lexemes;
 
 int add_explanatory_comments;
+int messages_print_location;
 
 int main(int argc, char **argv) {
     char  short_option;
@@ -75,6 +77,9 @@ int main(int argc, char **argv) {
             continue;
         case 'c':
             add_explanatory_comments = 1;
+            continue;
+        case 'e':
+            messages_print_location = 1;
             continue;
         case '?':
             if (optopt) {

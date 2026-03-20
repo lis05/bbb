@@ -2,8 +2,10 @@
 
 #include "stdarg.h"
 
+extern int messages_print_location;
+
 // for now, only the first line is displayed...
-void context_msg(const tfrag_t *frag, const char *format, ...) {
+void __bbb_context_msg(const tfrag_t *frag, const char *format, ...) {
     FILE *fd = NULL;
     if (frag->filename == NULL) {
         log_error("Text fragment missing filename...\n");
@@ -83,6 +85,6 @@ msg_print:
     vprintf(format, args);
     va_end(args);
 
-    printf("\n\n");
+    printf("\n");
 }
 

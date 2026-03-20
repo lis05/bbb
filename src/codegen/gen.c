@@ -1,6 +1,7 @@
 #include "gen.h"
 
 #include "../parser/error.h"
+#include "layout.h"
 #include "scope.h"
 #include "settings.h"
 #include "util.h"
@@ -12,11 +13,20 @@
         }                                                    \
     } while (0)
 
+#define EXPLAIN_NL(cbref)                \
+    do {                                 \
+        if (add_explanatory_comments) {  \
+            cb_add_back(&(cbref), 0, "\n"); \
+        }                                \
+    } while (0)
+
 static cb_t gen_program(int indent, const struct program_node_t *node);
 static cb_t gen_global_variable_decl(
     int indent, const struct global_variable_declaration_node_t *node);
 static cb_t gen_extern_decl(int                                     indent,
                             const struct extern_declaration_node_t *node);
+static cb_t gen_layout_decl(int                                     indent,
+                            const struct layout_declaration_node_t *node);
 
 struct scope_t global_scope;
 
@@ -63,7 +73,11 @@ static cb_t gen_program(int indent, const struct program_node_t *node) {
         }
         cb_glue_back(&res, &other);
     } else if (node->layout_decl != NULL) {
-        // todo
+        cb_t other = gen_layout_decl(indent, node->layout_decl);
+        if (!cb_is_valid(&other)) {
+            return other;
+        }
+        cb_glue_back(&res, &other);
     } else if (node->ext_decl != NULL) {
         cb_t other = gen_extern_decl(indent, node->ext_decl);
         if (!cb_is_valid(&other)) {
@@ -162,7 +176,7 @@ static cb_t gen_extern_decl(int                                     indent,
 
         if (scope_has(&global_scope, node->name->name)) {
             log_debug(" - symbol already in the global scope.\n");
-            context_msg(&node->frag,
+            context_msg(&node->name->frag,
                         "Note: the compiler is already aware of this symbol.\n");
             return res;
         }
@@ -190,7 +204,91 @@ static cb_t gen_extern_decl(int                                     indent,
 
         return res;
     } else {
-        context_msg(&node->frag, "Unknown declaration (wrong keyword)");
+        context_msg(&node->frag, "Unknown declaration (wrong keyword)\n");
         return cb_invalid();
     }
+}
+
+static cb_t gen_layout_decl(int                                     indent,
+                            const struct layout_declaration_node_t *node) {
+    log_debug("Entered with indent=%d\n", indent);
+    log_assert(node != NULL);
+
+    cb_t res;
+    cb_init(&res);
+
+    if (layouts_has(node->name->name) == 1) {
+        context_msg(&node->name->frag,
+                    "Error: layout with the same name already exists.\n");
+        return cb_invalid();
+    }
+
+    size_t          mem_len;
+    struct layout_t layout = {0};
+
+    // first pass for n and total_size
+    struct layout_declaration_items_node_t *items = node->items;
+
+    while (items != NULL) {
+        if (items->mem_len != NULL && util_get_mem_len(items->mem_len, &mem_len)) {
+            return cb_invalid();
+        }
+        layout.total_size += mem_len;
+        if (strcmp(items->name->name, "_") != 0) {
+            layout.n++;
+        }
+
+        items = items->rest;
+    }
+
+    // second pass
+    log_debug(" - fields without paddings: %zu\n", layout.n);
+    log_debug(" - total size: %zu\n", layout.total_size);
+    items = node->items;
+    layout.fields = (const char **)malloc(sizeof(const char *) * layout.n);
+    log_assert(layout.fields != NULL);
+    layout.offsets = (size_t *)malloc(sizeof(const char *) * layout.total_size);
+    log_assert(layout.offsets != NULL);
+
+    size_t n = layout.n;
+    layout.n = 0;
+    size_t i = 0;
+    size_t offset = 0;
+
+    EXPLAIN(res, indent, "Layout '%s' is defined as:\n", node->name->name);
+    while (items != NULL) {
+        if (items->mem_len != NULL && util_get_mem_len(items->mem_len, &mem_len)) {
+            return cb_invalid();  // cant happen but ok
+        }
+        if (layout_has_field(&layout, items->name->name) == 1) {
+            context_msg(&items->name->frag, "Error: duplicate layout field.\n");
+            free(layout.fields);
+            free(layout.offsets);
+            return cb_invalid();
+        }
+        if (strcmp(items->name->name, "_") != 0) {
+            layout.fields[i] = items->name->name;
+            layout.offsets[i] = offset;
+            EXPLAIN(res, indent + CB_TAB, "field '%s' of size %zub at offset +%zu\n",
+                    layout.fields[i], mem_len, offset);
+            log_debug(" - field '%s' of %zub at +%zu\n", items->name->name, mem_len,
+                      offset);
+            layout.n++;
+        } else {
+            log_debug(" - padding of %zub at +%zu\n", mem_len, offset);
+            EXPLAIN(res, indent + CB_TAB, "padding of size %zub at offset +%zu\n",
+                    mem_len, offset);
+        }
+        offset += mem_len;
+
+        i++;
+        items = items->rest;
+    }
+    EXPLAIN_NL(res);
+    log_assert(layout.n == n);
+
+    layouts_register(node->name->name, layout);
+    log_debug(" - registered the layout.\n");
+
+    return res;
 }
