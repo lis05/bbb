@@ -7,6 +7,7 @@
 #include "parser/ast.h"
 #include "parser/parser.h"
 #include "parser/token.h"
+#include "codegen/settings.h"
 
 static struct option const long_opts[] = {{"help", 0, NULL, 'h'}};
 
@@ -33,11 +34,6 @@ static void print_help() {
 	);
     // clang-format on
 }
-
-int print_lexemes;
-
-int add_explanatory_comments;
-int messages_print_location;
 
 int main(int argc, char **argv) {
     char  short_option;

@@ -17,10 +17,17 @@ SOURCES :=
 OBJECTS :=
 HEADERS :=
 
+TEST_SOURCES :=
+TEST_OBJECTS :=
+TEST_HEADERS :=
+
 # headers first
 HEADERS += $(wildcard src/*.h)
 HEADERS += $(wildcard src/parser/*.h)
 HEADERS += $(wildcard src/common/*.h)
+
+TEST_HEADERS += $(HEADERS)
+TEST_HEADERS += $(wildcard src/tests/*.h)
 
 # src
 SOURCES += $(wildcard src/*.c)
@@ -37,6 +44,10 @@ OBJECTS += $(patsubst src/parser/%.c,obj/parser/%.o,$(wildcard src/parser/*.c))
 # common
 SOURCES += $(wildcard src/common/*.c)
 OBJECTS += $(patsubst src/common/%.c,obj/common/%.o,$(wildcard src/common/*.c))
+
+# tests
+TEST_SOURCES := $(wildcard src/tests/*.c)
+TEST_OBJECTS += $(patsubst src/tests/%.c,obj/tests/%.o,$(wildcard src/tests/*.c))
 
 # wow
 $(BBB): $(OBJECTS) | obj build
@@ -88,7 +99,13 @@ obj/parser:
 obj/common:
 	mkdir -p $@
 
+obj/tests:
+	mkdir -p $@
+
 build:
+	mkdir -p $@
+
+build/tests:
 	mkdir -p $@
 
 .PHONY: fresh
@@ -103,8 +120,24 @@ debug:
 	@echo SOURCES= $(SOURCES)
 	@echo OBJECTS= $(OBJECTS)
 	@echo HEADERS= $(HEADERS)
+	@echo TEST_OBJECTS= $(TEST_OBJECTS)
+	@echo TEST_HEADERS= $(TEST_HEADERS)
 
 .PHONY: pt
 pt: $(BBB)
 	./scripts/pt.sh $(BBB)
 
+# tests?
+TEST_BINS := $(patsubst obj/tests/%.o,build/tests/%,$(TEST_OBJECTS))
+BBB_LIB := $(filter-out obj/main.o,$(OBJECTS))
+
+# tests compilation
+obj/tests/%.o: src/tests/%.c $(HEADERS) $(HEADERS) $(TEST_HEADERS) | obj/tests
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(TEST_BINS): build/tests/% : obj/tests/%.o $(BBB_LIB) | build/tests
+	$(LD) $(LDFLAGS) $(LDLIBS) $^ -o $@
+
+.PHONY: tests
+tests: $(TEST_BINS)
+	@./scripts/tests.sh $^

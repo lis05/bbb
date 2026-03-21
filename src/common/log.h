@@ -5,6 +5,7 @@
 #define LOG_LEVEL_ERROR 1
 #define LOG_LEVEL_INFO 2
 #define LOG_LEVEL_DEBUG 3
+#define LOG_LEVEL_PURE 4
 
 void set_log_level(int level);
 
@@ -24,6 +25,11 @@ void __bbb_log(int level, const char *file, int line, const char *func, char *fo
 #define log_debug(...)                                                             \
     do {                                                                           \
         __bbb_log(LOG_LEVEL_DEBUG, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__); \
+    } while (0)
+
+#define log_pure(...)                                                             \
+    do {                                                                          \
+        __bbb_log(LOG_LEVEL_PURE, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__); \
     } while (0)
 
 #define log_error(...)                                                             \
