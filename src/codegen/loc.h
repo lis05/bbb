@@ -16,6 +16,7 @@ enum location_type {
 
 struct location_t {
     enum location_type type;
+    size_t             mem_len;
     union {
         gpr_reg_t gpr_reg;
 
@@ -44,15 +45,14 @@ struct location_t {
     };
 };
 
-void loc_init_gpr(struct location_t *loc, gpr_reg_t gpr_reg);
-void loc_init_sse(struct location_t *loc, sse_reg_t sse_reg);
-void loc_init_symbol(struct location_t *loc, const char *symbol, int64_t offset);
-void loc_init_stack(struct location_t *loc, int64_t offset);
-void loc_init_scaled(struct location_t *loc, gpr_reg_t base, gpr_reg_t index,
-                     uint8_t scale, int64_t offset);
-void loc_init_int(struct location_t *loc, int64_t lit);
-void loc_init_uint(struct location_t *loc, uint64_t lit);
-void loc_init_double(struct location_t *loc, double lit);
-
-
+void loc_init_gpr(struct location_t *loc, size_t mem_len, gpr_reg_t gpr_reg);
+void loc_init_sse(struct location_t *loc, size_t mem_len, sse_reg_t sse_reg);
+void loc_init_symbol(struct location_t *loc, size_t mem_len, const char *symbol,
+                     int64_t offset);
+void loc_init_stack(struct location_t *loc, size_t mem_len, int64_t offset);
+void loc_init_scaled(struct location_t *loc, size_t mem_len, gpr_reg_t base,
+                     gpr_reg_t index, uint8_t scale, int64_t offset);
+void loc_init_int(struct location_t *loc, size_t mem_len, int64_t lit);
+void loc_init_uint(struct location_t *loc, size_t mem_len, uint64_t lit);
+void loc_init_double(struct location_t *loc, size_t mem_len, double lit);
 

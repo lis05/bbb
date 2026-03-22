@@ -56,15 +56,28 @@ struct vmap_t vmap_args(const struct vmap_args_request_t *req) {
             i, name, mem_len, align, chunk_to_name[chunk1], chunk_to_name[chunk2],
             usable_gpr_ptr, usable_sse_ptr, rbp_offset, how_many_chunks);
 
-        // TODO FIX THIS IS STUPID AND INCORRECT, >=3 GOES AS A POINTER U DUMP FUCK
-        if (how_many_chunks >= 3) {
+        if (chunk1 == VMAP_CHUNK_MEM || chunk2 == VMAP_CHUNK_MEM) {
+            log_pure("=== at least one chuck is MEM, goes on the stack\n");
             goto goes_on_the_stack;
-            log_pure("=== 3 or more chunks, goes on the stack\n");
         }
 
-        if (chunk1 == VMAP_CHUNK_MEM || chunk2 == VMAP_CHUNK_MEM) {
-            log_pure("=== at least one chuck iS MEM, goes on the stack\n");
-            goto goes_on_the_stack;
+        if (how_many_chunks >= 3) {
+            log_pure("=== 3 or more chunks, goes as a pointer\n");
+            if (usable_gpr_ptr < TOTAL_GPR) {
+                log_pure("=== ^^^ goes into %s\n", usable_gpr[usable_gpr_ptr]->qname);
+                struct location_t loc;
+                loc_init_gpr(&loc, mem_len, usable_gpr[usable_gpr_ptr++]);
+                answer.locs_chunk1[i] = loc;
+                log_pure("\n");
+            }
+            else {
+                log_pure("=== ^^^ not enough registers, goes on the stack\n");
+                // sad
+                mem_len = 8;
+                align = 8;
+                goto goes_on_the_stack;
+            }
+            continue;
         }
 
         int    uses_two_chunks = mem_len > 8;
@@ -93,12 +106,12 @@ struct vmap_t vmap_args(const struct vmap_args_request_t *req) {
 
         if (chunk1 == VMAP_CHUNK_INT) {
             struct location_t loc;
-            loc_init_gpr(&loc, usable_gpr[usable_gpr_ptr++]);
+            loc_init_gpr(&loc, MIN(mem_len, 8), usable_gpr[usable_gpr_ptr++]);
             log_pure("=== chunk1 goes into %s\n", loc.gpr_reg->qname);
             answer.locs_chunk1[i] = loc;
-        } else if (chunk2 == VMAP_CHUNK_SSE) {
+        } else if (chunk1 == VMAP_CHUNK_SSE) {
             struct location_t loc;
-            loc_init_sse(&loc, usable_sse[usable_sse_ptr++]);
+            loc_init_sse(&loc, MIN(mem_len, 8), usable_sse[usable_sse_ptr++]);
             log_pure("=== chunk1 goes into %s\n", loc.sse_reg->name);
             answer.locs_chunk1[i] = loc;
         }
@@ -110,12 +123,12 @@ struct vmap_t vmap_args(const struct vmap_args_request_t *req) {
 
         if (chunk2 == VMAP_CHUNK_INT) {
             struct location_t loc;
-            loc_init_gpr(&loc, usable_gpr[usable_gpr_ptr++]);
+            loc_init_gpr(&loc, MIN(mem_len - 8, 8), usable_gpr[usable_gpr_ptr++]);
             log_pure("=== chunk2 goes into %s\n", loc.gpr_reg->qname);
             answer.locs_chunk2[i] = loc;
         } else if (chunk2 == VMAP_CHUNK_SSE) {
             struct location_t loc;
-            loc_init_sse(&loc, usable_sse[usable_sse_ptr++]);
+            loc_init_sse(&loc, MIN(mem_len - 8, 8), usable_sse[usable_sse_ptr++]);
             log_pure("=== chunk2 goes into %s\n", loc.sse_reg->name);
             answer.locs_chunk2[i] = loc;
         }
@@ -123,14 +136,17 @@ struct vmap_t vmap_args(const struct vmap_args_request_t *req) {
         continue;
 
     goes_on_the_stack:
-        size_t aligned_size = req->mem_len[i] + req->mem_len[i] % req->align[i];
-        log_pure("=== decided: goes on the stack: aligned_size=%zu\n", aligned_size);
-        rbp_offset += rbp_offset % req->align[i];
-        log_pure("=== aligned rbp: %zu\n", rbp_offset);
+        size_t aligned_size = (mem_len + 7) & ~7;
+        log_pure("=== decided: goes on the stack: aligned_to8_size=%zu\n", aligned_size);
+        size_t old_rbp_offset = rbp_offset;
+        rbp_offset = (rbp_offset + align - 1) & ~(align - 1);
+        log_pure("=== aligned rbp: %zu -> %zu\n", old_rbp_offset, rbp_offset);
+        old_rbp_offset = rbp_offset;
         rbp_offset += aligned_size;
-        log_pure("=== item location: rbp + %zu\n", rbp_offset);
+        log_pure("=== item location: rbp + %zu\n", old_rbp_offset);
+        log_pure("=== rbp changes from %zu to %zu\n", old_rbp_offset, rbp_offset);
         struct location_t loc;
-        loc_init_stack(&loc, rbp_offset);
+        loc_init_stack(&loc, mem_len, old_rbp_offset);
         answer.locs_chunk1[i] = loc;
         log_pure("\n");
         continue;

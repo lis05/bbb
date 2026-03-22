@@ -143,7 +143,7 @@ static cb_t gen_global_variable_decl(
     }
 
     struct location_t loc;
-    loc_init_symbol(&loc, node->name->name, 0);
+    loc_init_symbol(&loc, mem_len, node->name->name, 0);
     log_debug(" - adding location to global scope.\n");
     scope_add(&global_scope, node->name->name, loc);
 
@@ -182,7 +182,7 @@ static cb_t gen_extern_decl(int                                     indent,
         }
 
         struct location_t loc;
-        loc_init_symbol(&loc, node->name->name, 0);
+        loc_init_symbol(&loc, 8, node->name->name, 0);
         log_debug(" - adding location to global scope.\n");
         scope_add(&global_scope, node->name->name, loc);
 
@@ -198,7 +198,7 @@ static cb_t gen_extern_decl(int                                     indent,
         }
 
         struct location_t loc;
-        loc_init_symbol(&loc, node->name->name, 0);
+        loc_init_symbol(&loc, 8, node->name->name, 0);
         log_debug(" - adding location to global scope.\n");
         scope_add(&global_scope, node->name->name, loc);
 
