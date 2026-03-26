@@ -125,7 +125,7 @@ debug:
 
 .PHONY: pt
 pt: $(BBB)
-	./scripts/pt.sh $(BBB)
+	./scripts/pt.sh $(BBB) $(pttest)
 
 # tests?
 TEST_BINS := $(patsubst obj/tests/%.o,build/tests/%,$(TEST_OBJECTS))

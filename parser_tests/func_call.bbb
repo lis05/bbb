@@ -1,0 +1,6 @@
+a: fn() {
+    call a();
+    call m8 b();
+    call #sse #int c();
+    call m16 #layout c(a, b, c, d: m8, e: #sse #int, f: #layout);
+}

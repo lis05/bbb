@@ -120,6 +120,7 @@ OP_TYPE                                 ({TYPE}|{MEM_LEN_S}|{MEM_LEN_P})
 {OP_TYPE}?"!="{OP_TYPE}?                { PRINT("[NOT_EQUALS: '%s']\n", yytext); RET_NAME(NOT_EQUALS); }
 {OP_TYPE}?"="{OP_TYPE}?                 { PRINT("[ASSIGN: '%s']\n", yytext); RET_NAME(ASSIGN); }
 {OP_TYPE}"?"{OP_TYPE}                   { PRINT("[CAST: '%s']\n", yytext); RET_NAME(CAST); }
+"call"                                  { PRINT("[CALL]\n"); RET_NAME(CALL); }
 {NAME}"."                               { PRINT("[ACCESS: '%s']\n", yytext); RET_NAME(ACCESS); }
 "("                                     { PRINT("[ROB]: (\n"); RET_NAME(ROB); }
 ")"                                     { PRINT("[RCB]: )\n"); RET_NAME(RCB); }

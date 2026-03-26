@@ -4,6 +4,7 @@
 
 struct program_node_t;
 struct global_variable_declaration_node_t;
+struct abi_class_node_t;
 struct layout_declaration_items_node_t;
 struct layout_declaration_node_t;
 struct extern_declaration_node_t;
@@ -39,6 +40,9 @@ struct address_op_node_t;
 struct sizeof_op_node_t;
 struct tetriary_node_t;
 struct suffix_op_node_t;
+struct function_call_op_arg_node_t;
+struct function_call_op_args_node_t;
+struct function_call_op_node_t;
 struct dereference_op_node_t;
 struct layout_access_op_node_t;
 struct secondary_node_t;
@@ -63,6 +67,13 @@ struct global_variable_declaration_node_t {
     struct name_node_t *vis;
     struct name_node_t *mem_len;
     struct name_node_t *align;
+};
+
+struct abi_class_node_t {
+    tfrag_t             frag;
+    struct name_node_t *chunk1;
+    struct name_node_t *chunk2;
+    struct name_node_t *layout;
 };
 
 struct layout_declaration_items_node_t {
@@ -92,12 +103,12 @@ struct extern_declaration_node_t {
 };
 
 struct function_declaration_arg_node_t {
-    tfrag_t             frag;
-    struct name_node_t *name;
-    struct name_node_t *colon;
-    struct name_node_t *mem_len;
-    struct name_node_t *align;
-    struct name_node_t *abi_class;
+    tfrag_t                  frag;
+    struct name_node_t      *name;
+    struct name_node_t      *colon;
+    struct name_node_t      *mem_len;
+    struct name_node_t      *align;
+    struct abi_class_node_t *abi_class;
 };
 
 struct function_declaration_args_node_t {
@@ -118,7 +129,7 @@ struct function_declaration_node_t {
     struct name_node_t                      *closed_brace;
     struct name_node_t                      *arrow;
     struct name_node_t                      *mem_len;
-    struct name_node_t                      *abi_class;
+    struct abi_class_node_t                 *abi_class;
     struct body_node_t                      *body;
 };
 
@@ -345,6 +356,33 @@ struct suffix_op_node_t {
     struct name_node_t      *op;
 };
 
+struct function_call_op_arg_node_t {
+    tfrag_t                   frag;
+    struct expression_node_t *arg;
+    struct name_node_t       *colon;
+    struct name_node_t       *mem_len;
+    struct name_node_t       *align;
+    struct abi_class_node_t  *abi_class;
+};
+
+struct function_call_op_args_node_t {
+    tfrag_t                              frag;
+    struct function_call_op_args_node_t *rest;
+    struct name_node_t                  *comma;
+    struct function_call_op_arg_node_t  *arg;
+};
+
+struct function_call_op_node_t {
+    tfrag_t                              frag;
+    struct name_node_t                  *kw;
+    struct expression_node_t            *fn;
+    struct name_node_t                  *mem_len;
+    struct abi_class_node_t             *abi_class;
+    struct name_node_t                  *open_bracket;
+    struct function_call_op_args_node_t *args;
+    struct name_node_t                  *close_bracket;
+};
+
 struct dereference_op_node_t {
     tfrag_t                   frag;
     struct secondary_node_t  *arg;
@@ -363,6 +401,7 @@ struct layout_access_op_node_t {
 struct secondary_node_t {
     tfrag_t                         frag;
     struct suffix_op_node_t        *suffix;
+    struct function_call_op_node_t *fn_call;
     struct dereference_op_node_t   *deref;
     struct layout_access_op_node_t *layout_access;
     struct primary_node_t          *primary;

@@ -4,8 +4,14 @@ res=""
 rc=0
 
 echo "bbb binary: $1"
+echo "$ 2: $2"
 
-for file in $(ls parser_tests); do
+tests="$(ls parser_tests)"
+if [ ! -z "$2" ]; then
+    tests="$2"
+fi
+
+for file in $tests; do
     echo "================================================"
     echo "==========" $file "=========="
     ./$1 -vvv -o res.asm -p parser_tests/$file

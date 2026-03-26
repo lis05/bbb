@@ -194,88 +194,92 @@ enum yysymbol_kind_t
   YYSYMBOL_AVOID = 30,                     /* AVOID  */
   YYSYMBOL_ALIAS = 31,                     /* ALIAS  */
   YYSYMBOL_REG = 32,                       /* REG  */
-  YYSYMBOL_LOGICAL_OR = 33,                /* LOGICAL_OR  */
-  YYSYMBOL_LOGICAL_AND = 34,               /* LOGICAL_AND  */
-  YYSYMBOL_ASSIGN = 35,                    /* ASSIGN  */
-  YYSYMBOL_INCREMENT = 36,                 /* INCREMENT  */
-  YYSYMBOL_DECREMENT = 37,                 /* DECREMENT  */
-  YYSYMBOL_SIZEOF = 38,                    /* SIZEOF  */
-  YYSYMBOL_PLUS = 39,                      /* PLUS  */
-  YYSYMBOL_MINUS = 40,                     /* MINUS  */
-  YYSYMBOL_MULTIPLY = 41,                  /* MULTIPLY  */
-  YYSYMBOL_DIVIDE = 42,                    /* DIVIDE  */
-  YYSYMBOL_REMAINDER = 43,                 /* REMAINDER  */
-  YYSYMBOL_BITWISE_AND = 44,               /* BITWISE_AND  */
-  YYSYMBOL_BITWISE_OR = 45,                /* BITWISE_OR  */
-  YYSYMBOL_BITWISE_XOR = 46,               /* BITWISE_XOR  */
-  YYSYMBOL_LOGICAL_NOT = 47,               /* LOGICAL_NOT  */
-  YYSYMBOL_BITWISE_NOT = 48,               /* BITWISE_NOT  */
-  YYSYMBOL_LESS_THAN = 49,                 /* LESS_THAN  */
-  YYSYMBOL_GREATER_THAN = 50,              /* GREATER_THAN  */
-  YYSYMBOL_LESS_EQUAL = 51,                /* LESS_EQUAL  */
-  YYSYMBOL_GREATER_EQUAL = 52,             /* GREATER_EQUAL  */
-  YYSYMBOL_EQUALS = 53,                    /* EQUALS  */
-  YYSYMBOL_NOT_EQUALS = 54,                /* NOT_EQUALS  */
-  YYSYMBOL_CAST = 55,                      /* CAST  */
-  YYSYMBOL_ACCESS = 56,                    /* ACCESS  */
-  YYSYMBOL_ROB = 57,                       /* "("  */
-  YYSYMBOL_RCB = 58,                       /* ")"  */
-  YYSYMBOL_SOB = 59,                       /* "["  */
-  YYSYMBOL_SCB = 60,                       /* "]"  */
-  YYSYMBOL_COB = 61,                       /* "{"  */
-  YYSYMBOL_CCB = 62,                       /* "}"  */
-  YYSYMBOL_ARROW = 63,                     /* ARROW  */
-  YYSYMBOL_COLON = 64,                     /* ":"  */
-  YYSYMBOL_SEMICOLON = 65,                 /* ";"  */
-  YYSYMBOL_COMMA = 66,                     /* ","  */
-  YYSYMBOL_YYACCEPT = 67,                  /* $accept  */
-  YYSYMBOL_program = 68,                   /* program  */
-  YYSYMBOL_visibility = 69,                /* visibility  */
-  YYSYMBOL_memory_length = 70,             /* memory_length  */
-  YYSYMBOL_alignment = 71,                 /* alignment  */
-  YYSYMBOL_global_variable_declaration = 72, /* global_variable_declaration  */
-  YYSYMBOL_chunk_class = 73,               /* chunk_class  */
-  YYSYMBOL_abi_class = 74,                 /* abi_class  */
-  YYSYMBOL_layout_declaration_items = 75,  /* layout_declaration_items  */
-  YYSYMBOL_layout_declaration = 76,        /* layout_declaration  */
-  YYSYMBOL_extern_declaration = 77,        /* extern_declaration  */
-  YYSYMBOL_function_declaration_arg = 78,  /* function_declaration_arg  */
-  YYSYMBOL_function_declaration_args = 79, /* function_declaration_args  */
-  YYSYMBOL_function_declaration = 80,      /* function_declaration  */
-  YYSYMBOL_body_list = 81,                 /* body_list  */
-  YYSYMBOL_body = 82,                      /* body  */
-  YYSYMBOL_statement = 83,                 /* statement  */
-  YYSYMBOL_variable_declaration = 84,      /* variable_declaration  */
-  YYSYMBOL_register_alias = 85,            /* register_alias  */
-  YYSYMBOL_if_statement = 86,              /* if_statement  */
-  YYSYMBOL_label_declaration = 87,         /* label_declaration  */
-  YYSYMBOL_goto_statement = 88,            /* goto_statement  */
-  YYSYMBOL_loop_statement = 89,            /* loop_statement  */
-  YYSYMBOL_break_statement = 90,           /* break_statement  */
-  YYSYMBOL_ret_statement = 91,             /* ret_statement  */
-  YYSYMBOL_avoid_block_regs = 92,          /* avoid_block_regs  */
-  YYSYMBOL_avoid_block = 93,               /* avoid_block  */
-  YYSYMBOL_expression = 94,                /* expression  */
-  YYSYMBOL_logical_or = 95,                /* logical_or  */
-  YYSYMBOL_logical_and = 96,               /* logical_and  */
-  YYSYMBOL_bitwise_or = 97,                /* bitwise_or  */
-  YYSYMBOL_bitwise_xor = 98,               /* bitwise_xor  */
-  YYSYMBOL_bitwise_and = 99,               /* bitwise_and  */
-  YYSYMBOL_equality = 100,                 /* equality  */
-  YYSYMBOL_relational = 101,               /* relational  */
-  YYSYMBOL_additive = 102,                 /* additive  */
-  YYSYMBOL_multiplicative = 103,           /* multiplicative  */
-  YYSYMBOL_prefix_op = 104,                /* prefix_op  */
-  YYSYMBOL_cast_op = 105,                  /* cast_op  */
-  YYSYMBOL_address_op = 106,               /* address_op  */
-  YYSYMBOL_sizeof_op = 107,                /* sizeof_op  */
-  YYSYMBOL_tetriary = 108,                 /* tetriary  */
-  YYSYMBOL_suffix_op = 109,                /* suffix_op  */
-  YYSYMBOL_dereference_op = 110,           /* dereference_op  */
-  YYSYMBOL_layout_access_op = 111,         /* layout_access_op  */
-  YYSYMBOL_secondary = 112,                /* secondary  */
-  YYSYMBOL_primary = 113,                  /* primary  */
-  YYSYMBOL_literal = 114                   /* literal  */
+  YYSYMBOL_CALL = 33,                      /* CALL  */
+  YYSYMBOL_LOGICAL_OR = 34,                /* LOGICAL_OR  */
+  YYSYMBOL_LOGICAL_AND = 35,               /* LOGICAL_AND  */
+  YYSYMBOL_ASSIGN = 36,                    /* ASSIGN  */
+  YYSYMBOL_INCREMENT = 37,                 /* INCREMENT  */
+  YYSYMBOL_DECREMENT = 38,                 /* DECREMENT  */
+  YYSYMBOL_SIZEOF = 39,                    /* SIZEOF  */
+  YYSYMBOL_PLUS = 40,                      /* PLUS  */
+  YYSYMBOL_MINUS = 41,                     /* MINUS  */
+  YYSYMBOL_MULTIPLY = 42,                  /* MULTIPLY  */
+  YYSYMBOL_DIVIDE = 43,                    /* DIVIDE  */
+  YYSYMBOL_REMAINDER = 44,                 /* REMAINDER  */
+  YYSYMBOL_BITWISE_AND = 45,               /* BITWISE_AND  */
+  YYSYMBOL_BITWISE_OR = 46,                /* BITWISE_OR  */
+  YYSYMBOL_BITWISE_XOR = 47,               /* BITWISE_XOR  */
+  YYSYMBOL_LOGICAL_NOT = 48,               /* LOGICAL_NOT  */
+  YYSYMBOL_BITWISE_NOT = 49,               /* BITWISE_NOT  */
+  YYSYMBOL_LESS_THAN = 50,                 /* LESS_THAN  */
+  YYSYMBOL_GREATER_THAN = 51,              /* GREATER_THAN  */
+  YYSYMBOL_LESS_EQUAL = 52,                /* LESS_EQUAL  */
+  YYSYMBOL_GREATER_EQUAL = 53,             /* GREATER_EQUAL  */
+  YYSYMBOL_EQUALS = 54,                    /* EQUALS  */
+  YYSYMBOL_NOT_EQUALS = 55,                /* NOT_EQUALS  */
+  YYSYMBOL_CAST = 56,                      /* CAST  */
+  YYSYMBOL_ACCESS = 57,                    /* ACCESS  */
+  YYSYMBOL_ROB = 58,                       /* "("  */
+  YYSYMBOL_RCB = 59,                       /* ")"  */
+  YYSYMBOL_SOB = 60,                       /* "["  */
+  YYSYMBOL_SCB = 61,                       /* "]"  */
+  YYSYMBOL_COB = 62,                       /* "{"  */
+  YYSYMBOL_CCB = 63,                       /* "}"  */
+  YYSYMBOL_ARROW = 64,                     /* ARROW  */
+  YYSYMBOL_COLON = 65,                     /* ":"  */
+  YYSYMBOL_SEMICOLON = 66,                 /* ";"  */
+  YYSYMBOL_COMMA = 67,                     /* ","  */
+  YYSYMBOL_YYACCEPT = 68,                  /* $accept  */
+  YYSYMBOL_program = 69,                   /* program  */
+  YYSYMBOL_visibility = 70,                /* visibility  */
+  YYSYMBOL_memory_length = 71,             /* memory_length  */
+  YYSYMBOL_alignment = 72,                 /* alignment  */
+  YYSYMBOL_global_variable_declaration = 73, /* global_variable_declaration  */
+  YYSYMBOL_chunk_class = 74,               /* chunk_class  */
+  YYSYMBOL_abi_class = 75,                 /* abi_class  */
+  YYSYMBOL_layout_declaration_items = 76,  /* layout_declaration_items  */
+  YYSYMBOL_layout_declaration = 77,        /* layout_declaration  */
+  YYSYMBOL_extern_declaration = 78,        /* extern_declaration  */
+  YYSYMBOL_function_declaration_arg = 79,  /* function_declaration_arg  */
+  YYSYMBOL_function_declaration_args = 80, /* function_declaration_args  */
+  YYSYMBOL_function_declaration = 81,      /* function_declaration  */
+  YYSYMBOL_body_list = 82,                 /* body_list  */
+  YYSYMBOL_body = 83,                      /* body  */
+  YYSYMBOL_statement = 84,                 /* statement  */
+  YYSYMBOL_variable_declaration = 85,      /* variable_declaration  */
+  YYSYMBOL_register_alias = 86,            /* register_alias  */
+  YYSYMBOL_if_statement = 87,              /* if_statement  */
+  YYSYMBOL_label_declaration = 88,         /* label_declaration  */
+  YYSYMBOL_goto_statement = 89,            /* goto_statement  */
+  YYSYMBOL_loop_statement = 90,            /* loop_statement  */
+  YYSYMBOL_break_statement = 91,           /* break_statement  */
+  YYSYMBOL_ret_statement = 92,             /* ret_statement  */
+  YYSYMBOL_avoid_block_regs = 93,          /* avoid_block_regs  */
+  YYSYMBOL_avoid_block = 94,               /* avoid_block  */
+  YYSYMBOL_expression = 95,                /* expression  */
+  YYSYMBOL_logical_or = 96,                /* logical_or  */
+  YYSYMBOL_logical_and = 97,               /* logical_and  */
+  YYSYMBOL_bitwise_or = 98,                /* bitwise_or  */
+  YYSYMBOL_bitwise_xor = 99,               /* bitwise_xor  */
+  YYSYMBOL_bitwise_and = 100,              /* bitwise_and  */
+  YYSYMBOL_equality = 101,                 /* equality  */
+  YYSYMBOL_relational = 102,               /* relational  */
+  YYSYMBOL_additive = 103,                 /* additive  */
+  YYSYMBOL_multiplicative = 104,           /* multiplicative  */
+  YYSYMBOL_prefix_op = 105,                /* prefix_op  */
+  YYSYMBOL_cast_op = 106,                  /* cast_op  */
+  YYSYMBOL_address_op = 107,               /* address_op  */
+  YYSYMBOL_sizeof_op = 108,                /* sizeof_op  */
+  YYSYMBOL_tetriary = 109,                 /* tetriary  */
+  YYSYMBOL_suffix_op = 110,                /* suffix_op  */
+  YYSYMBOL_function_call_op_arg = 111,     /* function_call_op_arg  */
+  YYSYMBOL_function_call_op_args = 112,    /* function_call_op_args  */
+  YYSYMBOL_function_call_op = 113,         /* function_call_op  */
+  YYSYMBOL_dereference_op = 114,           /* dereference_op  */
+  YYSYMBOL_layout_access_op = 115,         /* layout_access_op  */
+  YYSYMBOL_secondary = 116,                /* secondary  */
+  YYSYMBOL_primary = 117,                  /* primary  */
+  YYSYMBOL_literal = 118                   /* literal  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -603,19 +607,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   250
+#define YYLAST   339
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  67
+#define YYNTOKENS  68
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  48
+#define YYNNTS  51
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  134
+#define YYNRULES  151
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  218
+#define YYNSTATES  252
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   321
+#define YYMAXUTOK   322
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -661,27 +665,29 @@ static const yytype_int8 yytranslate[] =
       35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
       45,    46,    47,    48,    49,    50,    51,    52,    53,    54,
       55,    56,    57,    58,    59,    60,    61,    62,    63,    64,
-      65,    66
+      65,    66,    67
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   236,   236,   243,   250,   257,   264,   271,   278,   282,
-     283,   287,   291,   298,   306,   314,   326,   327,   328,   332,
-     333,   337,   345,   355,   365,   376,   391,   397,   406,   411,
-     418,   425,   432,   440,   448,   456,   468,   475,   480,   486,
-     497,   510,   523,   537,   549,   563,   577,   596,   602,   608,
-     618,   623,   628,   633,   638,   643,   648,   653,   658,   663,
-     668,   674,   682,   689,   700,   708,   719,   726,   738,   747,
-     757,   766,   772,   781,   791,   798,   805,   810,   818,   828,
-     835,   843,   850,   858,   865,   873,   880,   888,   895,   903,
-     910,   918,   925,   932,   940,   947,   954,   961,   968,   976,
-     983,   990,   998,  1005,  1012,  1019,  1027,  1033,  1039,  1045,
-    1054,  1063,  1071,  1081,  1090,  1095,  1100,  1105,  1110,  1118,
-    1124,  1133,  1141,  1151,  1161,  1166,  1171,  1176,  1184,  1191,
-    1199,  1200,  1201,  1202,  1203
+       0,   244,   244,   251,   258,   265,   272,   279,   286,   290,
+     291,   295,   299,   306,   314,   322,   334,   335,   336,   340,
+     345,   351,   359,   367,   377,   387,   398,   413,   419,   428,
+     433,   440,   447,   454,   462,   470,   478,   490,   497,   502,
+     508,   519,   532,   545,   559,   571,   585,   599,   618,   624,
+     630,   640,   645,   650,   655,   660,   665,   670,   675,   680,
+     685,   690,   696,   704,   711,   722,   730,   741,   748,   760,
+     769,   779,   788,   794,   803,   813,   820,   827,   832,   840,
+     850,   857,   865,   872,   880,   887,   895,   902,   910,   917,
+     925,   932,   940,   947,   954,   962,   969,   976,   983,   990,
+     998,  1005,  1012,  1020,  1027,  1034,  1041,  1049,  1055,  1061,
+    1067,  1076,  1085,  1093,  1103,  1112,  1117,  1122,  1127,  1132,
+    1140,  1146,  1155,  1160,  1167,  1174,  1181,  1189,  1197,  1205,
+    1217,  1224,  1229,  1235,  1244,  1254,  1264,  1277,  1285,  1295,
+    1305,  1310,  1315,  1320,  1325,  1333,  1340,  1348,  1349,  1350,
+    1351,  1352
 };
 #endif
 
@@ -703,7 +709,7 @@ static const char *const yytname[] =
   "CHUNK_CLASS_INT", "CHUNK_CLASS_LAYOUT", "GP_REGISTER", "REGISTER",
   "GLOBAL", "LAYOUT", "EXTERN", "NASM", "FN", "NASM_BLOCK", "IF", "ELSE",
   "GOTO", "LOOP", "BREAK", "CONTINUE", "RET", "AVOID", "ALIAS", "REG",
-  "LOGICAL_OR", "LOGICAL_AND", "ASSIGN", "INCREMENT", "DECREMENT",
+  "CALL", "LOGICAL_OR", "LOGICAL_AND", "ASSIGN", "INCREMENT", "DECREMENT",
   "SIZEOF", "PLUS", "MINUS", "MULTIPLY", "DIVIDE", "REMAINDER",
   "BITWISE_AND", "BITWISE_OR", "BITWISE_XOR", "LOGICAL_NOT", "BITWISE_NOT",
   "LESS_THAN", "GREATER_THAN", "LESS_EQUAL", "GREATER_EQUAL", "EQUALS",
@@ -720,7 +726,8 @@ static const char *const yytname[] =
   "expression", "logical_or", "logical_and", "bitwise_or", "bitwise_xor",
   "bitwise_and", "equality", "relational", "additive", "multiplicative",
   "prefix_op", "cast_op", "address_op", "sizeof_op", "tetriary",
-  "suffix_op", "dereference_op", "layout_access_op", "secondary",
+  "suffix_op", "function_call_op_arg", "function_call_op_args",
+  "function_call_op", "dereference_op", "layout_access_op", "secondary",
   "primary", "literal", YY_NULLPTR
 };
 
@@ -731,7 +738,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-84)
+#define YYPACT_NINF (-163)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -745,28 +752,32 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-     -84,    56,   -84,   -48,    24,    27,   -84,   -84,   -84,   -84,
-     -84,   120,   -84,   -84,   -84,   -84,   -84,    37,   -24,    60,
-      47,   -84,   -84,   -84,    39,    40,    74,    23,    47,   -84,
-     -84,    43,    -2,    39,    53,    86,   -84,   -30,    74,   -84,
-     109,   111,   -84,    10,    39,   160,    30,    74,    -4,   -84,
-     109,   -84,    11,   -84,   184,   122,   -84,   -84,   -84,   135,
-     -84,   -84,    34,   -84,   -84,   122,   -84,   -84,    83,    33,
-      78,   135,   -84,   -84,   113,   -84,   -84,   -84,   -84,   -84,
-     180,   161,    78,   125,   134,   180,    49,   180,   180,   201,
-     180,   180,   180,   119,   -84,   -84,   -84,   -84,   -84,   -84,
-     -84,   -84,   -84,   -84,   -84,   -84,   146,   130,   179,   178,
-     183,   186,   100,   156,   149,   139,   -84,   -84,   -84,   -84,
-     169,   -84,   -84,   -84,     2,   -84,   -84,    78,   -84,   -84,
-      33,    78,    32,   -84,    78,   166,   -84,   -84,   -84,   167,
-     -84,   -84,    66,   169,   169,   -84,   169,   169,   175,   180,
-     174,   -84,   180,   180,   180,   180,   180,   180,   180,   180,
-     180,   180,   180,   180,   180,   180,   180,   180,   180,   -84,
-     -84,   -84,   232,   155,   -84,    78,   -84,   -84,     0,    47,
-     212,   -84,   -84,   185,   -84,   -84,   169,   180,   179,   -84,
-     178,   183,   186,   100,   156,   156,   149,   149,   149,   149,
-     139,   139,   169,   169,   169,   -84,   -84,   181,   -84,   -84,
-     -84,   -84,    78,   -84,   -84,   169,   -84,   -84
+    -163,   114,  -163,   -48,     9,    40,  -163,  -163,  -163,  -163,
+    -163,   133,  -163,  -163,  -163,  -163,  -163,    39,   -12,    99,
+      61,  -163,  -163,  -163,    84,    91,    94,    -9,    61,  -163,
+    -163,    57,     0,    84,    78,    60,  -163,   -35,    94,  -163,
+      83,   100,  -163,     3,    84,   234,    73,    94,    19,  -163,
+      83,  -163,     4,  -163,   171,    48,   144,  -163,  -163,   280,
+    -163,  -163,   111,  -163,  -163,    48,  -163,  -163,  -163,   141,
+      68,    81,   280,  -163,  -163,   107,  -163,  -163,  -163,  -163,
+    -163,   279,   146,    81,    93,   134,   279,   103,   216,   279,
+     279,   212,   279,   279,   279,    51,  -163,  -163,  -163,  -163,
+    -163,  -163,  -163,  -163,  -163,  -163,  -163,  -163,   160,   152,
+     182,   190,   191,   192,   122,   161,   151,   153,  -163,  -163,
+    -163,  -163,   196,  -163,  -163,  -163,  -163,    38,  -163,  -163,
+      81,  -163,  -163,    68,    81,     5,  -163,    81,   195,  -163,
+    -163,  -163,   200,  -163,  -163,   -28,   266,   279,   209,   196,
+     196,  -163,   196,   196,   222,   279,   207,  -163,   279,   279,
+     279,   279,   279,   279,   279,   279,   279,   279,   279,   279,
+     279,   279,   279,   279,   279,  -163,  -163,  -163,   272,   202,
+    -163,    81,  -163,  -163,    -7,    61,   263,  -163,  -163,   187,
+    -163,   279,   232,   237,   279,  -163,   196,   279,   182,  -163,
+     190,   191,   192,   122,   161,   161,   151,   151,   151,   151,
+     153,   153,   196,   196,   196,  -163,  -163,   235,  -163,  -163,
+    -163,  -163,    81,  -163,  -163,   239,   279,   279,   233,  -163,
+      46,   196,  -163,  -163,   279,    56,    65,   234,  -163,   279,
+      72,  -163,  -163,   171,    48,  -163,  -163,  -163,    48,  -163,
+    -163,  -163
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -775,47 +786,53 @@ static const yytype_int16 yypact[] =
 static const yytype_uint8 yydefact[] =
 {
        7,     0,     1,     0,     0,     0,     6,     2,     3,     4,
-       5,     0,    26,    27,     9,    10,     8,     0,     0,     0,
-      12,    16,    17,    18,     0,     0,    38,     0,    13,    11,
-      14,     0,     0,     0,     0,    28,    37,     0,    38,    15,
-       0,     0,    23,     0,     0,     0,     0,     0,     0,    22,
-       0,    24,     0,    20,    29,    30,    19,    31,    48,     0,
-      39,    36,     0,    21,    25,    32,    33,    34,     0,     0,
-       0,     0,    43,    35,   134,   130,   131,   132,   133,    61,
+       5,     0,    27,    28,     9,    10,     8,     0,     0,     0,
+      12,    16,    17,    18,     0,     0,    39,     0,    13,    11,
+      14,     0,     0,     0,     0,    29,    38,     0,    39,    15,
+       0,     0,    24,     0,     0,     0,     0,     0,     0,    23,
+       0,    25,     0,    21,    30,    31,    19,    32,    49,     0,
+      40,    37,     0,    22,    26,    33,    34,    35,    20,     0,
+       0,     0,     0,    44,    36,   151,   147,   148,   149,   150,
+      62,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,    50,    53,    48,    51,
+      52,    54,    55,    56,    57,    58,    59,    60,     0,    81,
+      83,    85,    87,    89,    91,    94,    99,   102,   115,   116,
+     117,   118,   106,   140,   141,   142,   143,   119,   144,   146,
+       0,    41,    42,     0,     0,    69,   151,     0,     0,    71,
+      72,    73,     0,    78,    77,     0,     0,     0,     0,   107,
+     108,   114,   109,   110,     0,     0,     0,    61,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,    49,    52,    47,    50,    51,    53,
-      54,    55,    56,    57,    58,    59,     0,    80,    82,    84,
-      86,    88,    90,    93,    98,   101,   114,   115,   116,   117,
-     105,   124,   125,   126,   118,   127,   129,     0,    40,    41,
-       0,     0,    68,   134,     0,     0,    70,    71,    72,     0,
-      77,    76,     0,   106,   107,   113,   108,   109,     0,     0,
-       0,    60,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,   110,
-     119,   120,     0,     0,    42,     0,    44,    45,     0,    62,
-      66,    69,    73,     0,    78,   128,   112,     0,    81,    79,
-      83,    85,    87,    89,    91,    92,    94,    95,    96,    97,
-      99,   100,   102,   103,   104,   123,   122,     0,    46,    65,
-      64,    63,     0,    75,    74,   111,   121,    67
+       0,     0,     0,     0,     0,   111,   120,   121,     0,     0,
+      43,     0,    45,    46,     0,    63,    67,    70,    74,     0,
+      79,     0,     0,     0,   132,   145,   113,     0,    82,    80,
+      84,    86,    88,    90,    92,    93,    95,    96,    97,    98,
+     100,   101,   103,   104,   105,   139,   138,     0,    47,    66,
+      65,    64,     0,    76,    75,     0,   132,   132,   122,   131,
+       0,   112,   137,    68,   132,     0,     0,     0,   133,     0,
+       0,   134,   135,   123,   124,   125,   130,   136,   126,   127,
+     128,   129
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-     -84,   -84,   -84,   -16,   -28,   -84,    75,   -34,   -21,   -84,
-     170,   193,   204,   -84,   -84,   -60,   -84,   -84,   -84,   -84,
-     -84,   -84,   -84,   -84,   -84,   -84,   -84,   -74,   -84,    91,
-      90,    92,    89,    93,    51,    59,    61,   -84,   -84,   -84,
-     -84,   -83,   -84,   -84,   -84,   -84,   -84,   -84
+    -163,  -163,  -163,   -19,   -27,  -163,    12,   -50,   -14,  -163,
+     231,   254,   264,  -163,  -163,   -60,  -163,  -163,  -163,  -163,
+    -163,  -163,  -163,  -163,  -163,  -163,  -163,   -53,  -163,   148,
+     147,   149,   157,   145,    67,    90,    63,  -163,  -163,  -163,
+    -163,   -45,  -163,    70,  -162,  -163,  -163,  -163,  -163,  -163,
+    -163
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_uint8 yydefgoto[] =
 {
        0,     1,    19,    20,    30,     7,    56,    57,    32,     8,
-       9,    36,    37,    10,    68,    60,    96,    97,    98,    99,
-     100,   101,   102,   103,   104,   142,   105,   106,   107,   108,
-     109,   110,   111,   112,   113,   114,   115,   116,   117,   118,
-     119,   120,   121,   122,   123,   124,   125,   126
+       9,    36,    37,    10,    69,    60,    98,    99,   100,   101,
+     102,   103,   104,   105,   106,   145,   107,   228,   109,   110,
+     111,   112,   113,   114,   115,   116,   117,   118,   119,   120,
+     121,   122,   123,   229,   230,   124,   125,   126,   127,   128,
+     129
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -823,109 +840,131 @@ static const yytype_uint8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      39,    41,    72,    28,   143,   144,   134,   146,   147,   128,
-     129,   139,    43,    41,    41,   209,    11,    55,   148,   150,
-      66,    67,   136,    52,    49,    70,    65,    12,    46,    54,
-      13,    73,   210,    26,    63,   127,    47,   131,   170,   171,
-      14,    15,    31,    69,    21,    22,    23,    53,    21,    22,
-      23,    21,    22,    23,    62,   130,     2,    29,   172,     3,
-      42,   173,    47,   178,   140,   141,   186,   174,    14,    15,
-     176,   177,    51,    64,   180,     4,     5,    35,     6,   189,
-      38,    27,   184,   202,   203,   204,    74,    75,    76,    77,
-      78,    58,    25,    59,    58,    58,   175,    71,    24,   207,
-      34,    33,     4,     5,   215,    79,    80,    40,    81,    82,
-      83,    84,    85,    86,    44,   208,   179,    14,    15,    87,
-      88,    89,   133,    75,    76,    77,    78,    58,    14,    15,
-      90,    91,   183,    21,    22,    23,    53,    16,    17,    58,
-      92,    18,    93,    14,    15,    94,    21,    22,    23,    53,
-      45,   211,   217,   158,   159,    87,    88,    89,   133,    75,
-      76,    77,    78,   152,   135,   153,    90,    91,    14,    15,
-      29,    21,    22,    23,    53,    50,    92,   132,    93,   149,
-     166,   167,   168,   133,    75,    76,    77,    78,   164,   165,
-     137,    87,    88,    89,    29,    21,    22,    23,    53,   138,
-     213,   214,    90,    91,   145,   160,   161,   162,   163,   194,
-     195,   151,    92,   154,    93,   206,    87,    88,    89,   196,
-     197,   198,   199,   155,   169,   200,   201,    90,    91,   156,
-     157,   181,   182,   185,   187,   205,   212,    92,    95,    93,
-      61,   216,    48,   188,   190,   192,     0,   191,     0,     0,
-     193
+      28,    39,    73,    41,    66,    67,    41,    41,   219,    71,
+     131,   132,    12,    14,    15,    74,   108,    11,    55,    43,
+     130,    49,   134,   139,    46,   220,    54,    65,   137,    25,
+      52,    63,    47,   142,    58,   148,   184,    34,   147,   189,
+      70,   154,   156,    13,   149,   150,    26,   152,   153,    38,
+      21,    22,    23,   133,   136,    76,    77,    78,    79,    21,
+      22,    23,    53,    42,   235,   236,    51,    64,    68,   146,
+     180,    29,   240,   182,   183,   176,   177,   186,    62,    21,
+      22,    23,    53,   181,    88,   190,    47,    31,    89,    90,
+      91,    14,    15,   192,   193,   178,   191,    35,   179,    92,
+      93,    24,    21,    22,    23,   238,   199,    14,    15,    94,
+     196,    95,   155,   239,     2,   241,   185,     3,   143,   144,
+      27,   218,    40,   239,   242,    45,   217,   212,   213,   214,
+      58,   247,   239,     4,     5,    58,     6,    59,   225,   239,
+      44,    14,    15,    58,    75,    76,    77,    78,    79,   138,
+      16,    17,   231,    33,    18,    21,    22,    23,   221,   140,
+       4,     5,   233,    80,    81,    50,    82,    83,    84,    85,
+      86,    87,   135,    58,    88,    72,   164,   165,    89,    90,
+      91,    29,    21,    22,    23,    53,   158,   245,   159,    92,
+      93,   170,   171,   249,   250,   172,   173,   174,   251,    94,
+     141,    95,   223,   224,    96,   136,    76,    77,    78,    79,
+     244,   166,   167,   168,   169,   151,   248,   160,   243,   136,
+      76,    77,    78,    79,    14,    15,   157,    21,    22,    23,
+      53,   204,   205,   210,   211,    88,   161,   163,   162,    89,
+      90,    91,    14,    15,    29,    21,    22,    23,    53,    88,
+      92,    93,   175,    89,    90,    91,   206,   207,   208,   209,
+      94,   187,    95,   216,    92,    93,   188,   194,   197,   136,
+      76,    77,    78,    79,    94,   215,    95,    21,    22,    23,
+      53,   195,   136,    76,    77,    78,    79,   222,    14,    15,
+     226,    21,    22,    23,    53,   227,   232,   234,   237,    88,
+      97,    61,    48,    89,    90,    91,   198,   200,   203,   246,
+     201,     0,    88,     0,    92,    93,    89,    90,    91,   202,
+       0,     0,     0,     0,    94,     0,    95,    92,    93,     0,
+       0,     0,     0,     0,     0,     0,     0,    94,     0,    95
 };
 
 static const yytype_int16 yycheck[] =
 {
-      28,     3,    62,    19,    87,    88,    80,    90,    91,    69,
-      70,    85,    33,     3,     3,    15,    64,    45,    92,    93,
-      54,    55,    82,    44,    40,    59,    54,     3,    58,    45,
-       3,    65,    32,    57,    50,    69,    66,    71,    36,    37,
-       8,     9,     3,    59,    11,    12,    13,    14,    11,    12,
-      13,    11,    12,    13,    58,    71,     0,    10,    56,     3,
-      62,    59,    66,    31,    15,    16,   149,   127,     8,     9,
-     130,   131,    62,    62,   134,    19,    20,     3,    22,   153,
-      57,    21,   142,   166,   167,   168,     3,     4,     5,     6,
-       7,    61,    17,    63,    61,    61,   130,    63,    61,   173,
-      25,    61,    19,    20,   187,    22,    23,    64,    25,    26,
-      27,    28,    29,    30,    61,   175,   132,     8,     9,    36,
-      37,    38,     3,     4,     5,     6,     7,    61,     8,     9,
-      47,    48,    66,    11,    12,    13,    14,    17,    18,    61,
-      57,    21,    59,     8,     9,    62,    11,    12,    13,    14,
-      64,   179,   212,    53,    54,    36,    37,    38,     3,     4,
-       5,     6,     7,    33,     3,    35,    47,    48,     8,     9,
-      10,    11,    12,    13,    14,    64,    57,    64,    59,    60,
-      41,    42,    43,     3,     4,     5,     6,     7,    39,    40,
-      65,    36,    37,    38,    10,    11,    12,    13,    14,    65,
-      15,    16,    47,    48,     3,    49,    50,    51,    52,   158,
-     159,    65,    57,    34,    59,    60,    36,    37,    38,   160,
-     161,   162,   163,    45,    55,   164,   165,    47,    48,    46,
-      44,    65,    65,    58,    60,     3,    24,    57,    68,    59,
-      47,    60,    38,   152,   154,   156,    -1,   155,    -1,    -1,
-     157
+      19,    28,    62,     3,    54,    55,     3,     3,    15,    59,
+      70,    71,     3,     8,     9,    65,    69,    65,    45,    33,
+      70,    40,    72,    83,    59,    32,    45,    54,    81,    17,
+      44,    50,    67,    86,    62,    88,    31,    25,    88,    67,
+      59,    94,    95,     3,    89,    90,    58,    92,    93,    58,
+      11,    12,    13,    72,     3,     4,     5,     6,     7,    11,
+      12,    13,    14,    63,   226,   227,    63,    63,    56,    88,
+     130,    10,   234,   133,   134,    37,    38,   137,    59,    11,
+      12,    13,    14,   133,    33,   145,    67,     3,    37,    38,
+      39,     8,     9,   146,   147,    57,   146,     3,    60,    48,
+      49,    62,    11,    12,    13,    59,   159,     8,     9,    58,
+     155,    60,    61,    67,     0,    59,   135,     3,    15,    16,
+      21,   181,    65,    67,    59,    65,   179,   172,   173,   174,
+      62,    59,    67,    19,    20,    62,    22,    64,   191,    67,
+      62,     8,     9,    62,     3,     4,     5,     6,     7,     3,
+      17,    18,   197,    62,    21,    11,    12,    13,   185,    66,
+      19,    20,   222,    22,    23,    65,    25,    26,    27,    28,
+      29,    30,    65,    62,    33,    64,    54,    55,    37,    38,
+      39,    10,    11,    12,    13,    14,    34,   237,    36,    48,
+      49,    40,    41,   243,   244,    42,    43,    44,   248,    58,
+      66,    60,    15,    16,    63,     3,     4,     5,     6,     7,
+     237,    50,    51,    52,    53,     3,   243,    35,   237,     3,
+       4,     5,     6,     7,     8,     9,    66,    11,    12,    13,
+      14,   164,   165,   170,   171,    33,    46,    45,    47,    37,
+      38,    39,     8,     9,    10,    11,    12,    13,    14,    33,
+      48,    49,    56,    37,    38,    39,   166,   167,   168,   169,
+      58,    66,    60,    61,    48,    49,    66,    58,    61,     3,
+       4,     5,     6,     7,    58,     3,    60,    11,    12,    13,
+      14,    59,     3,     4,     5,     6,     7,    24,     8,     9,
+      58,    11,    12,    13,    14,    58,    61,    58,    65,    33,
+      69,    47,    38,    37,    38,    39,   158,   160,   163,   239,
+     161,    -1,    33,    -1,    48,    49,    37,    38,    39,   162,
+      -1,    -1,    -1,    -1,    58,    -1,    60,    48,    49,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    58,    -1,    60
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    68,     0,     3,    19,    20,    22,    72,    76,    77,
-      80,    64,     3,     3,     8,     9,    17,    18,    21,    69,
-      70,    11,    12,    13,    61,    73,    57,    21,    70,    10,
-      71,     3,    75,    61,    73,     3,    78,    79,    57,    71,
-      64,     3,    62,    75,    61,    64,    58,    66,    79,    70,
-      64,    62,    75,    14,    70,    71,    73,    74,    61,    63,
-      82,    78,    58,    70,    62,    71,    74,    74,    81,    70,
-      74,    63,    82,    74,     3,     4,     5,     6,     7,    22,
-      23,    25,    26,    27,    28,    29,    30,    36,    37,    38,
-      47,    48,    57,    59,    62,    77,    83,    84,    85,    86,
-      87,    88,    89,    90,    91,    93,    94,    95,    96,    97,
-      98,    99,   100,   101,   102,   103,   104,   105,   106,   107,
-     108,   109,   110,   111,   112,   113,   114,    74,    82,    82,
-      70,    74,    64,     3,    94,     3,    82,    65,    65,    94,
-      15,    16,    92,   108,   108,     3,   108,   108,    94,    60,
-      94,    65,    33,    35,    34,    45,    46,    44,    53,    54,
-      49,    50,    51,    52,    39,    40,    41,    42,    43,    55,
-      36,    37,    56,    59,    82,    74,    82,    82,    31,    70,
-      82,    65,    65,    66,    82,    58,   108,    60,    96,    94,
-      97,    98,    99,   100,   101,   101,   102,   102,   102,   102,
-     103,   103,   108,   108,   108,     3,    60,    94,    82,    15,
-      32,    71,    24,    15,    16,   108,    60,    82
+       0,    69,     0,     3,    19,    20,    22,    73,    77,    78,
+      81,    65,     3,     3,     8,     9,    17,    18,    21,    70,
+      71,    11,    12,    13,    62,    74,    58,    21,    71,    10,
+      72,     3,    76,    62,    74,     3,    79,    80,    58,    72,
+      65,     3,    63,    76,    62,    65,    59,    67,    80,    71,
+      65,    63,    76,    14,    71,    72,    74,    75,    62,    64,
+      83,    79,    59,    71,    63,    72,    75,    75,    74,    82,
+      71,    75,    64,    83,    75,     3,     4,     5,     6,     7,
+      22,    23,    25,    26,    27,    28,    29,    30,    33,    37,
+      38,    39,    48,    49,    58,    60,    63,    78,    84,    85,
+      86,    87,    88,    89,    90,    91,    92,    94,    95,    96,
+      97,    98,    99,   100,   101,   102,   103,   104,   105,   106,
+     107,   108,   109,   110,   113,   114,   115,   116,   117,   118,
+      75,    83,    83,    71,    75,    65,     3,    95,     3,    83,
+      66,    66,    95,    15,    16,    93,    71,    75,    95,   109,
+     109,     3,   109,   109,    95,    61,    95,    66,    34,    36,
+      35,    46,    47,    45,    54,    55,    50,    51,    52,    53,
+      40,    41,    42,    43,    44,    56,    37,    38,    57,    60,
+      83,    75,    83,    83,    31,    71,    83,    66,    66,    67,
+      83,    75,    95,    95,    58,    59,   109,    61,    97,    95,
+      98,    99,   100,   101,   102,   102,   103,   103,   103,   103,
+     104,   104,   109,   109,   109,     3,    61,    95,    83,    15,
+      32,    72,    24,    15,    16,    95,    58,    58,    95,   111,
+     112,   109,    61,    83,    58,   112,   112,    65,    59,    67,
+     112,    59,    59,    71,    72,    75,   111,    59,    72,    75,
+      75,    75
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    67,    68,    68,    68,    68,    68,    68,    69,    70,
-      70,    71,    72,    72,    72,    72,    73,    73,    73,    74,
-      74,    75,    75,    76,    76,    76,    77,    77,    78,    78,
-      78,    78,    78,    78,    78,    78,    79,    79,    79,    80,
-      80,    80,    80,    80,    80,    80,    80,    81,    81,    82,
-      83,    83,    83,    83,    83,    83,    83,    83,    83,    83,
-      83,    83,    84,    84,    85,    85,    86,    86,    87,    88,
-      89,    90,    90,    91,    92,    92,    92,    92,    93,    94,
-      94,    95,    95,    96,    96,    97,    97,    98,    98,    99,
-      99,   100,   100,   100,   101,   101,   101,   101,   101,   102,
-     102,   102,   103,   103,   103,   103,   104,   104,   104,   104,
-     105,   106,   106,   107,   108,   108,   108,   108,   108,   109,
-     109,   110,   110,   111,   112,   112,   112,   112,   113,   113,
-     114,   114,   114,   114,   114
+       0,    68,    69,    69,    69,    69,    69,    69,    70,    71,
+      71,    72,    73,    73,    73,    73,    74,    74,    74,    75,
+      75,    75,    76,    76,    77,    77,    77,    78,    78,    79,
+      79,    79,    79,    79,    79,    79,    79,    80,    80,    80,
+      81,    81,    81,    81,    81,    81,    81,    81,    82,    82,
+      83,    84,    84,    84,    84,    84,    84,    84,    84,    84,
+      84,    84,    84,    85,    85,    86,    86,    87,    87,    88,
+      89,    90,    91,    91,    92,    93,    93,    93,    93,    94,
+      95,    95,    96,    96,    97,    97,    98,    98,    99,    99,
+     100,   100,   101,   101,   101,   102,   102,   102,   102,   102,
+     103,   103,   103,   104,   104,   104,   104,   105,   105,   105,
+     105,   106,   107,   107,   108,   109,   109,   109,   109,   109,
+     110,   110,   111,   111,   111,   111,   111,   111,   111,   111,
+     112,   112,   112,   113,   113,   113,   113,   114,   114,   115,
+     116,   116,   116,   116,   116,   117,   117,   118,   118,   118,
+     118,   118
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -933,18 +972,20 @@ static const yytype_int8 yyr2[] =
 {
        0,     2,     2,     2,     2,     2,     2,     0,     1,     1,
        1,     1,     3,     4,     4,     5,     1,     1,     1,     1,
-       1,     4,     3,     6,     7,     8,     2,     2,     1,     3,
-       3,     3,     4,     4,     4,     5,     3,     1,     0,     7,
-       9,     9,    10,     8,    10,    10,    11,     2,     0,     3,
-       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       2,     1,     3,     4,     4,     4,     3,     5,     2,     3,
-       2,     2,     2,     3,     3,     3,     1,     1,     3,     3,
-       1,     3,     1,     3,     1,     3,     1,     3,     1,     3,
-       1,     3,     3,     1,     3,     3,     3,     3,     1,     3,
-       3,     1,     3,     3,     3,     1,     2,     2,     2,     2,
-       2,     4,     3,     2,     1,     1,     1,     1,     1,     2,
-       2,     4,     3,     3,     1,     1,     1,     1,     3,     1,
-       1,     1,     1,     1,     1
+       2,     1,     4,     3,     6,     7,     8,     2,     2,     1,
+       3,     3,     3,     4,     4,     4,     5,     3,     1,     0,
+       7,     9,     9,    10,     8,    10,    10,    11,     2,     0,
+       3,     1,     1,     1,     1,     1,     1,     1,     1,     1,
+       1,     2,     1,     3,     4,     4,     4,     3,     5,     2,
+       3,     2,     2,     2,     3,     3,     3,     1,     1,     3,
+       3,     1,     3,     1,     3,     1,     3,     1,     3,     1,
+       3,     1,     3,     3,     1,     3,     3,     3,     3,     1,
+       3,     3,     1,     3,     3,     3,     1,     2,     2,     2,
+       2,     2,     4,     3,     2,     1,     1,     1,     1,     1,
+       2,     2,     1,     3,     3,     3,     4,     4,     4,     5,
+       3,     1,     0,     5,     6,     6,     7,     4,     3,     3,
+       1,     1,     1,     1,     1,     3,     1,     1,     1,     1,
+       1,     1
 };
 
 
@@ -1678,7 +1719,7 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* program: program global_variable_declaration  */
-#line 236 "src/parser/rules.y"
+#line 244 "src/parser/rules.y"
                                         {
         (yyval.program) = ALLOC(struct program_node_t);
         TFRAG_COMBINE((yyval.program), (yyvsp[-1].program), (yyvsp[0].global_variable_declaration));
@@ -1686,11 +1727,11 @@ yyreduce:
         (yyval.program)->gvar_decl = (yyvsp[0].global_variable_declaration);
         parsing_result = (yyval.program);
     }
-#line 1690 "src/parser/rules.tab.c"
+#line 1731 "src/parser/rules.tab.c"
     break;
 
   case 3: /* program: program layout_declaration  */
-#line 243 "src/parser/rules.y"
+#line 251 "src/parser/rules.y"
                                  {
         (yyval.program) = ALLOC(struct program_node_t);
         TFRAG_COMBINE((yyval.program), (yyvsp[-1].program), (yyvsp[0].layout_declaration));
@@ -1698,11 +1739,11 @@ yyreduce:
         (yyval.program)->layout_decl = (yyvsp[0].layout_declaration);
         parsing_result = (yyval.program);
     }
-#line 1702 "src/parser/rules.tab.c"
+#line 1743 "src/parser/rules.tab.c"
     break;
 
   case 4: /* program: program extern_declaration  */
-#line 250 "src/parser/rules.y"
+#line 258 "src/parser/rules.y"
                                  {
         (yyval.program) = ALLOC(struct program_node_t);
         TFRAG_COMBINE((yyval.program), (yyvsp[-1].program), (yyvsp[0].extern_declaration));
@@ -1710,11 +1751,11 @@ yyreduce:
         (yyval.program)->ext_decl = (yyvsp[0].extern_declaration);
         parsing_result = (yyval.program);
     }
-#line 1714 "src/parser/rules.tab.c"
+#line 1755 "src/parser/rules.tab.c"
     break;
 
   case 5: /* program: program function_declaration  */
-#line 257 "src/parser/rules.y"
+#line 265 "src/parser/rules.y"
                                    {
         (yyval.program) = ALLOC(struct program_node_t);
         TFRAG_COMBINE((yyval.program), (yyvsp[-1].program), (yyvsp[0].function_declaration));
@@ -1722,11 +1763,11 @@ yyreduce:
         (yyval.program)->fn_decl = (yyvsp[0].function_declaration);
         parsing_result = (yyval.program);
     }
-#line 1726 "src/parser/rules.tab.c"
+#line 1767 "src/parser/rules.tab.c"
     break;
 
   case 6: /* program: program NASM_BLOCK  */
-#line 264 "src/parser/rules.y"
+#line 272 "src/parser/rules.y"
                          {
         (yyval.program) = ALLOC(struct program_node_t);
         TFRAG_COMBINE((yyval.program), (yyvsp[-1].program), (yyvsp[0].name));
@@ -1734,44 +1775,44 @@ yyreduce:
         (yyval.program)->nasm_b = (yyvsp[0].name);
         parsing_result = (yyval.program);
     }
-#line 1738 "src/parser/rules.tab.c"
+#line 1779 "src/parser/rules.tab.c"
     break;
 
   case 7: /* program: %empty  */
-#line 271 "src/parser/rules.y"
+#line 279 "src/parser/rules.y"
       {
         (yyval.program) = ALLOC(struct program_node_t);
         parsing_result = (yyval.program);
     }
-#line 1747 "src/parser/rules.tab.c"
+#line 1788 "src/parser/rules.tab.c"
     break;
 
   case 8: /* visibility: GLOBAL  */
-#line 278 "src/parser/rules.y"
+#line 286 "src/parser/rules.y"
            { (yyval.name) = (yyvsp[0].name); }
-#line 1753 "src/parser/rules.tab.c"
+#line 1794 "src/parser/rules.tab.c"
     break;
 
   case 9: /* memory_length: MEMORY_LENGTH_SIMPLE  */
-#line 282 "src/parser/rules.y"
+#line 290 "src/parser/rules.y"
                          { (yyval.name) = (yyvsp[0].name); }
-#line 1759 "src/parser/rules.tab.c"
+#line 1800 "src/parser/rules.tab.c"
     break;
 
   case 10: /* memory_length: MEMORY_LENGTH_PREFIX  */
-#line 283 "src/parser/rules.y"
+#line 291 "src/parser/rules.y"
                            { (yyval.name) = (yyvsp[0].name); }
-#line 1765 "src/parser/rules.tab.c"
+#line 1806 "src/parser/rules.tab.c"
     break;
 
   case 11: /* alignment: ALIGNMENT_SIMPLE  */
-#line 287 "src/parser/rules.y"
+#line 295 "src/parser/rules.y"
                      { (yyval.name) = (yyvsp[0].name); }
-#line 1771 "src/parser/rules.tab.c"
+#line 1812 "src/parser/rules.tab.c"
     break;
 
   case 12: /* global_variable_declaration: NAME ":" memory_length  */
-#line 291 "src/parser/rules.y"
+#line 299 "src/parser/rules.y"
                            {
         (yyval.global_variable_declaration) = ALLOC(struct global_variable_declaration_node_t);
         TFRAG_COMBINE((yyval.global_variable_declaration), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
@@ -1779,11 +1820,11 @@ yyreduce:
         (yyval.global_variable_declaration)->colon = (yyvsp[-1].name);
         (yyval.global_variable_declaration)->mem_len = (yyvsp[0].name);
     }
-#line 1783 "src/parser/rules.tab.c"
+#line 1824 "src/parser/rules.tab.c"
     break;
 
   case 13: /* global_variable_declaration: NAME ":" visibility memory_length  */
-#line 298 "src/parser/rules.y"
+#line 306 "src/parser/rules.y"
                                         {
         (yyval.global_variable_declaration) = ALLOC(struct global_variable_declaration_node_t);
         TFRAG_COMBINE((yyval.global_variable_declaration), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
@@ -1792,11 +1833,11 @@ yyreduce:
         (yyval.global_variable_declaration)->vis = (yyvsp[-1].name);
         (yyval.global_variable_declaration)->mem_len = (yyvsp[0].name);
     }
-#line 1796 "src/parser/rules.tab.c"
+#line 1837 "src/parser/rules.tab.c"
     break;
 
   case 14: /* global_variable_declaration: NAME ":" memory_length alignment  */
-#line 306 "src/parser/rules.y"
+#line 314 "src/parser/rules.y"
                                        {
         (yyval.global_variable_declaration) = ALLOC(struct global_variable_declaration_node_t);
         TFRAG_COMBINE((yyval.global_variable_declaration), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
@@ -1805,11 +1846,11 @@ yyreduce:
         (yyval.global_variable_declaration)->mem_len = (yyvsp[-1].name);
         (yyval.global_variable_declaration)->align = (yyvsp[0].name);
     }
-#line 1809 "src/parser/rules.tab.c"
+#line 1850 "src/parser/rules.tab.c"
     break;
 
   case 15: /* global_variable_declaration: NAME ":" visibility memory_length alignment  */
-#line 314 "src/parser/rules.y"
+#line 322 "src/parser/rules.y"
                                                   {
         (yyval.global_variable_declaration) = ALLOC(struct global_variable_declaration_node_t);
         TFRAG_COMBINE((yyval.global_variable_declaration), (yyvsp[-4].name), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
@@ -1819,41 +1860,60 @@ yyreduce:
         (yyval.global_variable_declaration)->mem_len = (yyvsp[-1].name);
         (yyval.global_variable_declaration)->align = (yyvsp[0].name);
     }
-#line 1823 "src/parser/rules.tab.c"
+#line 1864 "src/parser/rules.tab.c"
     break;
 
   case 16: /* chunk_class: CHUNK_CLASS_MEM  */
-#line 326 "src/parser/rules.y"
+#line 334 "src/parser/rules.y"
                     { (yyval.name) = (yyvsp[0].name); }
-#line 1829 "src/parser/rules.tab.c"
+#line 1870 "src/parser/rules.tab.c"
     break;
 
   case 17: /* chunk_class: CHUNK_CLASS_SSE  */
-#line 327 "src/parser/rules.y"
+#line 335 "src/parser/rules.y"
                       { (yyval.name) = (yyvsp[0].name); }
-#line 1835 "src/parser/rules.tab.c"
+#line 1876 "src/parser/rules.tab.c"
     break;
 
   case 18: /* chunk_class: CHUNK_CLASS_INT  */
-#line 328 "src/parser/rules.y"
+#line 336 "src/parser/rules.y"
                       { (yyval.name) = (yyvsp[0].name); }
-#line 1841 "src/parser/rules.tab.c"
+#line 1882 "src/parser/rules.tab.c"
     break;
 
   case 19: /* abi_class: chunk_class  */
-#line 332 "src/parser/rules.y"
-                { (yyval.name) = (yyvsp[0].name); }
-#line 1847 "src/parser/rules.tab.c"
+#line 340 "src/parser/rules.y"
+                {
+        (yyval.abi_class) = ALLOC(struct abi_class_node_t);
+        TFRAG_COMBINE((yyval.abi_class), (yyvsp[0].name));
+        (yyval.abi_class)->chunk1 = (yyvsp[0].name);
+    }
+#line 1892 "src/parser/rules.tab.c"
     break;
 
-  case 20: /* abi_class: CHUNK_CLASS_LAYOUT  */
-#line 333 "src/parser/rules.y"
-                         { (yyval.name) = (yyvsp[0].name); }
-#line 1853 "src/parser/rules.tab.c"
+  case 20: /* abi_class: chunk_class chunk_class  */
+#line 345 "src/parser/rules.y"
+                              {
+        (yyval.abi_class) = ALLOC(struct abi_class_node_t);
+        TFRAG_COMBINE((yyval.abi_class), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.abi_class)->chunk1 = (yyvsp[-1].name);
+        (yyval.abi_class)->chunk2 = (yyvsp[0].name);
+    }
+#line 1903 "src/parser/rules.tab.c"
     break;
 
-  case 21: /* layout_declaration_items: layout_declaration_items NAME ":" memory_length  */
-#line 337 "src/parser/rules.y"
+  case 21: /* abi_class: CHUNK_CLASS_LAYOUT  */
+#line 351 "src/parser/rules.y"
+                         {
+        (yyval.abi_class) = ALLOC(struct abi_class_node_t);
+        TFRAG_COMBINE((yyval.abi_class), (yyvsp[0].name));
+        (yyval.abi_class)->layout = (yyvsp[0].name);
+    }
+#line 1913 "src/parser/rules.tab.c"
+    break;
+
+  case 22: /* layout_declaration_items: layout_declaration_items NAME ":" memory_length  */
+#line 359 "src/parser/rules.y"
                                                     {
         (yyval.layout_declaration_items) = ALLOC(struct layout_declaration_items_node_t);
         TFRAG_COMBINE((yyval.layout_declaration_items), (yyvsp[-3].layout_declaration_items), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
@@ -1862,11 +1922,11 @@ yyreduce:
         (yyval.layout_declaration_items)->colon = (yyvsp[-1].name);
         (yyval.layout_declaration_items)->mem_len = (yyvsp[0].name);
     }
-#line 1866 "src/parser/rules.tab.c"
+#line 1926 "src/parser/rules.tab.c"
     break;
 
-  case 22: /* layout_declaration_items: NAME ":" memory_length  */
-#line 345 "src/parser/rules.y"
+  case 23: /* layout_declaration_items: NAME ":" memory_length  */
+#line 367 "src/parser/rules.y"
                              {
         (yyval.layout_declaration_items) = ALLOC(struct layout_declaration_items_node_t);
         TFRAG_COMBINE((yyval.layout_declaration_items), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
@@ -1874,11 +1934,11 @@ yyreduce:
         (yyval.layout_declaration_items)->colon = (yyvsp[-1].name);
         (yyval.layout_declaration_items)->mem_len = (yyvsp[0].name);
     }
-#line 1878 "src/parser/rules.tab.c"
+#line 1938 "src/parser/rules.tab.c"
     break;
 
-  case 23: /* layout_declaration: NAME ":" LAYOUT "{" layout_declaration_items "}"  */
-#line 355 "src/parser/rules.y"
+  case 24: /* layout_declaration: NAME ":" LAYOUT "{" layout_declaration_items "}"  */
+#line 377 "src/parser/rules.y"
                                                      {
         (yyval.layout_declaration) = ALLOC(struct layout_declaration_node_t);
         TFRAG_COMBINE((yyval.layout_declaration), (yyvsp[-5].name), (yyvsp[-4].name), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].layout_declaration_items), (yyvsp[0].name));
@@ -1889,11 +1949,11 @@ yyreduce:
         (yyval.layout_declaration)->items = (yyvsp[-1].layout_declaration_items);
         (yyval.layout_declaration)->closed_brace = (yyvsp[0].name);
     }
-#line 1893 "src/parser/rules.tab.c"
+#line 1953 "src/parser/rules.tab.c"
     break;
 
-  case 24: /* layout_declaration: NAME ":" LAYOUT chunk_class "{" layout_declaration_items "}"  */
-#line 365 "src/parser/rules.y"
+  case 25: /* layout_declaration: NAME ":" LAYOUT chunk_class "{" layout_declaration_items "}"  */
+#line 387 "src/parser/rules.y"
                                                                    {
         (yyval.layout_declaration) = ALLOC(struct layout_declaration_node_t);
         TFRAG_COMBINE((yyval.layout_declaration), (yyvsp[-6].name), (yyvsp[-5].name), (yyvsp[-4].name), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].layout_declaration_items), (yyvsp[0].name));
@@ -1905,11 +1965,11 @@ yyreduce:
         (yyval.layout_declaration)->items = (yyvsp[-1].layout_declaration_items);
         (yyval.layout_declaration)->closed_brace = (yyvsp[0].name);
     }
-#line 1909 "src/parser/rules.tab.c"
+#line 1969 "src/parser/rules.tab.c"
     break;
 
-  case 25: /* layout_declaration: NAME ":" LAYOUT chunk_class chunk_class "{" layout_declaration_items "}"  */
-#line 376 "src/parser/rules.y"
+  case 26: /* layout_declaration: NAME ":" LAYOUT chunk_class chunk_class "{" layout_declaration_items "}"  */
+#line 398 "src/parser/rules.y"
                                                                                {
         (yyval.layout_declaration) = ALLOC(struct layout_declaration_node_t);
         TFRAG_COMBINE((yyval.layout_declaration), (yyvsp[-7].name), (yyvsp[-6].name), (yyvsp[-5].name), (yyvsp[-4].name), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].layout_declaration_items), (yyvsp[0].name));
@@ -1922,43 +1982,43 @@ yyreduce:
         (yyval.layout_declaration)->items = (yyvsp[-1].layout_declaration_items);
         (yyval.layout_declaration)->closed_brace = (yyvsp[0].name);
     }
-#line 1926 "src/parser/rules.tab.c"
+#line 1986 "src/parser/rules.tab.c"
     break;
 
-  case 26: /* extern_declaration: EXTERN NAME  */
-#line 391 "src/parser/rules.y"
+  case 27: /* extern_declaration: EXTERN NAME  */
+#line 413 "src/parser/rules.y"
                 {
         (yyval.extern_declaration) = ALLOC(struct extern_declaration_node_t);
         TFRAG_COMBINE((yyval.extern_declaration), (yyvsp[-1].name), (yyvsp[0].name));
         (yyval.extern_declaration)->kw = (yyvsp[-1].name);
         (yyval.extern_declaration)->name = (yyvsp[0].name);
     }
-#line 1937 "src/parser/rules.tab.c"
+#line 1997 "src/parser/rules.tab.c"
     break;
 
-  case 27: /* extern_declaration: NASM NAME  */
-#line 397 "src/parser/rules.y"
+  case 28: /* extern_declaration: NASM NAME  */
+#line 419 "src/parser/rules.y"
                 {
         (yyval.extern_declaration) = ALLOC(struct extern_declaration_node_t);
         TFRAG_COMBINE((yyval.extern_declaration), (yyvsp[-1].name), (yyvsp[0].name));
         (yyval.extern_declaration)->kw = (yyvsp[-1].name);
         (yyval.extern_declaration)->name = (yyvsp[0].name);
     }
-#line 1948 "src/parser/rules.tab.c"
+#line 2008 "src/parser/rules.tab.c"
     break;
 
-  case 28: /* function_declaration_arg: NAME  */
-#line 406 "src/parser/rules.y"
+  case 29: /* function_declaration_arg: NAME  */
+#line 428 "src/parser/rules.y"
          {
         (yyval.function_declaration_arg) = ALLOC(struct function_declaration_arg_node_t);
         TFRAG_COMBINE((yyval.function_declaration_arg), (yyvsp[0].name));
         (yyval.function_declaration_arg)->name = (yyvsp[0].name);
     }
-#line 1958 "src/parser/rules.tab.c"
+#line 2018 "src/parser/rules.tab.c"
     break;
 
-  case 29: /* function_declaration_arg: NAME ":" memory_length  */
-#line 411 "src/parser/rules.y"
+  case 30: /* function_declaration_arg: NAME ":" memory_length  */
+#line 433 "src/parser/rules.y"
                              {
         (yyval.function_declaration_arg) = ALLOC(struct function_declaration_arg_node_t);
         TFRAG_COMBINE((yyval.function_declaration_arg), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
@@ -1966,88 +2026,88 @@ yyreduce:
         (yyval.function_declaration_arg)->colon = (yyvsp[-1].name);
         (yyval.function_declaration_arg)->mem_len = (yyvsp[0].name);
     }
-#line 1970 "src/parser/rules.tab.c"
+#line 2030 "src/parser/rules.tab.c"
     break;
 
-  case 30: /* function_declaration_arg: NAME ":" alignment  */
-#line 418 "src/parser/rules.y"
-                         {
-        (yyval.function_declaration_arg) = ALLOC(struct function_declaration_arg_node_t);
-        TFRAG_COMBINE((yyval.function_declaration_arg), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
-        (yyval.function_declaration_arg)->name = (yyvsp[-2].name);
-        (yyval.function_declaration_arg)->colon = (yyvsp[-1].name);
-        (yyval.function_declaration_arg)->align = (yyvsp[0].name);
-    }
-#line 1982 "src/parser/rules.tab.c"
-    break;
-
-  case 31: /* function_declaration_arg: NAME ":" abi_class  */
-#line 425 "src/parser/rules.y"
-                         {
-        (yyval.function_declaration_arg) = ALLOC(struct function_declaration_arg_node_t);
-        TFRAG_COMBINE((yyval.function_declaration_arg), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
-        (yyval.function_declaration_arg)->name = (yyvsp[-2].name);
-        (yyval.function_declaration_arg)->colon = (yyvsp[-1].name);
-        (yyval.function_declaration_arg)->abi_class = (yyvsp[0].name);
-    }
-#line 1994 "src/parser/rules.tab.c"
-    break;
-
-  case 32: /* function_declaration_arg: NAME ":" memory_length alignment  */
-#line 432 "src/parser/rules.y"
-                                       {
-        (yyval.function_declaration_arg) = ALLOC(struct function_declaration_arg_node_t);
-        TFRAG_COMBINE((yyval.function_declaration_arg), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
-        (yyval.function_declaration_arg)->name = (yyvsp[-3].name);
-        (yyval.function_declaration_arg)->colon = (yyvsp[-2].name);
-        (yyval.function_declaration_arg)->mem_len = (yyvsp[-1].name);
-        (yyval.function_declaration_arg)->align = (yyvsp[0].name);
-    }
-#line 2007 "src/parser/rules.tab.c"
-    break;
-
-  case 33: /* function_declaration_arg: NAME ":" memory_length abi_class  */
+  case 31: /* function_declaration_arg: NAME ":" alignment  */
 #line 440 "src/parser/rules.y"
+                         {
+        (yyval.function_declaration_arg) = ALLOC(struct function_declaration_arg_node_t);
+        TFRAG_COMBINE((yyval.function_declaration_arg), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.function_declaration_arg)->name = (yyvsp[-2].name);
+        (yyval.function_declaration_arg)->colon = (yyvsp[-1].name);
+        (yyval.function_declaration_arg)->align = (yyvsp[0].name);
+    }
+#line 2042 "src/parser/rules.tab.c"
+    break;
+
+  case 32: /* function_declaration_arg: NAME ":" abi_class  */
+#line 447 "src/parser/rules.y"
+                         {
+        (yyval.function_declaration_arg) = ALLOC(struct function_declaration_arg_node_t);
+        TFRAG_COMBINE((yyval.function_declaration_arg), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].abi_class));
+        (yyval.function_declaration_arg)->name = (yyvsp[-2].name);
+        (yyval.function_declaration_arg)->colon = (yyvsp[-1].name);
+        (yyval.function_declaration_arg)->abi_class = (yyvsp[0].abi_class);
+    }
+#line 2054 "src/parser/rules.tab.c"
+    break;
+
+  case 33: /* function_declaration_arg: NAME ":" memory_length alignment  */
+#line 454 "src/parser/rules.y"
                                        {
         (yyval.function_declaration_arg) = ALLOC(struct function_declaration_arg_node_t);
         TFRAG_COMBINE((yyval.function_declaration_arg), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
         (yyval.function_declaration_arg)->name = (yyvsp[-3].name);
         (yyval.function_declaration_arg)->colon = (yyvsp[-2].name);
         (yyval.function_declaration_arg)->mem_len = (yyvsp[-1].name);
-        (yyval.function_declaration_arg)->abi_class = (yyvsp[0].name);
+        (yyval.function_declaration_arg)->align = (yyvsp[0].name);
     }
-#line 2020 "src/parser/rules.tab.c"
+#line 2067 "src/parser/rules.tab.c"
     break;
 
-  case 34: /* function_declaration_arg: NAME ":" alignment abi_class  */
-#line 448 "src/parser/rules.y"
+  case 34: /* function_declaration_arg: NAME ":" memory_length abi_class  */
+#line 462 "src/parser/rules.y"
+                                       {
+        (yyval.function_declaration_arg) = ALLOC(struct function_declaration_arg_node_t);
+        TFRAG_COMBINE((yyval.function_declaration_arg), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].abi_class));
+        (yyval.function_declaration_arg)->name = (yyvsp[-3].name);
+        (yyval.function_declaration_arg)->colon = (yyvsp[-2].name);
+        (yyval.function_declaration_arg)->mem_len = (yyvsp[-1].name);
+        (yyval.function_declaration_arg)->abi_class = (yyvsp[0].abi_class);
+    }
+#line 2080 "src/parser/rules.tab.c"
+    break;
+
+  case 35: /* function_declaration_arg: NAME ":" alignment abi_class  */
+#line 470 "src/parser/rules.y"
                                    {
         (yyval.function_declaration_arg) = ALLOC(struct function_declaration_arg_node_t);
-        TFRAG_COMBINE((yyval.function_declaration_arg), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
+        TFRAG_COMBINE((yyval.function_declaration_arg), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].abi_class));
         (yyval.function_declaration_arg)->name = (yyvsp[-3].name);
         (yyval.function_declaration_arg)->colon = (yyvsp[-2].name);
         (yyval.function_declaration_arg)->align = (yyvsp[-1].name);
-        (yyval.function_declaration_arg)->abi_class = (yyvsp[0].name);
+        (yyval.function_declaration_arg)->abi_class = (yyvsp[0].abi_class);
     }
-#line 2033 "src/parser/rules.tab.c"
+#line 2093 "src/parser/rules.tab.c"
     break;
 
-  case 35: /* function_declaration_arg: NAME ":" memory_length alignment abi_class  */
-#line 456 "src/parser/rules.y"
+  case 36: /* function_declaration_arg: NAME ":" memory_length alignment abi_class  */
+#line 478 "src/parser/rules.y"
                                                  {
         (yyval.function_declaration_arg) = ALLOC(struct function_declaration_arg_node_t);
-        TFRAG_COMBINE((yyval.function_declaration_arg), (yyvsp[-4].name), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
+        TFRAG_COMBINE((yyval.function_declaration_arg), (yyvsp[-4].name), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].abi_class));
         (yyval.function_declaration_arg)->name = (yyvsp[-4].name);
         (yyval.function_declaration_arg)->colon = (yyvsp[-3].name);
         (yyval.function_declaration_arg)->mem_len = (yyvsp[-2].name);
         (yyval.function_declaration_arg)->align = (yyvsp[-1].name);
-        (yyval.function_declaration_arg)->abi_class = (yyvsp[0].name);
+        (yyval.function_declaration_arg)->abi_class = (yyvsp[0].abi_class);
     }
-#line 2047 "src/parser/rules.tab.c"
+#line 2107 "src/parser/rules.tab.c"
     break;
 
-  case 36: /* function_declaration_args: function_declaration_args "," function_declaration_arg  */
-#line 468 "src/parser/rules.y"
+  case 37: /* function_declaration_args: function_declaration_args "," function_declaration_arg  */
+#line 490 "src/parser/rules.y"
                                                            {
         (yyval.function_declaration_args) = ALLOC(struct function_declaration_args_node_t);
         TFRAG_COMBINE((yyval.function_declaration_args), (yyvsp[-2].function_declaration_args), (yyvsp[-1].name), (yyvsp[0].function_declaration_arg));
@@ -2055,29 +2115,29 @@ yyreduce:
         (yyval.function_declaration_args)->comma = (yyvsp[-1].name);
         (yyval.function_declaration_args)->arg = (yyvsp[0].function_declaration_arg);
     }
-#line 2059 "src/parser/rules.tab.c"
+#line 2119 "src/parser/rules.tab.c"
     break;
 
-  case 37: /* function_declaration_args: function_declaration_arg  */
-#line 475 "src/parser/rules.y"
+  case 38: /* function_declaration_args: function_declaration_arg  */
+#line 497 "src/parser/rules.y"
                                {
         (yyval.function_declaration_args) = ALLOC(struct function_declaration_args_node_t);
         TFRAG_COMBINE((yyval.function_declaration_args), (yyvsp[0].function_declaration_arg));
         (yyval.function_declaration_args)->arg = (yyvsp[0].function_declaration_arg);
     }
-#line 2069 "src/parser/rules.tab.c"
+#line 2129 "src/parser/rules.tab.c"
     break;
 
-  case 38: /* function_declaration_args: %empty  */
-#line 480 "src/parser/rules.y"
+  case 39: /* function_declaration_args: %empty  */
+#line 502 "src/parser/rules.y"
       {
         (yyval.function_declaration_args) = ALLOC(struct function_declaration_args_node_t);
     }
-#line 2077 "src/parser/rules.tab.c"
+#line 2137 "src/parser/rules.tab.c"
     break;
 
-  case 39: /* function_declaration: NAME ":" FN "(" function_declaration_args ")" body  */
-#line 486 "src/parser/rules.y"
+  case 40: /* function_declaration: NAME ":" FN "(" function_declaration_args ")" body  */
+#line 508 "src/parser/rules.y"
                                                        {
         (yyval.function_declaration) = ALLOC(struct function_declaration_node_t);
         TFRAG_COMBINE((yyval.function_declaration), (yyvsp[-6].name), (yyvsp[-5].name), (yyvsp[-4].name), (yyvsp[-3].name), (yyvsp[-2].function_declaration_args), (yyvsp[-1].name), (yyvsp[0].body));
@@ -2089,11 +2149,11 @@ yyreduce:
         (yyval.function_declaration)->closed_brace = (yyvsp[-1].name);
         (yyval.function_declaration)->body = (yyvsp[0].body);
     }
-#line 2093 "src/parser/rules.tab.c"
+#line 2153 "src/parser/rules.tab.c"
     break;
 
-  case 40: /* function_declaration: NAME ":" FN "(" function_declaration_args ")" ARROW memory_length body  */
-#line 497 "src/parser/rules.y"
+  case 41: /* function_declaration: NAME ":" FN "(" function_declaration_args ")" ARROW memory_length body  */
+#line 519 "src/parser/rules.y"
                                                                              {
         (yyval.function_declaration) = ALLOC(struct function_declaration_node_t);
         TFRAG_COMBINE((yyval.function_declaration), (yyvsp[-8].name), (yyvsp[-7].name), (yyvsp[-6].name), (yyvsp[-5].name), (yyvsp[-4].function_declaration_args), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].body));
@@ -2107,14 +2167,14 @@ yyreduce:
         (yyval.function_declaration)->mem_len = (yyvsp[-1].name);
         (yyval.function_declaration)->body = (yyvsp[0].body);
     }
-#line 2111 "src/parser/rules.tab.c"
+#line 2171 "src/parser/rules.tab.c"
     break;
 
-  case 41: /* function_declaration: NAME ":" FN "(" function_declaration_args ")" ARROW abi_class body  */
-#line 510 "src/parser/rules.y"
+  case 42: /* function_declaration: NAME ":" FN "(" function_declaration_args ")" ARROW abi_class body  */
+#line 532 "src/parser/rules.y"
                                                                          {
         (yyval.function_declaration) = ALLOC(struct function_declaration_node_t);
-        TFRAG_COMBINE((yyval.function_declaration), (yyvsp[-8].name), (yyvsp[-7].name), (yyvsp[-6].name), (yyvsp[-5].name), (yyvsp[-4].function_declaration_args), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].body));
+        TFRAG_COMBINE((yyval.function_declaration), (yyvsp[-8].name), (yyvsp[-7].name), (yyvsp[-6].name), (yyvsp[-5].name), (yyvsp[-4].function_declaration_args), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].abi_class), (yyvsp[0].body));
         (yyval.function_declaration)->name = (yyvsp[-8].name);
         (yyval.function_declaration)->colon = (yyvsp[-7].name);
         (yyval.function_declaration)->fn = (yyvsp[-6].name);
@@ -2122,17 +2182,17 @@ yyreduce:
         (yyval.function_declaration)->args = (yyvsp[-4].function_declaration_args);
         (yyval.function_declaration)->closed_brace = (yyvsp[-3].name);
         (yyval.function_declaration)->arrow = (yyvsp[-2].name);
-        (yyval.function_declaration)->abi_class = (yyvsp[-1].name);
+        (yyval.function_declaration)->abi_class = (yyvsp[-1].abi_class);
         (yyval.function_declaration)->body = (yyvsp[0].body);
     }
-#line 2129 "src/parser/rules.tab.c"
+#line 2189 "src/parser/rules.tab.c"
     break;
 
-  case 42: /* function_declaration: NAME ":" FN "(" function_declaration_args ")" ARROW memory_length abi_class body  */
-#line 523 "src/parser/rules.y"
+  case 43: /* function_declaration: NAME ":" FN "(" function_declaration_args ")" ARROW memory_length abi_class body  */
+#line 545 "src/parser/rules.y"
                                                                                        {
         (yyval.function_declaration) = ALLOC(struct function_declaration_node_t);
-        TFRAG_COMBINE((yyval.function_declaration), (yyvsp[-9].name), (yyvsp[-8].name), (yyvsp[-7].name), (yyvsp[-6].name), (yyvsp[-5].function_declaration_args), (yyvsp[-4].name), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].body));
+        TFRAG_COMBINE((yyval.function_declaration), (yyvsp[-9].name), (yyvsp[-8].name), (yyvsp[-7].name), (yyvsp[-6].name), (yyvsp[-5].function_declaration_args), (yyvsp[-4].name), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].abi_class), (yyvsp[0].body));
         (yyval.function_declaration)->name = (yyvsp[-9].name);
         (yyval.function_declaration)->colon = (yyvsp[-8].name);
         (yyval.function_declaration)->fn = (yyvsp[-7].name);
@@ -2141,14 +2201,14 @@ yyreduce:
         (yyval.function_declaration)->closed_brace = (yyvsp[-4].name);
         (yyval.function_declaration)->arrow = (yyvsp[-3].name);
         (yyval.function_declaration)->mem_len = (yyvsp[-2].name);
-        (yyval.function_declaration)->abi_class = (yyvsp[-1].name);
+        (yyval.function_declaration)->abi_class = (yyvsp[-1].abi_class);
         (yyval.function_declaration)->body = (yyvsp[0].body);
     }
-#line 2148 "src/parser/rules.tab.c"
+#line 2208 "src/parser/rules.tab.c"
     break;
 
-  case 43: /* function_declaration: NAME ":" visibility FN "(" function_declaration_args ")" body  */
-#line 537 "src/parser/rules.y"
+  case 44: /* function_declaration: NAME ":" visibility FN "(" function_declaration_args ")" body  */
+#line 559 "src/parser/rules.y"
                                                                     {
         (yyval.function_declaration) = ALLOC(struct function_declaration_node_t);
         TFRAG_COMBINE((yyval.function_declaration), (yyvsp[-7].name), (yyvsp[-6].name), (yyvsp[-5].name), (yyvsp[-4].name), (yyvsp[-3].name), (yyvsp[-2].function_declaration_args), (yyvsp[-1].name), (yyvsp[0].body));
@@ -2161,11 +2221,11 @@ yyreduce:
         (yyval.function_declaration)->closed_brace = (yyvsp[-1].name);
         (yyval.function_declaration)->body = (yyvsp[0].body);
     }
-#line 2165 "src/parser/rules.tab.c"
+#line 2225 "src/parser/rules.tab.c"
     break;
 
-  case 44: /* function_declaration: NAME ":" visibility FN "(" function_declaration_args ")" ARROW memory_length body  */
-#line 549 "src/parser/rules.y"
+  case 45: /* function_declaration: NAME ":" visibility FN "(" function_declaration_args ")" ARROW memory_length body  */
+#line 571 "src/parser/rules.y"
                                                                                         {
         (yyval.function_declaration) = ALLOC(struct function_declaration_node_t);
         TFRAG_COMBINE((yyval.function_declaration), (yyvsp[-9].name), (yyvsp[-8].name), (yyvsp[-7].name), (yyvsp[-6].name), (yyvsp[-5].name), (yyvsp[-4].function_declaration_args), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].body));
@@ -2180,14 +2240,14 @@ yyreduce:
         (yyval.function_declaration)->mem_len = (yyvsp[-1].name);
         (yyval.function_declaration)->body = (yyvsp[0].body);
     }
-#line 2184 "src/parser/rules.tab.c"
+#line 2244 "src/parser/rules.tab.c"
     break;
 
-  case 45: /* function_declaration: NAME ":" visibility FN "(" function_declaration_args ")" ARROW abi_class body  */
-#line 563 "src/parser/rules.y"
+  case 46: /* function_declaration: NAME ":" visibility FN "(" function_declaration_args ")" ARROW abi_class body  */
+#line 585 "src/parser/rules.y"
                                                                                     {
         (yyval.function_declaration) = ALLOC(struct function_declaration_node_t);
-        TFRAG_COMBINE((yyval.function_declaration), (yyvsp[-9].name), (yyvsp[-8].name), (yyvsp[-7].name), (yyvsp[-6].name), (yyvsp[-5].name), (yyvsp[-4].function_declaration_args), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].body));
+        TFRAG_COMBINE((yyval.function_declaration), (yyvsp[-9].name), (yyvsp[-8].name), (yyvsp[-7].name), (yyvsp[-6].name), (yyvsp[-5].name), (yyvsp[-4].function_declaration_args), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].abi_class), (yyvsp[0].body));
         (yyval.function_declaration)->name = (yyvsp[-9].name);
         (yyval.function_declaration)->colon = (yyvsp[-8].name);
         (yyval.function_declaration)->vis = (yyvsp[-7].name);
@@ -2196,17 +2256,17 @@ yyreduce:
         (yyval.function_declaration)->args = (yyvsp[-4].function_declaration_args);
         (yyval.function_declaration)->closed_brace = (yyvsp[-3].name);
         (yyval.function_declaration)->arrow = (yyvsp[-2].name);
-        (yyval.function_declaration)->abi_class = (yyvsp[-1].name);
+        (yyval.function_declaration)->abi_class = (yyvsp[-1].abi_class);
         (yyval.function_declaration)->body = (yyvsp[0].body);
     }
-#line 2203 "src/parser/rules.tab.c"
+#line 2263 "src/parser/rules.tab.c"
     break;
 
-  case 46: /* function_declaration: NAME ":" visibility FN "(" function_declaration_args ")" ARROW memory_length abi_class body  */
-#line 578 "src/parser/rules.y"
+  case 47: /* function_declaration: NAME ":" visibility FN "(" function_declaration_args ")" ARROW memory_length abi_class body  */
+#line 600 "src/parser/rules.y"
                {
         (yyval.function_declaration) = ALLOC(struct function_declaration_node_t);
-        TFRAG_COMBINE((yyval.function_declaration), (yyvsp[-10].name), (yyvsp[-9].name), (yyvsp[-8].name), (yyvsp[-7].name), (yyvsp[-6].name), (yyvsp[-5].function_declaration_args), (yyvsp[-4].name), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].body));
+        TFRAG_COMBINE((yyval.function_declaration), (yyvsp[-10].name), (yyvsp[-9].name), (yyvsp[-8].name), (yyvsp[-7].name), (yyvsp[-6].name), (yyvsp[-5].function_declaration_args), (yyvsp[-4].name), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].abi_class), (yyvsp[0].body));
         (yyval.function_declaration)->name = (yyvsp[-10].name);
         (yyval.function_declaration)->colon = (yyvsp[-9].name);
         (yyval.function_declaration)->vis = (yyvsp[-8].name);
@@ -2216,33 +2276,33 @@ yyreduce:
         (yyval.function_declaration)->closed_brace = (yyvsp[-4].name);
         (yyval.function_declaration)->arrow = (yyvsp[-3].name);
         (yyval.function_declaration)->mem_len = (yyvsp[-2].name);
-        (yyval.function_declaration)->abi_class = (yyvsp[-1].name);
+        (yyval.function_declaration)->abi_class = (yyvsp[-1].abi_class);
         (yyval.function_declaration)->body = (yyvsp[0].body);
     }
-#line 2223 "src/parser/rules.tab.c"
+#line 2283 "src/parser/rules.tab.c"
     break;
 
-  case 47: /* body_list: body_list statement  */
-#line 596 "src/parser/rules.y"
+  case 48: /* body_list: body_list statement  */
+#line 618 "src/parser/rules.y"
                         {
         (yyval.body_list) = ALLOC(struct body_list_node_t);
         TFRAG_COMBINE((yyval.body_list), (yyvsp[-1].body_list), (yyvsp[0].statement));
         (yyval.body_list)->rest = (yyvsp[-1].body_list);
         (yyval.body_list)->s = (yyvsp[0].statement);
     }
-#line 2234 "src/parser/rules.tab.c"
+#line 2294 "src/parser/rules.tab.c"
     break;
 
-  case 48: /* body_list: %empty  */
-#line 602 "src/parser/rules.y"
+  case 49: /* body_list: %empty  */
+#line 624 "src/parser/rules.y"
       {
         (yyval.body_list) = ALLOC(struct body_list_node_t);
     }
-#line 2242 "src/parser/rules.tab.c"
+#line 2302 "src/parser/rules.tab.c"
     break;
 
-  case 49: /* body: "{" body_list "}"  */
-#line 608 "src/parser/rules.y"
+  case 50: /* body: "{" body_list "}"  */
+#line 630 "src/parser/rules.y"
                       {
         (yyval.body) = ALLOC(struct body_node_t);
         TFRAG_COMBINE((yyval.body), (yyvsp[-2].name), (yyvsp[-1].body_list), (yyvsp[0].name));
@@ -2250,132 +2310,132 @@ yyreduce:
         (yyval.body)->list = (yyvsp[-1].body_list);
         (yyval.body)->closed_brace = (yyvsp[0].name);
     }
-#line 2254 "src/parser/rules.tab.c"
+#line 2314 "src/parser/rules.tab.c"
     break;
 
-  case 50: /* statement: variable_declaration  */
-#line 618 "src/parser/rules.y"
+  case 51: /* statement: variable_declaration  */
+#line 640 "src/parser/rules.y"
                          {
         (yyval.statement) = ALLOC(struct statement_node_t);
         TFRAG_COMBINE((yyval.statement), (yyvsp[0].variable_declaration));
         (yyval.statement)->vdecl = (yyvsp[0].variable_declaration);
     }
-#line 2264 "src/parser/rules.tab.c"
+#line 2324 "src/parser/rules.tab.c"
     break;
 
-  case 51: /* statement: register_alias  */
-#line 623 "src/parser/rules.y"
+  case 52: /* statement: register_alias  */
+#line 645 "src/parser/rules.y"
                      {
         (yyval.statement) = ALLOC(struct statement_node_t);
         TFRAG_COMBINE((yyval.statement), (yyvsp[0].register_alias));
         (yyval.statement)->alias = (yyvsp[0].register_alias);
     }
-#line 2274 "src/parser/rules.tab.c"
+#line 2334 "src/parser/rules.tab.c"
     break;
 
-  case 52: /* statement: extern_declaration  */
-#line 628 "src/parser/rules.y"
+  case 53: /* statement: extern_declaration  */
+#line 650 "src/parser/rules.y"
                          {
         (yyval.statement) = ALLOC(struct statement_node_t);
         TFRAG_COMBINE((yyval.statement), (yyvsp[0].extern_declaration));
         (yyval.statement)->ext_decl = (yyvsp[0].extern_declaration);
     }
-#line 2284 "src/parser/rules.tab.c"
+#line 2344 "src/parser/rules.tab.c"
     break;
 
-  case 53: /* statement: if_statement  */
-#line 633 "src/parser/rules.y"
+  case 54: /* statement: if_statement  */
+#line 655 "src/parser/rules.y"
                    {
         (yyval.statement) = ALLOC(struct statement_node_t);
         TFRAG_COMBINE((yyval.statement), (yyvsp[0].if_statement));
         (yyval.statement)->if_s = (yyvsp[0].if_statement);
     }
-#line 2294 "src/parser/rules.tab.c"
+#line 2354 "src/parser/rules.tab.c"
     break;
 
-  case 54: /* statement: label_declaration  */
-#line 638 "src/parser/rules.y"
+  case 55: /* statement: label_declaration  */
+#line 660 "src/parser/rules.y"
                         {
         (yyval.statement) = ALLOC(struct statement_node_t);
         TFRAG_COMBINE((yyval.statement), (yyvsp[0].label_declaration));
         (yyval.statement)->label = (yyvsp[0].label_declaration);
     }
-#line 2304 "src/parser/rules.tab.c"
+#line 2364 "src/parser/rules.tab.c"
     break;
 
-  case 55: /* statement: goto_statement  */
-#line 643 "src/parser/rules.y"
+  case 56: /* statement: goto_statement  */
+#line 665 "src/parser/rules.y"
                      {
         (yyval.statement) = ALLOC(struct statement_node_t);
         TFRAG_COMBINE((yyval.statement), (yyvsp[0].goto_statement));
         (yyval.statement)->goto_s = (yyvsp[0].goto_statement);
     }
-#line 2314 "src/parser/rules.tab.c"
+#line 2374 "src/parser/rules.tab.c"
     break;
 
-  case 56: /* statement: loop_statement  */
-#line 648 "src/parser/rules.y"
+  case 57: /* statement: loop_statement  */
+#line 670 "src/parser/rules.y"
                      {
         (yyval.statement) = ALLOC(struct statement_node_t);
         TFRAG_COMBINE((yyval.statement), (yyvsp[0].loop_statement));
         (yyval.statement)->loop_s = (yyvsp[0].loop_statement);
     }
-#line 2324 "src/parser/rules.tab.c"
+#line 2384 "src/parser/rules.tab.c"
     break;
 
-  case 57: /* statement: break_statement  */
-#line 653 "src/parser/rules.y"
+  case 58: /* statement: break_statement  */
+#line 675 "src/parser/rules.y"
                       {
         (yyval.statement) = ALLOC(struct statement_node_t);
         TFRAG_COMBINE((yyval.statement), (yyvsp[0].break_statement));
         (yyval.statement)->break_s = (yyvsp[0].break_statement);
     }
-#line 2334 "src/parser/rules.tab.c"
+#line 2394 "src/parser/rules.tab.c"
     break;
 
-  case 58: /* statement: ret_statement  */
-#line 658 "src/parser/rules.y"
+  case 59: /* statement: ret_statement  */
+#line 680 "src/parser/rules.y"
                     {
         (yyval.statement) = ALLOC(struct statement_node_t);
         TFRAG_COMBINE((yyval.statement), (yyvsp[0].ret_statement));
         (yyval.statement)->ret_s = (yyvsp[0].ret_statement);
     }
-#line 2344 "src/parser/rules.tab.c"
+#line 2404 "src/parser/rules.tab.c"
     break;
 
-  case 59: /* statement: avoid_block  */
-#line 663 "src/parser/rules.y"
+  case 60: /* statement: avoid_block  */
+#line 685 "src/parser/rules.y"
                   {
         (yyval.statement) = ALLOC(struct statement_node_t);
         TFRAG_COMBINE((yyval.statement), (yyvsp[0].avoid_block));
         (yyval.statement)->avoid = (yyvsp[0].avoid_block);
     }
-#line 2354 "src/parser/rules.tab.c"
+#line 2414 "src/parser/rules.tab.c"
     break;
 
-  case 60: /* statement: expression ";"  */
-#line 668 "src/parser/rules.y"
+  case 61: /* statement: expression ";"  */
+#line 690 "src/parser/rules.y"
                      {
         (yyval.statement) = ALLOC(struct statement_node_t);
         TFRAG_COMBINE((yyval.statement), (yyvsp[-1].expression), (yyvsp[0].name));
         (yyval.statement)->expr = (yyvsp[-1].expression);
         (yyval.statement)->semicolon = (yyvsp[0].name);
     }
-#line 2365 "src/parser/rules.tab.c"
+#line 2425 "src/parser/rules.tab.c"
     break;
 
-  case 61: /* statement: NASM_BLOCK  */
-#line 674 "src/parser/rules.y"
+  case 62: /* statement: NASM_BLOCK  */
+#line 696 "src/parser/rules.y"
                  {
         (yyval.statement) = ALLOC(struct statement_node_t);
         TFRAG_COMBINE((yyval.statement), (yyvsp[0].name));
         (yyval.statement)->nasm = (yyvsp[0].name);
     }
-#line 2375 "src/parser/rules.tab.c"
+#line 2435 "src/parser/rules.tab.c"
     break;
 
-  case 62: /* variable_declaration: NAME ":" memory_length  */
-#line 682 "src/parser/rules.y"
+  case 63: /* variable_declaration: NAME ":" memory_length  */
+#line 704 "src/parser/rules.y"
                            {
         (yyval.variable_declaration) = ALLOC(struct variable_declaration_node_t);
         TFRAG_COMBINE((yyval.variable_declaration), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
@@ -2383,11 +2443,11 @@ yyreduce:
         (yyval.variable_declaration)->colon = (yyvsp[-1].name);
         (yyval.variable_declaration)->mem_len = (yyvsp[0].name);
     }
-#line 2387 "src/parser/rules.tab.c"
+#line 2447 "src/parser/rules.tab.c"
     break;
 
-  case 63: /* variable_declaration: NAME ":" memory_length alignment  */
-#line 689 "src/parser/rules.y"
+  case 64: /* variable_declaration: NAME ":" memory_length alignment  */
+#line 711 "src/parser/rules.y"
                                        {
         (yyval.variable_declaration) = ALLOC(struct variable_declaration_node_t);
         TFRAG_COMBINE((yyval.variable_declaration), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
@@ -2396,11 +2456,11 @@ yyreduce:
         (yyval.variable_declaration)->mem_len = (yyvsp[-1].name);
         (yyval.variable_declaration)->align = (yyvsp[0].name);
     }
-#line 2400 "src/parser/rules.tab.c"
+#line 2460 "src/parser/rules.tab.c"
     break;
 
-  case 64: /* register_alias: NAME ":" ALIAS REG  */
-#line 700 "src/parser/rules.y"
+  case 65: /* register_alias: NAME ":" ALIAS REG  */
+#line 722 "src/parser/rules.y"
                        {
         (yyval.register_alias) = ALLOC(struct register_alias_node_t);
         TFRAG_COMBINE((yyval.register_alias), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
@@ -2409,11 +2469,11 @@ yyreduce:
         (yyval.register_alias)->alias = (yyvsp[-1].name);
         (yyval.register_alias)->reg = (yyvsp[0].name);
     }
-#line 2413 "src/parser/rules.tab.c"
+#line 2473 "src/parser/rules.tab.c"
     break;
 
-  case 65: /* register_alias: NAME ":" ALIAS GP_REGISTER  */
-#line 708 "src/parser/rules.y"
+  case 66: /* register_alias: NAME ":" ALIAS GP_REGISTER  */
+#line 730 "src/parser/rules.y"
                                  {
         (yyval.register_alias) = ALLOC(struct register_alias_node_t);
         TFRAG_COMBINE((yyval.register_alias), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
@@ -2422,11 +2482,11 @@ yyreduce:
         (yyval.register_alias)->alias = (yyvsp[-1].name);
         (yyval.register_alias)->reg = (yyvsp[0].name);
     }
-#line 2426 "src/parser/rules.tab.c"
+#line 2486 "src/parser/rules.tab.c"
     break;
 
-  case 66: /* if_statement: IF expression body  */
-#line 719 "src/parser/rules.y"
+  case 67: /* if_statement: IF expression body  */
+#line 741 "src/parser/rules.y"
                        {
         (yyval.if_statement) = ALLOC(struct if_statement_node_t);
         TFRAG_COMBINE((yyval.if_statement), (yyvsp[-2].name), (yyvsp[-1].expression), (yyvsp[0].body));
@@ -2434,11 +2494,11 @@ yyreduce:
         (yyval.if_statement)->expr = (yyvsp[-1].expression);
         (yyval.if_statement)->body = (yyvsp[0].body);
     }
-#line 2438 "src/parser/rules.tab.c"
+#line 2498 "src/parser/rules.tab.c"
     break;
 
-  case 67: /* if_statement: IF expression body ELSE body  */
-#line 726 "src/parser/rules.y"
+  case 68: /* if_statement: IF expression body ELSE body  */
+#line 748 "src/parser/rules.y"
                                    {
         (yyval.if_statement) = ALLOC(struct if_statement_node_t);
         TFRAG_COMBINE((yyval.if_statement), (yyvsp[-4].name), (yyvsp[-3].expression), (yyvsp[-2].body), (yyvsp[-1].name), (yyvsp[0].body));
@@ -2448,22 +2508,22 @@ yyreduce:
         (yyval.if_statement)->else_kw = (yyvsp[-1].name);
         (yyval.if_statement)->else_body = (yyvsp[0].body);
     }
-#line 2452 "src/parser/rules.tab.c"
+#line 2512 "src/parser/rules.tab.c"
     break;
 
-  case 68: /* label_declaration: NAME ":"  */
-#line 738 "src/parser/rules.y"
+  case 69: /* label_declaration: NAME ":"  */
+#line 760 "src/parser/rules.y"
              {
         (yyval.label_declaration) = ALLOC(struct label_declaration_node_t);
         TFRAG_COMBINE((yyval.label_declaration), (yyvsp[-1].name), (yyvsp[0].name));
         (yyval.label_declaration)->name = (yyvsp[-1].name);
         (yyval.label_declaration)->colon = (yyvsp[0].name);
     }
-#line 2463 "src/parser/rules.tab.c"
+#line 2523 "src/parser/rules.tab.c"
     break;
 
-  case 69: /* goto_statement: GOTO NAME ";"  */
-#line 747 "src/parser/rules.y"
+  case 70: /* goto_statement: GOTO NAME ";"  */
+#line 769 "src/parser/rules.y"
                   {
         (yyval.goto_statement) = ALLOC(struct goto_statement_node_t);
         TFRAG_COMBINE((yyval.goto_statement), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
@@ -2471,44 +2531,44 @@ yyreduce:
         (yyval.goto_statement)->name = (yyvsp[-1].name);
         (yyval.goto_statement)->semicolon = (yyvsp[0].name);
     }
-#line 2475 "src/parser/rules.tab.c"
+#line 2535 "src/parser/rules.tab.c"
     break;
 
-  case 70: /* loop_statement: LOOP body  */
-#line 757 "src/parser/rules.y"
+  case 71: /* loop_statement: LOOP body  */
+#line 779 "src/parser/rules.y"
               {
         (yyval.loop_statement) = ALLOC(struct loop_statement_node_t);
         TFRAG_COMBINE((yyval.loop_statement), (yyvsp[-1].name), (yyvsp[0].body));
         (yyval.loop_statement)->kw = (yyvsp[-1].name);
         (yyval.loop_statement)->body = (yyvsp[0].body);
     }
-#line 2486 "src/parser/rules.tab.c"
+#line 2546 "src/parser/rules.tab.c"
     break;
 
-  case 71: /* break_statement: BREAK ";"  */
-#line 766 "src/parser/rules.y"
+  case 72: /* break_statement: BREAK ";"  */
+#line 788 "src/parser/rules.y"
               {
         (yyval.break_statement) = ALLOC(struct break_statement_node_t);
         TFRAG_COMBINE((yyval.break_statement), (yyvsp[-1].name), (yyvsp[0].name));
         (yyval.break_statement)->kw = (yyvsp[-1].name);
         (yyval.break_statement)->semicolon = (yyvsp[0].name);
     }
-#line 2497 "src/parser/rules.tab.c"
+#line 2557 "src/parser/rules.tab.c"
     break;
 
-  case 72: /* break_statement: CONTINUE ";"  */
-#line 772 "src/parser/rules.y"
+  case 73: /* break_statement: CONTINUE ";"  */
+#line 794 "src/parser/rules.y"
                    {
         (yyval.break_statement) = ALLOC(struct break_statement_node_t);
         TFRAG_COMBINE((yyval.break_statement), (yyvsp[-1].name), (yyvsp[0].name));
         (yyval.break_statement)->kw = (yyvsp[-1].name);
         (yyval.break_statement)->semicolon = (yyvsp[0].name);
     }
-#line 2508 "src/parser/rules.tab.c"
+#line 2568 "src/parser/rules.tab.c"
     break;
 
-  case 73: /* ret_statement: RET expression ";"  */
-#line 781 "src/parser/rules.y"
+  case 74: /* ret_statement: RET expression ";"  */
+#line 803 "src/parser/rules.y"
                        {
         (yyval.ret_statement) = ALLOC(struct ret_statement_node_t);
         TFRAG_COMBINE((yyval.ret_statement), (yyvsp[-2].name), (yyvsp[-1].expression), (yyvsp[0].name));
@@ -2516,11 +2576,11 @@ yyreduce:
         (yyval.ret_statement)->expr = (yyvsp[-1].expression);
         (yyval.ret_statement)->semicolon = (yyvsp[0].name);
     }
-#line 2520 "src/parser/rules.tab.c"
+#line 2580 "src/parser/rules.tab.c"
     break;
 
-  case 74: /* avoid_block_regs: avoid_block_regs "," REGISTER  */
-#line 791 "src/parser/rules.y"
+  case 75: /* avoid_block_regs: avoid_block_regs "," REGISTER  */
+#line 813 "src/parser/rules.y"
                                   {
         (yyval.avoid_block_regs) = ALLOC(struct avoid_block_regs_node_t);
         TFRAG_COMBINE((yyval.avoid_block_regs), (yyvsp[-2].avoid_block_regs), (yyvsp[-1].name), (yyvsp[0].name));
@@ -2528,11 +2588,11 @@ yyreduce:
         (yyval.avoid_block_regs)->comma = (yyvsp[-1].name);
         (yyval.avoid_block_regs)->reg = (yyvsp[0].name);
     }
-#line 2532 "src/parser/rules.tab.c"
+#line 2592 "src/parser/rules.tab.c"
     break;
 
-  case 75: /* avoid_block_regs: avoid_block_regs "," GP_REGISTER  */
-#line 798 "src/parser/rules.y"
+  case 76: /* avoid_block_regs: avoid_block_regs "," GP_REGISTER  */
+#line 820 "src/parser/rules.y"
                                        {
         (yyval.avoid_block_regs) = ALLOC(struct avoid_block_regs_node_t);
         TFRAG_COMBINE((yyval.avoid_block_regs), (yyvsp[-2].avoid_block_regs), (yyvsp[-1].name), (yyvsp[0].name));
@@ -2540,31 +2600,31 @@ yyreduce:
         (yyval.avoid_block_regs)->comma = (yyvsp[-1].name);
         (yyval.avoid_block_regs)->reg = (yyvsp[0].name);
     }
-#line 2544 "src/parser/rules.tab.c"
+#line 2604 "src/parser/rules.tab.c"
     break;
 
-  case 76: /* avoid_block_regs: REGISTER  */
-#line 805 "src/parser/rules.y"
+  case 77: /* avoid_block_regs: REGISTER  */
+#line 827 "src/parser/rules.y"
                {
         (yyval.avoid_block_regs) = ALLOC(struct avoid_block_regs_node_t);
         TFRAG_COMBINE((yyval.avoid_block_regs), (yyvsp[0].name));
         (yyval.avoid_block_regs)->reg = (yyvsp[0].name);
     }
-#line 2554 "src/parser/rules.tab.c"
+#line 2614 "src/parser/rules.tab.c"
     break;
 
-  case 77: /* avoid_block_regs: GP_REGISTER  */
-#line 810 "src/parser/rules.y"
+  case 78: /* avoid_block_regs: GP_REGISTER  */
+#line 832 "src/parser/rules.y"
                   {
         (yyval.avoid_block_regs) = ALLOC(struct avoid_block_regs_node_t);
         TFRAG_COMBINE((yyval.avoid_block_regs), (yyvsp[0].name));
         (yyval.avoid_block_regs)->reg = (yyvsp[0].name);
     }
-#line 2564 "src/parser/rules.tab.c"
+#line 2624 "src/parser/rules.tab.c"
     break;
 
-  case 78: /* avoid_block: AVOID avoid_block_regs body  */
-#line 818 "src/parser/rules.y"
+  case 79: /* avoid_block: AVOID avoid_block_regs body  */
+#line 840 "src/parser/rules.y"
                                 {
         (yyval.avoid_block) = ALLOC(struct avoid_block_node_t);
         TFRAG_COMBINE((yyval.avoid_block), (yyvsp[-2].name), (yyvsp[-1].avoid_block_regs), (yyvsp[0].body));
@@ -2572,11 +2632,11 @@ yyreduce:
         (yyval.avoid_block)->regs = (yyvsp[-1].avoid_block_regs);
         (yyval.avoid_block)->body = (yyvsp[0].body);
     }
-#line 2576 "src/parser/rules.tab.c"
+#line 2636 "src/parser/rules.tab.c"
     break;
 
-  case 79: /* expression: logical_or ASSIGN expression  */
-#line 828 "src/parser/rules.y"
+  case 80: /* expression: logical_or ASSIGN expression  */
+#line 850 "src/parser/rules.y"
                                  {
         (yyval.expression) = ALLOC(struct expression_node_t);
         TFRAG_COMBINE((yyval.expression), (yyvsp[-2].logical_or), (yyvsp[-1].name), (yyvsp[0].expression));
@@ -2584,21 +2644,21 @@ yyreduce:
         (yyval.expression)->op = (yyvsp[-1].name);
         (yyval.expression)->arg2 = (yyvsp[0].expression);
     }
-#line 2588 "src/parser/rules.tab.c"
+#line 2648 "src/parser/rules.tab.c"
     break;
 
-  case 80: /* expression: logical_or  */
-#line 835 "src/parser/rules.y"
+  case 81: /* expression: logical_or  */
+#line 857 "src/parser/rules.y"
                  {
         (yyval.expression) = ALLOC(struct expression_node_t);
         TFRAG_COMBINE((yyval.expression), (yyvsp[0].logical_or));
         (yyval.expression)->other = (yyvsp[0].logical_or);
     }
-#line 2598 "src/parser/rules.tab.c"
+#line 2658 "src/parser/rules.tab.c"
     break;
 
-  case 81: /* logical_or: logical_or LOGICAL_OR logical_and  */
-#line 843 "src/parser/rules.y"
+  case 82: /* logical_or: logical_or LOGICAL_OR logical_and  */
+#line 865 "src/parser/rules.y"
                                       {
         (yyval.logical_or) = ALLOC(struct logical_or_node_t);
         TFRAG_COMBINE((yyval.logical_or), (yyvsp[-2].logical_or), (yyvsp[-1].name), (yyvsp[0].logical_and));
@@ -2606,21 +2666,21 @@ yyreduce:
         (yyval.logical_or)->op = (yyvsp[-1].name);
         (yyval.logical_or)->arg2 = (yyvsp[0].logical_and);
     }
-#line 2610 "src/parser/rules.tab.c"
+#line 2670 "src/parser/rules.tab.c"
     break;
 
-  case 82: /* logical_or: logical_and  */
-#line 850 "src/parser/rules.y"
+  case 83: /* logical_or: logical_and  */
+#line 872 "src/parser/rules.y"
                   {
         (yyval.logical_or) = ALLOC(struct logical_or_node_t);
         TFRAG_COMBINE((yyval.logical_or), (yyvsp[0].logical_and));
         (yyval.logical_or)->other = (yyvsp[0].logical_and);
     }
-#line 2620 "src/parser/rules.tab.c"
+#line 2680 "src/parser/rules.tab.c"
     break;
 
-  case 83: /* logical_and: logical_and LOGICAL_AND bitwise_or  */
-#line 858 "src/parser/rules.y"
+  case 84: /* logical_and: logical_and LOGICAL_AND bitwise_or  */
+#line 880 "src/parser/rules.y"
                                        {
         (yyval.logical_and) = ALLOC(struct logical_and_node_t);
         TFRAG_COMBINE((yyval.logical_and), (yyvsp[-2].logical_and), (yyvsp[-1].name), (yyvsp[0].bitwise_or));
@@ -2628,21 +2688,21 @@ yyreduce:
         (yyval.logical_and)->op = (yyvsp[-1].name);
         (yyval.logical_and)->arg2 = (yyvsp[0].bitwise_or);
     }
-#line 2632 "src/parser/rules.tab.c"
+#line 2692 "src/parser/rules.tab.c"
     break;
 
-  case 84: /* logical_and: bitwise_or  */
-#line 865 "src/parser/rules.y"
+  case 85: /* logical_and: bitwise_or  */
+#line 887 "src/parser/rules.y"
                  {
         (yyval.logical_and) = ALLOC(struct logical_and_node_t);
         TFRAG_COMBINE((yyval.logical_and), (yyvsp[0].bitwise_or));
         (yyval.logical_and)->other = (yyvsp[0].bitwise_or);
     }
-#line 2642 "src/parser/rules.tab.c"
+#line 2702 "src/parser/rules.tab.c"
     break;
 
-  case 85: /* bitwise_or: bitwise_or BITWISE_OR bitwise_xor  */
-#line 873 "src/parser/rules.y"
+  case 86: /* bitwise_or: bitwise_or BITWISE_OR bitwise_xor  */
+#line 895 "src/parser/rules.y"
                                       {
         (yyval.bitwise_or) = ALLOC(struct bitwise_or_node_t);
         TFRAG_COMBINE((yyval.bitwise_or), (yyvsp[-2].bitwise_or), (yyvsp[-1].name), (yyvsp[0].bitwise_xor));
@@ -2650,21 +2710,21 @@ yyreduce:
         (yyval.bitwise_or)->op = (yyvsp[-1].name);
         (yyval.bitwise_or)->arg2 = (yyvsp[0].bitwise_xor);
     }
-#line 2654 "src/parser/rules.tab.c"
+#line 2714 "src/parser/rules.tab.c"
     break;
 
-  case 86: /* bitwise_or: bitwise_xor  */
-#line 880 "src/parser/rules.y"
+  case 87: /* bitwise_or: bitwise_xor  */
+#line 902 "src/parser/rules.y"
                   {
         (yyval.bitwise_or) = ALLOC(struct bitwise_or_node_t);
         TFRAG_COMBINE((yyval.bitwise_or), (yyvsp[0].bitwise_xor));
         (yyval.bitwise_or)->other = (yyvsp[0].bitwise_xor);
     }
-#line 2664 "src/parser/rules.tab.c"
+#line 2724 "src/parser/rules.tab.c"
     break;
 
-  case 87: /* bitwise_xor: bitwise_xor BITWISE_XOR bitwise_and  */
-#line 888 "src/parser/rules.y"
+  case 88: /* bitwise_xor: bitwise_xor BITWISE_XOR bitwise_and  */
+#line 910 "src/parser/rules.y"
                                         {
         (yyval.bitwise_xor) = ALLOC(struct bitwise_xor_node_t);
         TFRAG_COMBINE((yyval.bitwise_xor), (yyvsp[-2].bitwise_xor), (yyvsp[-1].name), (yyvsp[0].bitwise_and));
@@ -2672,21 +2732,21 @@ yyreduce:
         (yyval.bitwise_xor)->op = (yyvsp[-1].name);
         (yyval.bitwise_xor)->arg2 = (yyvsp[0].bitwise_and);
     }
-#line 2676 "src/parser/rules.tab.c"
+#line 2736 "src/parser/rules.tab.c"
     break;
 
-  case 88: /* bitwise_xor: bitwise_and  */
-#line 895 "src/parser/rules.y"
+  case 89: /* bitwise_xor: bitwise_and  */
+#line 917 "src/parser/rules.y"
                   {
         (yyval.bitwise_xor) = ALLOC(struct bitwise_xor_node_t);
         TFRAG_COMBINE((yyval.bitwise_xor), (yyvsp[0].bitwise_and));
         (yyval.bitwise_xor)->other = (yyvsp[0].bitwise_and);
     }
-#line 2686 "src/parser/rules.tab.c"
+#line 2746 "src/parser/rules.tab.c"
     break;
 
-  case 89: /* bitwise_and: bitwise_and BITWISE_AND equality  */
-#line 903 "src/parser/rules.y"
+  case 90: /* bitwise_and: bitwise_and BITWISE_AND equality  */
+#line 925 "src/parser/rules.y"
                                      {
         (yyval.bitwise_and) = ALLOC(struct bitwise_and_node_t);
         TFRAG_COMBINE((yyval.bitwise_and), (yyvsp[-2].bitwise_and), (yyvsp[-1].name), (yyvsp[0].equality));
@@ -2694,21 +2754,21 @@ yyreduce:
         (yyval.bitwise_and)->op = (yyvsp[-1].name);
         (yyval.bitwise_and)->arg2 = (yyvsp[0].equality);
     }
-#line 2698 "src/parser/rules.tab.c"
+#line 2758 "src/parser/rules.tab.c"
     break;
 
-  case 90: /* bitwise_and: equality  */
-#line 910 "src/parser/rules.y"
+  case 91: /* bitwise_and: equality  */
+#line 932 "src/parser/rules.y"
                {
         (yyval.bitwise_and) = ALLOC(struct bitwise_and_node_t);
         TFRAG_COMBINE((yyval.bitwise_and), (yyvsp[0].equality));
         (yyval.bitwise_and)->other = (yyvsp[0].equality);
     }
-#line 2708 "src/parser/rules.tab.c"
+#line 2768 "src/parser/rules.tab.c"
     break;
 
-  case 91: /* equality: equality EQUALS relational  */
-#line 918 "src/parser/rules.y"
+  case 92: /* equality: equality EQUALS relational  */
+#line 940 "src/parser/rules.y"
                                {
         (yyval.equality) = ALLOC(struct equality_node_t);
         TFRAG_COMBINE((yyval.equality), (yyvsp[-2].equality), (yyvsp[-1].name), (yyvsp[0].relational));
@@ -2716,11 +2776,11 @@ yyreduce:
         (yyval.equality)->op = (yyvsp[-1].name);
         (yyval.equality)->arg2 = (yyvsp[0].relational);
     }
-#line 2720 "src/parser/rules.tab.c"
+#line 2780 "src/parser/rules.tab.c"
     break;
 
-  case 92: /* equality: equality NOT_EQUALS relational  */
-#line 925 "src/parser/rules.y"
+  case 93: /* equality: equality NOT_EQUALS relational  */
+#line 947 "src/parser/rules.y"
                                      {
         (yyval.equality) = ALLOC(struct equality_node_t);
         TFRAG_COMBINE((yyval.equality), (yyvsp[-2].equality), (yyvsp[-1].name), (yyvsp[0].relational));
@@ -2728,21 +2788,21 @@ yyreduce:
         (yyval.equality)->op = (yyvsp[-1].name);
         (yyval.equality)->arg2 = (yyvsp[0].relational);
     }
-#line 2732 "src/parser/rules.tab.c"
+#line 2792 "src/parser/rules.tab.c"
     break;
 
-  case 93: /* equality: relational  */
-#line 932 "src/parser/rules.y"
+  case 94: /* equality: relational  */
+#line 954 "src/parser/rules.y"
                  {
         (yyval.equality) = ALLOC(struct equality_node_t);
         TFRAG_COMBINE((yyval.equality), (yyvsp[0].relational));
         (yyval.equality)->other = (yyvsp[0].relational);
     }
-#line 2742 "src/parser/rules.tab.c"
+#line 2802 "src/parser/rules.tab.c"
     break;
 
-  case 94: /* relational: relational LESS_THAN additive  */
-#line 940 "src/parser/rules.y"
+  case 95: /* relational: relational LESS_THAN additive  */
+#line 962 "src/parser/rules.y"
                                   {
         (yyval.relational) = ALLOC(struct relational_node_t);
         TFRAG_COMBINE((yyval.relational), (yyvsp[-2].relational), (yyvsp[-1].name), (yyvsp[0].additive));
@@ -2750,11 +2810,11 @@ yyreduce:
         (yyval.relational)->op = (yyvsp[-1].name);
         (yyval.relational)->arg2 = (yyvsp[0].additive);
     }
-#line 2754 "src/parser/rules.tab.c"
+#line 2814 "src/parser/rules.tab.c"
     break;
 
-  case 95: /* relational: relational GREATER_THAN additive  */
-#line 947 "src/parser/rules.y"
+  case 96: /* relational: relational GREATER_THAN additive  */
+#line 969 "src/parser/rules.y"
                                        {
         (yyval.relational) = ALLOC(struct relational_node_t);
         TFRAG_COMBINE((yyval.relational), (yyvsp[-2].relational), (yyvsp[-1].name), (yyvsp[0].additive));
@@ -2762,11 +2822,11 @@ yyreduce:
         (yyval.relational)->op = (yyvsp[-1].name);
         (yyval.relational)->arg2 = (yyvsp[0].additive);
     }
-#line 2766 "src/parser/rules.tab.c"
+#line 2826 "src/parser/rules.tab.c"
     break;
 
-  case 96: /* relational: relational LESS_EQUAL additive  */
-#line 954 "src/parser/rules.y"
+  case 97: /* relational: relational LESS_EQUAL additive  */
+#line 976 "src/parser/rules.y"
                                      {
         (yyval.relational) = ALLOC(struct relational_node_t);
         TFRAG_COMBINE((yyval.relational), (yyvsp[-2].relational), (yyvsp[-1].name), (yyvsp[0].additive));
@@ -2774,11 +2834,11 @@ yyreduce:
         (yyval.relational)->op = (yyvsp[-1].name);
         (yyval.relational)->arg2 = (yyvsp[0].additive);
     }
-#line 2778 "src/parser/rules.tab.c"
+#line 2838 "src/parser/rules.tab.c"
     break;
 
-  case 97: /* relational: relational GREATER_EQUAL additive  */
-#line 961 "src/parser/rules.y"
+  case 98: /* relational: relational GREATER_EQUAL additive  */
+#line 983 "src/parser/rules.y"
                                         {
         (yyval.relational) = ALLOC(struct relational_node_t);
         TFRAG_COMBINE((yyval.relational), (yyvsp[-2].relational), (yyvsp[-1].name), (yyvsp[0].additive));
@@ -2786,21 +2846,21 @@ yyreduce:
         (yyval.relational)->op = (yyvsp[-1].name);
         (yyval.relational)->arg2 = (yyvsp[0].additive);
     }
-#line 2790 "src/parser/rules.tab.c"
+#line 2850 "src/parser/rules.tab.c"
     break;
 
-  case 98: /* relational: additive  */
-#line 968 "src/parser/rules.y"
+  case 99: /* relational: additive  */
+#line 990 "src/parser/rules.y"
                {
         (yyval.relational) = ALLOC(struct relational_node_t);
         TFRAG_COMBINE((yyval.relational), (yyvsp[0].additive));
         (yyval.relational)->other = (yyvsp[0].additive);
     }
-#line 2800 "src/parser/rules.tab.c"
+#line 2860 "src/parser/rules.tab.c"
     break;
 
-  case 99: /* additive: additive PLUS multiplicative  */
-#line 976 "src/parser/rules.y"
+  case 100: /* additive: additive PLUS multiplicative  */
+#line 998 "src/parser/rules.y"
                                  {
         (yyval.additive) = ALLOC(struct additive_node_t);
         TFRAG_COMBINE((yyval.additive), (yyvsp[-2].additive), (yyvsp[-1].name), (yyvsp[0].multiplicative));
@@ -2808,11 +2868,11 @@ yyreduce:
         (yyval.additive)->op = (yyvsp[-1].name);
         (yyval.additive)->arg2 = (yyvsp[0].multiplicative);
     }
-#line 2812 "src/parser/rules.tab.c"
+#line 2872 "src/parser/rules.tab.c"
     break;
 
-  case 100: /* additive: additive MINUS multiplicative  */
-#line 983 "src/parser/rules.y"
+  case 101: /* additive: additive MINUS multiplicative  */
+#line 1005 "src/parser/rules.y"
                                     {
         (yyval.additive) = ALLOC(struct additive_node_t);
         TFRAG_COMBINE((yyval.additive), (yyvsp[-2].additive), (yyvsp[-1].name), (yyvsp[0].multiplicative));
@@ -2820,21 +2880,21 @@ yyreduce:
         (yyval.additive)->op = (yyvsp[-1].name);
         (yyval.additive)->arg2 = (yyvsp[0].multiplicative);
     }
-#line 2824 "src/parser/rules.tab.c"
+#line 2884 "src/parser/rules.tab.c"
     break;
 
-  case 101: /* additive: multiplicative  */
-#line 990 "src/parser/rules.y"
+  case 102: /* additive: multiplicative  */
+#line 1012 "src/parser/rules.y"
                      {
         (yyval.additive) = ALLOC(struct additive_node_t);
         TFRAG_COMBINE((yyval.additive), (yyvsp[0].multiplicative));
         (yyval.additive)->other = (yyvsp[0].multiplicative);
     }
-#line 2834 "src/parser/rules.tab.c"
+#line 2894 "src/parser/rules.tab.c"
     break;
 
-  case 102: /* multiplicative: multiplicative MULTIPLY tetriary  */
-#line 998 "src/parser/rules.y"
+  case 103: /* multiplicative: multiplicative MULTIPLY tetriary  */
+#line 1020 "src/parser/rules.y"
                                      {
         (yyval.multiplicative) = ALLOC(struct multiplicative_node_t);
         TFRAG_COMBINE((yyval.multiplicative), (yyvsp[-2].multiplicative), (yyvsp[-1].name), (yyvsp[0].tetriary));
@@ -2842,11 +2902,11 @@ yyreduce:
         (yyval.multiplicative)->op = (yyvsp[-1].name);
         (yyval.multiplicative)->arg2 = (yyvsp[0].tetriary);
     }
-#line 2846 "src/parser/rules.tab.c"
+#line 2906 "src/parser/rules.tab.c"
     break;
 
-  case 103: /* multiplicative: multiplicative DIVIDE tetriary  */
-#line 1005 "src/parser/rules.y"
+  case 104: /* multiplicative: multiplicative DIVIDE tetriary  */
+#line 1027 "src/parser/rules.y"
                                      {
         (yyval.multiplicative) = ALLOC(struct multiplicative_node_t);
         TFRAG_COMBINE((yyval.multiplicative), (yyvsp[-2].multiplicative), (yyvsp[-1].name), (yyvsp[0].tetriary));
@@ -2854,11 +2914,11 @@ yyreduce:
         (yyval.multiplicative)->op = (yyvsp[-1].name);
         (yyval.multiplicative)->arg2 = (yyvsp[0].tetriary);
     }
-#line 2858 "src/parser/rules.tab.c"
+#line 2918 "src/parser/rules.tab.c"
     break;
 
-  case 104: /* multiplicative: multiplicative REMAINDER tetriary  */
-#line 1012 "src/parser/rules.y"
+  case 105: /* multiplicative: multiplicative REMAINDER tetriary  */
+#line 1034 "src/parser/rules.y"
                                         {
         (yyval.multiplicative) = ALLOC(struct multiplicative_node_t);
         TFRAG_COMBINE((yyval.multiplicative), (yyvsp[-2].multiplicative), (yyvsp[-1].name), (yyvsp[0].tetriary));
@@ -2866,76 +2926,76 @@ yyreduce:
         (yyval.multiplicative)->op = (yyvsp[-1].name);
         (yyval.multiplicative)->arg2 = (yyvsp[0].tetriary);
     }
-#line 2870 "src/parser/rules.tab.c"
+#line 2930 "src/parser/rules.tab.c"
     break;
 
-  case 105: /* multiplicative: tetriary  */
-#line 1019 "src/parser/rules.y"
+  case 106: /* multiplicative: tetriary  */
+#line 1041 "src/parser/rules.y"
                {
         (yyval.multiplicative) = ALLOC(struct multiplicative_node_t);
         TFRAG_COMBINE((yyval.multiplicative), (yyvsp[0].tetriary));
         (yyval.multiplicative)->other = (yyvsp[0].tetriary);
     }
-#line 2880 "src/parser/rules.tab.c"
+#line 2940 "src/parser/rules.tab.c"
     break;
 
-  case 106: /* prefix_op: INCREMENT tetriary  */
-#line 1027 "src/parser/rules.y"
+  case 107: /* prefix_op: INCREMENT tetriary  */
+#line 1049 "src/parser/rules.y"
                        {
         (yyval.prefix_op) = ALLOC(struct prefix_op_node_t);
         TFRAG_COMBINE((yyval.prefix_op), (yyvsp[-1].name), (yyvsp[0].tetriary));
         (yyval.prefix_op)->op = (yyvsp[-1].name);
         (yyval.prefix_op)->arg = (yyvsp[0].tetriary);
     }
-#line 2891 "src/parser/rules.tab.c"
+#line 2951 "src/parser/rules.tab.c"
     break;
 
-  case 107: /* prefix_op: DECREMENT tetriary  */
-#line 1033 "src/parser/rules.y"
+  case 108: /* prefix_op: DECREMENT tetriary  */
+#line 1055 "src/parser/rules.y"
                          {
         (yyval.prefix_op) = ALLOC(struct prefix_op_node_t);
         TFRAG_COMBINE((yyval.prefix_op), (yyvsp[-1].name), (yyvsp[0].tetriary));
         (yyval.prefix_op)->op = (yyvsp[-1].name);
         (yyval.prefix_op)->arg = (yyvsp[0].tetriary);
     }
-#line 2902 "src/parser/rules.tab.c"
+#line 2962 "src/parser/rules.tab.c"
     break;
 
-  case 108: /* prefix_op: LOGICAL_NOT tetriary  */
-#line 1039 "src/parser/rules.y"
+  case 109: /* prefix_op: LOGICAL_NOT tetriary  */
+#line 1061 "src/parser/rules.y"
                            {
         (yyval.prefix_op) = ALLOC(struct prefix_op_node_t);
         TFRAG_COMBINE((yyval.prefix_op), (yyvsp[-1].name), (yyvsp[0].tetriary));
         (yyval.prefix_op)->op = (yyvsp[-1].name);
         (yyval.prefix_op)->arg = (yyvsp[0].tetriary);
     }
-#line 2913 "src/parser/rules.tab.c"
+#line 2973 "src/parser/rules.tab.c"
     break;
 
-  case 109: /* prefix_op: BITWISE_NOT tetriary  */
-#line 1045 "src/parser/rules.y"
+  case 110: /* prefix_op: BITWISE_NOT tetriary  */
+#line 1067 "src/parser/rules.y"
                            {
         (yyval.prefix_op) = ALLOC(struct prefix_op_node_t);
         TFRAG_COMBINE((yyval.prefix_op), (yyvsp[-1].name), (yyvsp[0].tetriary));
         (yyval.prefix_op)->op = (yyvsp[-1].name);
         (yyval.prefix_op)->arg = (yyvsp[0].tetriary);
     }
-#line 2924 "src/parser/rules.tab.c"
+#line 2984 "src/parser/rules.tab.c"
     break;
 
-  case 110: /* cast_op: tetriary CAST  */
-#line 1054 "src/parser/rules.y"
+  case 111: /* cast_op: tetriary CAST  */
+#line 1076 "src/parser/rules.y"
                   {
         (yyval.cast_op) = ALLOC(struct cast_op_node_t);
         TFRAG_COMBINE((yyval.cast_op), (yyvsp[-1].tetriary), (yyvsp[0].name));
         (yyval.cast_op)->arg = (yyvsp[-1].tetriary);
         (yyval.cast_op)->op = (yyvsp[0].name);
     }
-#line 2935 "src/parser/rules.tab.c"
+#line 2995 "src/parser/rules.tab.c"
     break;
 
-  case 111: /* address_op: "[" expression "]" tetriary  */
-#line 1063 "src/parser/rules.y"
+  case 112: /* address_op: "[" expression "]" tetriary  */
+#line 1085 "src/parser/rules.y"
                                 {
         (yyval.address_op) = ALLOC(struct address_op_node_t);
         TFRAG_COMBINE((yyval.address_op), (yyvsp[-3].name), (yyvsp[-2].expression), (yyvsp[-1].name), (yyvsp[0].tetriary));
@@ -2944,11 +3004,11 @@ yyreduce:
         (yyval.address_op)->closed_brace = (yyvsp[-1].name);
         (yyval.address_op)->arg = (yyvsp[0].tetriary);
     }
-#line 2948 "src/parser/rules.tab.c"
+#line 3008 "src/parser/rules.tab.c"
     break;
 
-  case 112: /* address_op: "[" "]" tetriary  */
-#line 1071 "src/parser/rules.y"
+  case 113: /* address_op: "[" "]" tetriary  */
+#line 1093 "src/parser/rules.y"
                        {
         (yyval.address_op) = ALLOC(struct address_op_node_t);
         TFRAG_COMBINE((yyval.address_op), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].tetriary));
@@ -2956,94 +3016,283 @@ yyreduce:
         (yyval.address_op)->closed_brace = (yyvsp[-1].name);
         (yyval.address_op)->arg = (yyvsp[0].tetriary);
     }
-#line 2960 "src/parser/rules.tab.c"
+#line 3020 "src/parser/rules.tab.c"
     break;
 
-  case 113: /* sizeof_op: SIZEOF NAME  */
-#line 1081 "src/parser/rules.y"
+  case 114: /* sizeof_op: SIZEOF NAME  */
+#line 1103 "src/parser/rules.y"
                 {
         (yyval.sizeof_op) = ALLOC(struct sizeof_op_node_t);
         TFRAG_COMBINE((yyval.sizeof_op), (yyvsp[-1].name), (yyvsp[0].name));
         (yyval.sizeof_op)->kw = (yyvsp[-1].name);
         (yyval.sizeof_op)->name = (yyvsp[0].name);
     }
-#line 2971 "src/parser/rules.tab.c"
+#line 3031 "src/parser/rules.tab.c"
     break;
 
-  case 114: /* tetriary: prefix_op  */
-#line 1090 "src/parser/rules.y"
+  case 115: /* tetriary: prefix_op  */
+#line 1112 "src/parser/rules.y"
               {
         (yyval.tetriary) = ALLOC(struct tetriary_node_t);
         TFRAG_COMBINE((yyval.tetriary), (yyvsp[0].prefix_op));
         (yyval.tetriary)->prefix = (yyvsp[0].prefix_op);
     }
-#line 2981 "src/parser/rules.tab.c"
+#line 3041 "src/parser/rules.tab.c"
     break;
 
-  case 115: /* tetriary: cast_op  */
-#line 1095 "src/parser/rules.y"
+  case 116: /* tetriary: cast_op  */
+#line 1117 "src/parser/rules.y"
               {
         (yyval.tetriary) = ALLOC(struct tetriary_node_t);
         TFRAG_COMBINE((yyval.tetriary), (yyvsp[0].cast_op));
         (yyval.tetriary)->cast = (yyvsp[0].cast_op);
     }
-#line 2991 "src/parser/rules.tab.c"
+#line 3051 "src/parser/rules.tab.c"
     break;
 
-  case 116: /* tetriary: address_op  */
-#line 1100 "src/parser/rules.y"
+  case 117: /* tetriary: address_op  */
+#line 1122 "src/parser/rules.y"
                  {
         (yyval.tetriary) = ALLOC(struct tetriary_node_t);
         TFRAG_COMBINE((yyval.tetriary), (yyvsp[0].address_op));
         (yyval.tetriary)->address = (yyvsp[0].address_op);
     }
-#line 3001 "src/parser/rules.tab.c"
+#line 3061 "src/parser/rules.tab.c"
     break;
 
-  case 117: /* tetriary: sizeof_op  */
-#line 1105 "src/parser/rules.y"
+  case 118: /* tetriary: sizeof_op  */
+#line 1127 "src/parser/rules.y"
                 {
         (yyval.tetriary) = ALLOC(struct tetriary_node_t);
         TFRAG_COMBINE((yyval.tetriary), (yyvsp[0].sizeof_op));
         (yyval.tetriary)->sizeof_op = (yyvsp[0].sizeof_op);
     }
-#line 3011 "src/parser/rules.tab.c"
+#line 3071 "src/parser/rules.tab.c"
     break;
 
-  case 118: /* tetriary: secondary  */
-#line 1110 "src/parser/rules.y"
+  case 119: /* tetriary: secondary  */
+#line 1132 "src/parser/rules.y"
                 {
         (yyval.tetriary) = ALLOC(struct tetriary_node_t);
         TFRAG_COMBINE((yyval.tetriary), (yyvsp[0].secondary));
         (yyval.tetriary)->secondary = (yyvsp[0].secondary);
     }
-#line 3021 "src/parser/rules.tab.c"
+#line 3081 "src/parser/rules.tab.c"
     break;
 
-  case 119: /* suffix_op: secondary INCREMENT  */
-#line 1118 "src/parser/rules.y"
+  case 120: /* suffix_op: secondary INCREMENT  */
+#line 1140 "src/parser/rules.y"
                         {
         (yyval.suffix_op) = ALLOC(struct suffix_op_node_t);
         TFRAG_COMBINE((yyval.suffix_op), (yyvsp[-1].secondary), (yyvsp[0].name));
         (yyval.suffix_op)->arg = (yyvsp[-1].secondary);
         (yyval.suffix_op)->op = (yyvsp[0].name);
     }
-#line 3032 "src/parser/rules.tab.c"
+#line 3092 "src/parser/rules.tab.c"
     break;
 
-  case 120: /* suffix_op: secondary DECREMENT  */
-#line 1124 "src/parser/rules.y"
+  case 121: /* suffix_op: secondary DECREMENT  */
+#line 1146 "src/parser/rules.y"
                           {
         (yyval.suffix_op) = ALLOC(struct suffix_op_node_t);
         TFRAG_COMBINE((yyval.suffix_op), (yyvsp[-1].secondary), (yyvsp[0].name));
         (yyval.suffix_op)->arg = (yyvsp[-1].secondary);
         (yyval.suffix_op)->op = (yyvsp[0].name);
     }
-#line 3043 "src/parser/rules.tab.c"
+#line 3103 "src/parser/rules.tab.c"
     break;
 
-  case 121: /* dereference_op: secondary "[" expression "]"  */
-#line 1133 "src/parser/rules.y"
+  case 122: /* function_call_op_arg: expression  */
+#line 1155 "src/parser/rules.y"
+               {
+        (yyval.function_call_op_arg) = ALLOC(struct function_call_op_arg_node_t);
+        TFRAG_COMBINE((yyval.function_call_op_arg), (yyvsp[0].expression));
+        (yyval.function_call_op_arg)->arg = (yyvsp[0].expression);
+    }
+#line 3113 "src/parser/rules.tab.c"
+    break;
+
+  case 123: /* function_call_op_arg: expression ":" memory_length  */
+#line 1160 "src/parser/rules.y"
+                                   {
+        (yyval.function_call_op_arg) = ALLOC(struct function_call_op_arg_node_t);
+        TFRAG_COMBINE((yyval.function_call_op_arg), (yyvsp[-2].expression), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.function_call_op_arg)->arg = (yyvsp[-2].expression);
+        (yyval.function_call_op_arg)->colon = (yyvsp[-1].name);
+        (yyval.function_call_op_arg)->mem_len = (yyvsp[0].name);
+    }
+#line 3125 "src/parser/rules.tab.c"
+    break;
+
+  case 124: /* function_call_op_arg: expression ":" alignment  */
+#line 1167 "src/parser/rules.y"
+                               {
+        (yyval.function_call_op_arg) = ALLOC(struct function_call_op_arg_node_t);
+        TFRAG_COMBINE((yyval.function_call_op_arg), (yyvsp[-2].expression), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.function_call_op_arg)->arg = (yyvsp[-2].expression);
+        (yyval.function_call_op_arg)->colon = (yyvsp[-1].name);
+        (yyval.function_call_op_arg)->align = (yyvsp[0].name);
+    }
+#line 3137 "src/parser/rules.tab.c"
+    break;
+
+  case 125: /* function_call_op_arg: expression ":" abi_class  */
+#line 1174 "src/parser/rules.y"
+                               {
+        (yyval.function_call_op_arg) = ALLOC(struct function_call_op_arg_node_t);
+        TFRAG_COMBINE((yyval.function_call_op_arg), (yyvsp[-2].expression), (yyvsp[-1].name), (yyvsp[0].abi_class));
+        (yyval.function_call_op_arg)->arg = (yyvsp[-2].expression);
+        (yyval.function_call_op_arg)->colon = (yyvsp[-1].name);
+        (yyval.function_call_op_arg)->abi_class = (yyvsp[0].abi_class);
+    }
+#line 3149 "src/parser/rules.tab.c"
+    break;
+
+  case 126: /* function_call_op_arg: expression ":" memory_length alignment  */
+#line 1181 "src/parser/rules.y"
+                                             {
+        (yyval.function_call_op_arg) = ALLOC(struct function_call_op_arg_node_t);
+        TFRAG_COMBINE((yyval.function_call_op_arg), (yyvsp[-3].expression), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].name));
+        (yyval.function_call_op_arg)->arg = (yyvsp[-3].expression);
+        (yyval.function_call_op_arg)->colon = (yyvsp[-2].name);
+        (yyval.function_call_op_arg)->mem_len = (yyvsp[-1].name);
+        (yyval.function_call_op_arg)->align = (yyvsp[0].name);
+    }
+#line 3162 "src/parser/rules.tab.c"
+    break;
+
+  case 127: /* function_call_op_arg: expression ":" memory_length abi_class  */
+#line 1189 "src/parser/rules.y"
+                                             {
+        (yyval.function_call_op_arg) = ALLOC(struct function_call_op_arg_node_t);
+        TFRAG_COMBINE((yyval.function_call_op_arg), (yyvsp[-3].expression), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].abi_class));
+        (yyval.function_call_op_arg)->arg = (yyvsp[-3].expression);
+        (yyval.function_call_op_arg)->colon = (yyvsp[-2].name);
+        (yyval.function_call_op_arg)->mem_len = (yyvsp[-1].name);
+        (yyval.function_call_op_arg)->abi_class = (yyvsp[0].abi_class);
+    }
+#line 3175 "src/parser/rules.tab.c"
+    break;
+
+  case 128: /* function_call_op_arg: expression ":" alignment abi_class  */
+#line 1197 "src/parser/rules.y"
+                                         {
+        (yyval.function_call_op_arg) = ALLOC(struct function_call_op_arg_node_t);
+        TFRAG_COMBINE((yyval.function_call_op_arg), (yyvsp[-3].expression), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].abi_class));
+        (yyval.function_call_op_arg)->arg = (yyvsp[-3].expression);
+        (yyval.function_call_op_arg)->colon = (yyvsp[-2].name);
+        (yyval.function_call_op_arg)->align = (yyvsp[-1].name);
+        (yyval.function_call_op_arg)->abi_class = (yyvsp[0].abi_class);
+    }
+#line 3188 "src/parser/rules.tab.c"
+    break;
+
+  case 129: /* function_call_op_arg: expression ":" memory_length alignment abi_class  */
+#line 1205 "src/parser/rules.y"
+                                                       {
+        (yyval.function_call_op_arg) = ALLOC(struct function_call_op_arg_node_t);
+        TFRAG_COMBINE((yyval.function_call_op_arg), (yyvsp[-4].expression), (yyvsp[-3].name), (yyvsp[-2].name), (yyvsp[-1].name), (yyvsp[0].abi_class));
+        (yyval.function_call_op_arg)->arg = (yyvsp[-4].expression);
+        (yyval.function_call_op_arg)->colon = (yyvsp[-3].name);
+        (yyval.function_call_op_arg)->mem_len = (yyvsp[-2].name);
+        (yyval.function_call_op_arg)->align = (yyvsp[-1].name);
+        (yyval.function_call_op_arg)->abi_class = (yyvsp[0].abi_class);
+    }
+#line 3202 "src/parser/rules.tab.c"
+    break;
+
+  case 130: /* function_call_op_args: function_call_op_args "," function_call_op_arg  */
+#line 1217 "src/parser/rules.y"
+                                                   {
+        (yyval.function_call_op_args) = ALLOC(struct function_call_op_args_node_t);
+        TFRAG_COMBINE((yyval.function_call_op_args), (yyvsp[-2].function_call_op_args), (yyvsp[-1].name), (yyvsp[0].function_call_op_arg));
+        (yyval.function_call_op_args)->rest = (yyvsp[-2].function_call_op_args);
+        (yyval.function_call_op_args)->comma = (yyvsp[-1].name);
+        (yyval.function_call_op_args)->arg = (yyvsp[0].function_call_op_arg);
+    }
+#line 3214 "src/parser/rules.tab.c"
+    break;
+
+  case 131: /* function_call_op_args: function_call_op_arg  */
+#line 1224 "src/parser/rules.y"
+                           {
+        (yyval.function_call_op_args) = ALLOC(struct function_call_op_args_node_t);
+        TFRAG_COMBINE((yyval.function_call_op_args), (yyvsp[0].function_call_op_arg));
+        (yyval.function_call_op_args)->arg = (yyvsp[0].function_call_op_arg);
+    }
+#line 3224 "src/parser/rules.tab.c"
+    break;
+
+  case 132: /* function_call_op_args: %empty  */
+#line 1229 "src/parser/rules.y"
+      {
+        (yyval.function_call_op_args) = ALLOC(struct function_call_op_args_node_t);
+    }
+#line 3232 "src/parser/rules.tab.c"
+    break;
+
+  case 133: /* function_call_op: CALL expression "(" function_call_op_args ")"  */
+#line 1235 "src/parser/rules.y"
+                                                  {
+        (yyval.function_call_op) = ALLOC(struct function_call_op_node_t);
+        TFRAG_COMBINE((yyval.function_call_op), (yyvsp[-4].name), (yyvsp[-3].expression), (yyvsp[-2].name), (yyvsp[-1].function_call_op_args), (yyvsp[0].name));
+        (yyval.function_call_op)->kw = (yyvsp[-4].name);
+        (yyval.function_call_op)->fn = (yyvsp[-3].expression);
+        (yyval.function_call_op)->open_bracket = (yyvsp[-2].name);
+        (yyval.function_call_op)->args = (yyvsp[-1].function_call_op_args);
+        (yyval.function_call_op)->close_bracket = (yyvsp[0].name);
+    }
+#line 3246 "src/parser/rules.tab.c"
+    break;
+
+  case 134: /* function_call_op: CALL memory_length expression "(" function_call_op_args ")"  */
+#line 1244 "src/parser/rules.y"
+                                                                  {
+        (yyval.function_call_op) = ALLOC(struct function_call_op_node_t);
+        TFRAG_COMBINE((yyval.function_call_op), (yyvsp[-5].name), (yyvsp[-4].name), (yyvsp[-3].expression), (yyvsp[-2].name), (yyvsp[-1].function_call_op_args), (yyvsp[0].name));
+        (yyval.function_call_op)->kw = (yyvsp[-5].name);
+        (yyval.function_call_op)->mem_len = (yyvsp[-4].name);
+        (yyval.function_call_op)->fn = (yyvsp[-3].expression);
+        (yyval.function_call_op)->open_bracket = (yyvsp[-2].name);
+        (yyval.function_call_op)->args = (yyvsp[-1].function_call_op_args);
+        (yyval.function_call_op)->close_bracket = (yyvsp[0].name);
+    }
+#line 3261 "src/parser/rules.tab.c"
+    break;
+
+  case 135: /* function_call_op: CALL abi_class expression "(" function_call_op_args ")"  */
+#line 1254 "src/parser/rules.y"
+                                                              {
+        (yyval.function_call_op) = ALLOC(struct function_call_op_node_t);
+        TFRAG_COMBINE((yyval.function_call_op), (yyvsp[-5].name), (yyvsp[-4].abi_class), (yyvsp[-3].expression), (yyvsp[-2].name), (yyvsp[-1].function_call_op_args), (yyvsp[0].name));
+        (yyval.function_call_op)->kw = (yyvsp[-5].name);
+        (yyval.function_call_op)->abi_class = (yyvsp[-4].abi_class);
+        (yyval.function_call_op)->fn = (yyvsp[-3].expression);
+        (yyval.function_call_op)->open_bracket = (yyvsp[-2].name);
+        (yyval.function_call_op)->args = (yyvsp[-1].function_call_op_args);
+        (yyval.function_call_op)->close_bracket = (yyvsp[0].name);
+    }
+#line 3276 "src/parser/rules.tab.c"
+    break;
+
+  case 136: /* function_call_op: CALL memory_length abi_class expression "(" function_call_op_args ")"  */
+#line 1264 "src/parser/rules.y"
+                                                                            {
+        (yyval.function_call_op) = ALLOC(struct function_call_op_node_t);
+        TFRAG_COMBINE((yyval.function_call_op), (yyvsp[-6].name), (yyvsp[-5].name), (yyvsp[-4].abi_class), (yyvsp[-3].expression), (yyvsp[-2].name), (yyvsp[-1].function_call_op_args), (yyvsp[0].name));
+        (yyval.function_call_op)->kw = (yyvsp[-6].name);
+        (yyval.function_call_op)->mem_len = (yyvsp[-5].name);
+        (yyval.function_call_op)->abi_class = (yyvsp[-4].abi_class);
+        (yyval.function_call_op)->fn = (yyvsp[-3].expression);
+        (yyval.function_call_op)->open_bracket = (yyvsp[-2].name);
+        (yyval.function_call_op)->args = (yyvsp[-1].function_call_op_args);
+        (yyval.function_call_op)->close_bracket = (yyvsp[0].name);
+    }
+#line 3292 "src/parser/rules.tab.c"
+    break;
+
+  case 137: /* dereference_op: secondary "[" expression "]"  */
+#line 1277 "src/parser/rules.y"
                                  {
         (yyval.dereference_op) = ALLOC(struct dereference_op_node_t);
         TFRAG_COMBINE((yyval.dereference_op), (yyvsp[-3].secondary), (yyvsp[-2].name), (yyvsp[-1].expression), (yyvsp[0].name));
@@ -3052,11 +3301,11 @@ yyreduce:
         (yyval.dereference_op)->offset = (yyvsp[-1].expression);
         (yyval.dereference_op)->close_brace = (yyvsp[0].name);
     }
-#line 3056 "src/parser/rules.tab.c"
+#line 3305 "src/parser/rules.tab.c"
     break;
 
-  case 122: /* dereference_op: secondary "[" "]"  */
-#line 1141 "src/parser/rules.y"
+  case 138: /* dereference_op: secondary "[" "]"  */
+#line 1285 "src/parser/rules.y"
                         {
         (yyval.dereference_op) = ALLOC(struct dereference_op_node_t);
         TFRAG_COMBINE((yyval.dereference_op), (yyvsp[-2].secondary), (yyvsp[-1].name), (yyvsp[0].name));
@@ -3064,11 +3313,11 @@ yyreduce:
         (yyval.dereference_op)->open_brace = (yyvsp[-1].name);
         (yyval.dereference_op)->close_brace = (yyvsp[0].name);
     }
-#line 3068 "src/parser/rules.tab.c"
+#line 3317 "src/parser/rules.tab.c"
     break;
 
-  case 123: /* layout_access_op: secondary ACCESS NAME  */
-#line 1151 "src/parser/rules.y"
+  case 139: /* layout_access_op: secondary ACCESS NAME  */
+#line 1295 "src/parser/rules.y"
                           {
         (yyval.layout_access_op) = ALLOC(struct layout_access_op_node_t);
         TFRAG_COMBINE((yyval.layout_access_op), (yyvsp[-2].secondary), (yyvsp[-1].name), (yyvsp[0].name));
@@ -3076,51 +3325,61 @@ yyreduce:
         (yyval.layout_access_op)->op = (yyvsp[-1].name);
         (yyval.layout_access_op)->field = (yyvsp[0].name);
     }
-#line 3080 "src/parser/rules.tab.c"
+#line 3329 "src/parser/rules.tab.c"
     break;
 
-  case 124: /* secondary: suffix_op  */
-#line 1161 "src/parser/rules.y"
+  case 140: /* secondary: suffix_op  */
+#line 1305 "src/parser/rules.y"
               {
         (yyval.secondary) = ALLOC(struct secondary_node_t);
         TFRAG_COMBINE((yyval.secondary), (yyvsp[0].suffix_op));
         (yyval.secondary)->suffix = (yyvsp[0].suffix_op);
     }
-#line 3090 "src/parser/rules.tab.c"
+#line 3339 "src/parser/rules.tab.c"
     break;
 
-  case 125: /* secondary: dereference_op  */
-#line 1166 "src/parser/rules.y"
+  case 141: /* secondary: function_call_op  */
+#line 1310 "src/parser/rules.y"
+                       {
+        (yyval.secondary) = ALLOC(struct secondary_node_t);
+        TFRAG_COMBINE((yyval.secondary), (yyvsp[0].function_call_op));
+        (yyval.secondary)->fn_call = (yyvsp[0].function_call_op);
+    }
+#line 3349 "src/parser/rules.tab.c"
+    break;
+
+  case 142: /* secondary: dereference_op  */
+#line 1315 "src/parser/rules.y"
                      {
         (yyval.secondary) = ALLOC(struct secondary_node_t);
         TFRAG_COMBINE((yyval.secondary), (yyvsp[0].dereference_op));
         (yyval.secondary)->deref = (yyvsp[0].dereference_op);
     }
-#line 3100 "src/parser/rules.tab.c"
+#line 3359 "src/parser/rules.tab.c"
     break;
 
-  case 126: /* secondary: layout_access_op  */
-#line 1171 "src/parser/rules.y"
+  case 143: /* secondary: layout_access_op  */
+#line 1320 "src/parser/rules.y"
                        {
         (yyval.secondary) = ALLOC(struct secondary_node_t);
         TFRAG_COMBINE((yyval.secondary), (yyvsp[0].layout_access_op));
         (yyval.secondary)->layout_access = (yyvsp[0].layout_access_op);
     }
-#line 3110 "src/parser/rules.tab.c"
+#line 3369 "src/parser/rules.tab.c"
     break;
 
-  case 127: /* secondary: primary  */
-#line 1176 "src/parser/rules.y"
+  case 144: /* secondary: primary  */
+#line 1325 "src/parser/rules.y"
               {
         (yyval.secondary) = ALLOC(struct secondary_node_t);
         TFRAG_COMBINE((yyval.secondary), (yyvsp[0].primary));
         (yyval.secondary)->primary = (yyvsp[0].primary);
     }
-#line 3120 "src/parser/rules.tab.c"
+#line 3379 "src/parser/rules.tab.c"
     break;
 
-  case 128: /* primary: "(" expression ")"  */
-#line 1184 "src/parser/rules.y"
+  case 145: /* primary: "(" expression ")"  */
+#line 1333 "src/parser/rules.y"
                        {
         (yyval.primary) = ALLOC(struct primary_node_t);
         TFRAG_COMBINE((yyval.primary), (yyvsp[-2].name), (yyvsp[-1].expression), (yyvsp[0].name));
@@ -3128,56 +3387,56 @@ yyreduce:
         (yyval.primary)->expression = (yyvsp[-1].expression);
         (yyval.primary)->close_brace = (yyvsp[0].name);
     }
-#line 3132 "src/parser/rules.tab.c"
+#line 3391 "src/parser/rules.tab.c"
     break;
 
-  case 129: /* primary: literal  */
-#line 1191 "src/parser/rules.y"
+  case 146: /* primary: literal  */
+#line 1340 "src/parser/rules.y"
               {
         (yyval.primary) = ALLOC(struct primary_node_t);
         TFRAG_COMBINE((yyval.primary), (yyvsp[0].literal));
         (yyval.primary)->literal = (yyvsp[0].literal);
     }
-#line 3142 "src/parser/rules.tab.c"
+#line 3401 "src/parser/rules.tab.c"
     break;
 
-  case 130: /* literal: INT  */
-#line 1199 "src/parser/rules.y"
+  case 147: /* literal: INT  */
+#line 1348 "src/parser/rules.y"
         { (yyval.literal) = (yyvsp[0].literal); }
-#line 3148 "src/parser/rules.tab.c"
+#line 3407 "src/parser/rules.tab.c"
     break;
 
-  case 131: /* literal: UINT  */
-#line 1200 "src/parser/rules.y"
+  case 148: /* literal: UINT  */
+#line 1349 "src/parser/rules.y"
            { (yyval.literal) = (yyvsp[0].literal); }
-#line 3154 "src/parser/rules.tab.c"
+#line 3413 "src/parser/rules.tab.c"
     break;
 
-  case 132: /* literal: DOUBLE  */
-#line 1201 "src/parser/rules.y"
+  case 149: /* literal: DOUBLE  */
+#line 1350 "src/parser/rules.y"
              { (yyval.literal) = (yyvsp[0].literal); }
-#line 3160 "src/parser/rules.tab.c"
+#line 3419 "src/parser/rules.tab.c"
     break;
 
-  case 133: /* literal: STRING  */
-#line 1202 "src/parser/rules.y"
+  case 150: /* literal: STRING  */
+#line 1351 "src/parser/rules.y"
              { (yyval.literal) = (yyvsp[0].literal); }
-#line 3166 "src/parser/rules.tab.c"
+#line 3425 "src/parser/rules.tab.c"
     break;
 
-  case 134: /* literal: NAME  */
-#line 1203 "src/parser/rules.y"
+  case 151: /* literal: NAME  */
+#line 1352 "src/parser/rules.y"
            {
         (yyval.literal) = ALLOC(struct literal_node_t);
         TFRAG_COMBINE((yyval.literal), (yyvsp[0].name));
         (yyval.literal)->type = LIT_NAME;
         (yyval.literal)->name_lit = (yyvsp[0].name);
     }
-#line 3177 "src/parser/rules.tab.c"
+#line 3436 "src/parser/rules.tab.c"
     break;
 
 
-#line 3181 "src/parser/rules.tab.c"
+#line 3440 "src/parser/rules.tab.c"
 
       default: break;
     }
@@ -3401,5 +3660,5 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 1211 "src/parser/rules.y"
+#line 1360 "src/parser/rules.y"
 

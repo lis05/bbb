@@ -84,40 +84,41 @@ extern int yydebug;
     AVOID = 285,                   /* AVOID  */
     ALIAS = 286,                   /* ALIAS  */
     REG = 287,                     /* REG  */
-    LOGICAL_OR = 288,              /* LOGICAL_OR  */
-    LOGICAL_AND = 289,             /* LOGICAL_AND  */
-    ASSIGN = 290,                  /* ASSIGN  */
-    INCREMENT = 291,               /* INCREMENT  */
-    DECREMENT = 292,               /* DECREMENT  */
-    SIZEOF = 293,                  /* SIZEOF  */
-    PLUS = 294,                    /* PLUS  */
-    MINUS = 295,                   /* MINUS  */
-    MULTIPLY = 296,                /* MULTIPLY  */
-    DIVIDE = 297,                  /* DIVIDE  */
-    REMAINDER = 298,               /* REMAINDER  */
-    BITWISE_AND = 299,             /* BITWISE_AND  */
-    BITWISE_OR = 300,              /* BITWISE_OR  */
-    BITWISE_XOR = 301,             /* BITWISE_XOR  */
-    LOGICAL_NOT = 302,             /* LOGICAL_NOT  */
-    BITWISE_NOT = 303,             /* BITWISE_NOT  */
-    LESS_THAN = 304,               /* LESS_THAN  */
-    GREATER_THAN = 305,            /* GREATER_THAN  */
-    LESS_EQUAL = 306,              /* LESS_EQUAL  */
-    GREATER_EQUAL = 307,           /* GREATER_EQUAL  */
-    EQUALS = 308,                  /* EQUALS  */
-    NOT_EQUALS = 309,              /* NOT_EQUALS  */
-    CAST = 310,                    /* CAST  */
-    ACCESS = 311,                  /* ACCESS  */
-    ROB = 312,                     /* "("  */
-    RCB = 313,                     /* ")"  */
-    SOB = 314,                     /* "["  */
-    SCB = 315,                     /* "]"  */
-    COB = 316,                     /* "{"  */
-    CCB = 317,                     /* "}"  */
-    ARROW = 318,                   /* ARROW  */
-    COLON = 319,                   /* ":"  */
-    SEMICOLON = 320,               /* ";"  */
-    COMMA = 321                    /* ","  */
+    CALL = 288,                    /* CALL  */
+    LOGICAL_OR = 289,              /* LOGICAL_OR  */
+    LOGICAL_AND = 290,             /* LOGICAL_AND  */
+    ASSIGN = 291,                  /* ASSIGN  */
+    INCREMENT = 292,               /* INCREMENT  */
+    DECREMENT = 293,               /* DECREMENT  */
+    SIZEOF = 294,                  /* SIZEOF  */
+    PLUS = 295,                    /* PLUS  */
+    MINUS = 296,                   /* MINUS  */
+    MULTIPLY = 297,                /* MULTIPLY  */
+    DIVIDE = 298,                  /* DIVIDE  */
+    REMAINDER = 299,               /* REMAINDER  */
+    BITWISE_AND = 300,             /* BITWISE_AND  */
+    BITWISE_OR = 301,              /* BITWISE_OR  */
+    BITWISE_XOR = 302,             /* BITWISE_XOR  */
+    LOGICAL_NOT = 303,             /* LOGICAL_NOT  */
+    BITWISE_NOT = 304,             /* BITWISE_NOT  */
+    LESS_THAN = 305,               /* LESS_THAN  */
+    GREATER_THAN = 306,            /* GREATER_THAN  */
+    LESS_EQUAL = 307,              /* LESS_EQUAL  */
+    GREATER_EQUAL = 308,           /* GREATER_EQUAL  */
+    EQUALS = 309,                  /* EQUALS  */
+    NOT_EQUALS = 310,              /* NOT_EQUALS  */
+    CAST = 311,                    /* CAST  */
+    ACCESS = 312,                  /* ACCESS  */
+    ROB = 313,                     /* "("  */
+    RCB = 314,                     /* ")"  */
+    SOB = 315,                     /* "["  */
+    SCB = 316,                     /* "]"  */
+    COB = 317,                     /* "{"  */
+    CCB = 318,                     /* "}"  */
+    ARROW = 319,                   /* ARROW  */
+    COLON = 320,                   /* ":"  */
+    SEMICOLON = 321,               /* ";"  */
+    COMMA = 322                    /* ","  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -130,6 +131,7 @@ union YYSTYPE
 
     struct program_node_t *program;
     struct global_variable_declaration_node_t *global_variable_declaration;
+    struct abi_class_node_t *abi_class;
     struct layout_declaration_items_node_t *layout_declaration_items;
     struct layout_declaration_node_t *layout_declaration;
     struct extern_declaration_node_t *extern_declaration;
@@ -165,6 +167,9 @@ union YYSTYPE
     struct sizeof_op_node_t *sizeof_op;
     struct tetriary_node_t *tetriary;
     struct suffix_op_node_t *suffix_op;
+    struct function_call_op_arg_node_t *function_call_op_arg;
+    struct function_call_op_args_node_t *function_call_op_args;
+    struct function_call_op_node_t *function_call_op;
     struct dereference_op_node_t *dereference_op;
     struct layout_access_op_node_t *layout_access_op;
     struct secondary_node_t *secondary;
@@ -172,7 +177,7 @@ union YYSTYPE
     struct literal_node_t *literal;
     struct name_node_t *name;
 
-#line 176 "src/parser/rules.tab.h"
+#line 181 "src/parser/rules.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

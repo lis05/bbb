@@ -69,6 +69,7 @@
 %union {
     struct program_node_t *program;
     struct global_variable_declaration_node_t *global_variable_declaration;
+    struct abi_class_node_t *abi_class;
     struct layout_declaration_items_node_t *layout_declaration_items;
     struct layout_declaration_node_t *layout_declaration;
     struct extern_declaration_node_t *extern_declaration;
@@ -104,6 +105,9 @@
     struct sizeof_op_node_t *sizeof_op;
     struct tetriary_node_t *tetriary;
     struct suffix_op_node_t *suffix_op;
+    struct function_call_op_arg_node_t *function_call_op_arg;
+    struct function_call_op_args_node_t *function_call_op_args;
+    struct function_call_op_node_t *function_call_op;
     struct dereference_op_node_t *dereference_op;
     struct layout_access_op_node_t *layout_access_op;
     struct secondary_node_t *secondary;
@@ -144,6 +148,7 @@
 %token <name> AVOID
 %token <name> ALIAS
 %token <name> REG
+%token <name> CALL
 
 %token <name> LOGICAL_OR
 %token <name> LOGICAL_AND
@@ -187,7 +192,7 @@
 %type <name> alignment
 %type <global_variable_declaration> global_variable_declaration
 %type <name> chunk_class
-%type <name> abi_class
+%type <abi_class> abi_class
 %type <layout_declaration_items> layout_declaration_items
 %type <layout_declaration> layout_declaration
 %type <extern_declaration> extern_declaration
@@ -224,6 +229,9 @@
 %type <sizeof_op> sizeof_op
 %type <tetriary> tetriary
 %type <suffix_op> suffix_op
+%type <function_call_op_arg> function_call_op_arg
+%type <function_call_op_args> function_call_op_args
+%type <function_call_op> function_call_op
 %type <dereference_op> dereference_op
 %type <layout_access_op> layout_access_op
 %type <secondary> secondary
@@ -329,8 +337,22 @@ chunk_class:
     ;
 
 abi_class:
-    chunk_class { $$ = $1; }
-    | CHUNK_CLASS_LAYOUT { $$ = $1; }
+    chunk_class {
+        $$ = ALLOC(struct abi_class_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->chunk1 = $1;
+    }
+    | chunk_class chunk_class {
+        $$ = ALLOC(struct abi_class_node_t);
+        TFRAG_COMBINE($$, $1, $2);
+        $$->chunk1 = $1;
+        $$->chunk2 = $2;
+    }
+    | CHUNK_CLASS_LAYOUT {
+        $$ = ALLOC(struct abi_class_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->layout = $1;
+    }
     ;
 
 layout_declaration_items:
@@ -1129,6 +1151,128 @@ suffix_op:
     }
     ;
 
+function_call_op_arg:
+    expression {
+        $$ = ALLOC(struct function_call_op_arg_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->arg = $1;
+    }
+    | expression ":" memory_length {
+        $$ = ALLOC(struct function_call_op_arg_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg = $1;
+        $$->colon = $2;
+        $$->mem_len = $3;
+    }
+    | expression ":" alignment {
+        $$ = ALLOC(struct function_call_op_arg_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg = $1;
+        $$->colon = $2;
+        $$->align = $3;
+    }
+    | expression ":" abi_class {
+        $$ = ALLOC(struct function_call_op_arg_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->arg = $1;
+        $$->colon = $2;
+        $$->abi_class = $3;
+    }
+    | expression ":" memory_length alignment {
+        $$ = ALLOC(struct function_call_op_arg_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3, $4);
+        $$->arg = $1;
+        $$->colon = $2;
+        $$->mem_len = $3;
+        $$->align = $4;
+    }
+    | expression ":" memory_length abi_class {
+        $$ = ALLOC(struct function_call_op_arg_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3, $4);
+        $$->arg = $1;
+        $$->colon = $2;
+        $$->mem_len = $3;
+        $$->abi_class = $4;
+    }
+    | expression ":" alignment abi_class {
+        $$ = ALLOC(struct function_call_op_arg_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3, $4);
+        $$->arg = $1;
+        $$->colon = $2;
+        $$->align = $3;
+        $$->abi_class = $4;
+    }
+    | expression ":" memory_length alignment abi_class {
+        $$ = ALLOC(struct function_call_op_arg_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3, $4, $5);
+        $$->arg = $1;
+        $$->colon = $2;
+        $$->mem_len = $3;
+        $$->align = $4;
+        $$->abi_class = $5;
+    }
+    ;
+
+function_call_op_args:
+    function_call_op_args "," function_call_op_arg {
+        $$ = ALLOC(struct function_call_op_args_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3);
+        $$->rest = $1;
+        $$->comma = $2;
+        $$->arg = $3;
+    }
+    | function_call_op_arg {
+        $$ = ALLOC(struct function_call_op_args_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->arg = $1;
+    }
+    | {
+        $$ = ALLOC(struct function_call_op_args_node_t);
+    }
+    ;
+
+function_call_op:
+    CALL expression "(" function_call_op_args ")" {
+        $$ = ALLOC(struct function_call_op_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3, $4, $5);
+        $$->kw = $1;
+        $$->fn = $2;
+        $$->open_bracket = $3;
+        $$->args = $4;
+        $$->close_bracket = $5;
+    }
+    | CALL memory_length expression "(" function_call_op_args ")" {
+        $$ = ALLOC(struct function_call_op_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3, $4, $5, $6);
+        $$->kw = $1;
+        $$->mem_len = $2;
+        $$->fn = $3;
+        $$->open_bracket = $4;
+        $$->args = $5;
+        $$->close_bracket = $6;
+    }
+    | CALL abi_class expression "(" function_call_op_args ")" {
+        $$ = ALLOC(struct function_call_op_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3, $4, $5, $6);
+        $$->kw = $1;
+        $$->abi_class = $2;
+        $$->fn = $3;
+        $$->open_bracket = $4;
+        $$->args = $5;
+        $$->close_bracket = $6;
+    }
+    | CALL memory_length abi_class expression "(" function_call_op_args ")" {
+        $$ = ALLOC(struct function_call_op_node_t);
+        TFRAG_COMBINE($$, $1, $2, $3, $4, $5, $6, $7);
+        $$->kw = $1;
+        $$->mem_len = $2;
+        $$->abi_class = $3;
+        $$->fn = $4;
+        $$->open_bracket = $5;
+        $$->args = $6;
+        $$->close_bracket = $7;
+    }
+
 dereference_op:
     secondary "[" expression "]" {
         $$ = ALLOC(struct dereference_op_node_t);
@@ -1162,6 +1306,11 @@ secondary:
         $$ = ALLOC(struct secondary_node_t);
         TFRAG_COMBINE($$, $1);
         $$->suffix = $1;
+    }
+    | function_call_op {
+        $$ = ALLOC(struct secondary_node_t);
+        TFRAG_COMBINE($$, $1);
+        $$->fn_call = $1;
     }
     | dereference_op {
         $$ = ALLOC(struct secondary_node_t);

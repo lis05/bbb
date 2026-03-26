@@ -5,6 +5,7 @@
 #include "scope.h"
 #include "settings.h"
 #include "util.h"
+#include "vmap.h"
 
 #define EXPLAIN(cbref, indent, ...)                          \
     do {                                                     \
@@ -13,11 +14,11 @@
         }                                                    \
     } while (0)
 
-#define EXPLAIN_NL(cbref)                \
-    do {                                 \
-        if (add_explanatory_comments) {  \
+#define EXPLAIN_NL(cbref)                   \
+    do {                                    \
+        if (add_explanatory_comments) {     \
             cb_add_back(&(cbref), 0, "\n"); \
-        }                                \
+        }                                   \
     } while (0)
 
 static cb_t gen_program(int indent, const struct program_node_t *node);
@@ -291,4 +292,89 @@ static cb_t gen_layout_decl(int                                     indent,
     log_debug(" - registered the layout.\n");
 
     return res;
+}
+
+// stores info about all function arguments
+struct func_args_meta_t {
+    size_t       n;
+    const char **names;
+    size_t      *mem_len;
+    size_t      *align;
+    uint8_t     *chunk;
+    const char **layout;  // exclusive with chunk
+    tfrag_t     *frags;
+};
+
+static void destroy_func_args_meta(struct func_args_meta_t *meta) {
+    free(meta->names);
+    free(meta->mem_len);
+    free(meta->align);
+    free(meta->chunk);
+    free(meta->layout);
+    free(meta->frags);
+}
+
+static struct func_args_meta_t collect_func_args(
+    const struct function_declaration_node_t *node, int *error) {
+    log_debug("Collecting func_args_meta_t for '%s'\n", node->name);
+    *error = 0;
+
+    struct func_args_meta_t res = {0};
+
+    struct function_declaration_args_node_t *args = node->args;
+    struct function_declaration_arg_node_t *arg = NULL;
+    while (args != NULL) {
+        if (args->rest != NULL) {
+            res.n++;
+        }
+        args = args->rest;
+    }
+    log_debug(" - n=%zu\n", res.n);
+
+    if (res.n == 0) {
+        log_debug(" - returning early since n=0\n");
+        return res;
+    }
+
+    res.names = (const char **)malloc(sizeof(const char *) * res.n);
+    log_assert(res.names != NULL);
+    res.mem_len = (size_t *)malloc(sizeof(size_t) * res.n);
+    log_assert(res.mem_len != NULL);
+    res.align = (size_t *)malloc(sizeof(size_t) * res.n);
+    log_assert(res.align != NULL);
+    res.chunk = (uint8_t *)malloc(sizeof(uint8_t) * res.n);
+    log_assert(res.chunk != NULL);
+    res.layout = (const char **)malloc(sizeof(const char *) * res.n);
+    log_assert(res.layout != NULL);
+    res.frags = (tfrag_t *)malloc(sizeof(tfrag_t) * res.n);
+    log_assert(res.frags != NULL);
+
+    args = node->args;
+    size_t i = res.n - 1;
+    size_t mem_len, align;
+    while (args != NULL) {
+        if ((arg = args->arg) != NULL) {
+            log_debug(" - %zu:\n", i);
+            res.names[i] = arg->name->name;
+
+            if (util_get_mem_len(arg->mem_len, &mem_len)) {
+                goto l_error;
+            }
+            res.mem_len[i] = mem_len;
+            log_debug("   - mem_len=%zu\n", mem_len);
+
+            if (util_get_align(arg->align, &align)) {
+                goto l_error;
+            }
+            res.align[i] = align;
+            log_debug("   - align=%zu\n", align);
+
+            // todo dumb ahh
+        }
+    }
+
+l_error:
+    *error = 1;
+    destroy_func_args_meta(&res);
+    return (struct func_args_meta_t){0};
 }

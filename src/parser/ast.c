@@ -1,8 +1,7 @@
 #include "ast.h"
 
 #include <inttypes.h>
-
-// this whole file was written by gemini
+#include <stdio.h>
 
 static void p_ind(int indent) {
     for (int i = 0; i < indent; i++) printf("  ");
@@ -72,6 +71,22 @@ void ast_print_global_variable_declaration_node(
     RECURSE(node, vis, ast_print_name_node);
     RECURSE(node, mem_len, ast_print_name_node);
     RECURSE(node, align, ast_print_name_node);
+}
+
+void ast_print_abi_class_node(struct abi_class_node_t *node, int indent) {
+    if (!node)
+        return;
+    p_ind(indent);
+    printf("[ABI_CLASS");
+    p_frag(node->frag);
+    printf(":");
+    CHECK_PTR(node, chunk1);
+    CHECK_PTR(node, chunk2);
+    CHECK_PTR(node, layout);
+    printf("]\n");
+    RECURSE(node, chunk1, ast_print_name_node);
+    RECURSE(node, chunk2, ast_print_name_node);
+    RECURSE(node, layout, ast_print_name_node);
 }
 
 void ast_print_layout_declaration_items_node(
@@ -153,7 +168,7 @@ void ast_print_function_declaration_arg_node(
     RECURSE(node, colon, ast_print_name_node);
     RECURSE(node, mem_len, ast_print_name_node);
     RECURSE(node, align, ast_print_name_node);
-    RECURSE(node, abi_class, ast_print_name_node);
+    RECURSE(node, abi_class, ast_print_abi_class_node);
 }
 
 void ast_print_function_declaration_args_node(
@@ -202,7 +217,7 @@ void ast_print_function_declaration_node(struct function_declaration_node_t *nod
     RECURSE(node, closed_brace, ast_print_name_node);
     RECURSE(node, arrow, ast_print_name_node);
     RECURSE(node, mem_len, ast_print_name_node);
-    RECURSE(node, abi_class, ast_print_name_node);
+    RECURSE(node, abi_class, ast_print_abi_class_node);
     RECURSE(node, body, ast_print_body_node);
 }
 
@@ -273,7 +288,7 @@ void ast_print_statement_node(struct statement_node_t *node, int indent) {
 }
 
 void ast_print_variable_declaration_node(struct variable_declaration_node_t *node,
-                                         int indent) {
+                                         int                                 indent) {
     if (!node)
         return;
     p_ind(indent);
@@ -712,6 +727,61 @@ void ast_print_suffix_op_node(struct suffix_op_node_t *node, int indent) {
     RECURSE(node, op, ast_print_name_node);
 }
 
+void ast_print_function_call_op_arg_node(struct function_call_op_arg_node_t *node, int indent) {
+    if (!node) return;
+    p_ind(indent);
+    printf("[FN_CALL_ARG");
+    p_frag(node->frag);
+    printf(":");
+    CHECK_PTR(node, colon);
+    CHECK_PTR(node, mem_len);
+    CHECK_PTR(node, align);
+    CHECK_PTR(node, abi_class);
+    printf("]\n");
+    RECURSE(node, colon, ast_print_name_node);
+    RECURSE(node, mem_len, ast_print_name_node);
+    RECURSE(node, align, ast_print_name_node);
+    RECURSE(node, abi_class, ast_print_abi_class_node);
+}
+
+void ast_print_function_call_op_args_node(struct function_call_op_args_node_t *node, int indent) {
+    if (!node) return;
+    p_ind(indent);
+    printf("[FN_CALL_ARGS");
+    p_frag(node->frag);
+    printf(":");
+    CHECK_PTR(node, rest);
+    CHECK_PTR(node, comma);
+    CHECK_PTR(node, arg);
+    printf("]\n");
+    RECURSE(node, rest, ast_print_function_call_op_args_node);
+    RECURSE(node, comma, ast_print_name_node);
+    RECURSE(node, arg, ast_print_function_call_op_arg_node);
+}
+
+void ast_print_function_call_op_node(struct function_call_op_node_t *node, int indent) {
+    if (!node) return;
+    p_ind(indent);
+    printf("[FN_CALL_OP");
+    p_frag(node->frag);
+    printf(":");
+    CHECK_PTR(node, kw);
+    CHECK_PTR(node, fn);
+    CHECK_PTR(node, mem_len);
+    CHECK_PTR(node, abi_class);
+    CHECK_PTR(node, open_bracket);
+    CHECK_PTR(node, args);
+    CHECK_PTR(node, close_bracket);
+    printf("]\n");
+    RECURSE(node, kw, ast_print_name_node);
+    RECURSE(node, fn, ast_print_expression_node);
+    RECURSE(node, mem_len, ast_print_name_node);
+    RECURSE(node, abi_class, ast_print_abi_class_node);
+    RECURSE(node, open_bracket, ast_print_name_node);
+    RECURSE(node, args, ast_print_function_call_op_args_node);
+    RECURSE(node, close_bracket, ast_print_name_node);
+}
+
 void ast_print_dereference_op_node(struct dereference_op_node_t *node, int indent) {
     if (!node)
         return;
@@ -755,11 +825,13 @@ void ast_print_secondary_node(struct secondary_node_t *node, int indent) {
     p_frag(node->frag);
     printf(":");
     CHECK_PTR(node, suffix);
+    CHECK_PTR(node, fn_call);
     CHECK_PTR(node, deref);
     CHECK_PTR(node, layout_access);
     CHECK_PTR(node, primary);
     printf("]\n");
     RECURSE(node, suffix, ast_print_suffix_op_node);
+    RECURSE(node, fn_call, ast_print_function_call_op_node);
     RECURSE(node, deref, ast_print_dereference_op_node);
     RECURSE(node, layout_access, ast_print_layout_access_op_node);
     RECURSE(node, primary, ast_print_primary_node);
@@ -808,4 +880,3 @@ void ast_print_literal_node(struct literal_node_t *node, int indent) {
         break;
     }
 }
-
