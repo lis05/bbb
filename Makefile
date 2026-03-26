@@ -24,6 +24,7 @@ TEST_HEADERS :=
 # headers first
 HEADERS += $(wildcard src/*.h)
 HEADERS += $(wildcard src/parser/*.h)
+HEADERS += $(wildcard src/codegen/*.h)
 HEADERS += $(wildcard src/common/*.h)
 
 TEST_HEADERS += $(HEADERS)
@@ -115,14 +116,6 @@ fresh:
 	make grammar
 	make
 
-.PHONY: debug
-debug:
-	@echo SOURCES= $(SOURCES)
-	@echo OBJECTS= $(OBJECTS)
-	@echo HEADERS= $(HEADERS)
-	@echo TEST_OBJECTS= $(TEST_OBJECTS)
-	@echo TEST_HEADERS= $(TEST_HEADERS)
-
 .PHONY: pt
 pt: $(BBB)
 	./scripts/pt.sh $(BBB) $(pttest)
@@ -132,7 +125,7 @@ TEST_BINS := $(patsubst obj/tests/%.o,build/tests/%,$(TEST_OBJECTS))
 BBB_LIB := $(filter-out obj/main.o,$(OBJECTS))
 
 # tests compilation
-obj/tests/%.o: src/tests/%.c $(HEADERS) $(HEADERS) $(TEST_HEADERS) | obj/tests
+obj/tests/%.o: src/tests/%.c $(TEST_HEADERS) | obj/tests
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(TEST_BINS): build/tests/% : obj/tests/%.o $(BBB_LIB) | build/tests
@@ -141,3 +134,14 @@ $(TEST_BINS): build/tests/% : obj/tests/%.o $(BBB_LIB) | build/tests
 .PHONY: tests
 tests: $(TEST_BINS)
 	@./scripts/tests.sh $^
+
+.PHONY: debug
+debug:
+	@echo SOURCES= $(SOURCES)
+	@echo OBJECTS= $(OBJECTS)
+	@echo HEADERS= $(HEADERS)
+	@echo TEST_OBJECTS= $(TEST_OBJECTS)
+	@echo TEST_HEADERS= $(TEST_HEADERS)
+	@echo TEST_BINS = $(TEST_BINS)
+	@echo BBB_LIB = $(BBB_LIB)
+

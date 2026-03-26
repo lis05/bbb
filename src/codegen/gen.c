@@ -143,8 +143,13 @@ static cb_t gen_global_variable_decl(
         return cb_invalid();
     }
 
-    struct location_t loc;
-    loc_init_symbol(&loc, mem_len, node->name->name, 0);
+    struct location_t loc = {
+        .type = LOC_SYMBOL,
+        .true_len = mem_len,
+        .alignment = align,
+        .symbol = node->name->name,
+    };
+
     log_debug(" - adding location to global scope.\n");
     scope_add(&global_scope, node->name->name, loc);
 
@@ -182,8 +187,12 @@ static cb_t gen_extern_decl(int                                     indent,
             return res;
         }
 
-        struct location_t loc;
-        loc_init_symbol(&loc, 8, node->name->name, 0);
+        struct location_t loc = {
+            .type = LOC_SYMBOL,
+            .true_len = 0,
+            .alignment = 0,
+            .symbol = node->name->name,
+        };
         log_debug(" - adding location to global scope.\n");
         scope_add(&global_scope, node->name->name, loc);
 
@@ -198,8 +207,12 @@ static cb_t gen_extern_decl(int                                     indent,
             return res;
         }
 
-        struct location_t loc;
-        loc_init_symbol(&loc, 8, node->name->name, 0);
+        struct location_t loc = {
+            .type = LOC_SYMBOL,
+            .true_len = 0,
+            .alignment = 0,
+            .symbol = node->name->name,
+        };
         log_debug(" - adding location to global scope.\n");
         scope_add(&global_scope, node->name->name, loc);
 
@@ -322,7 +335,7 @@ static struct func_args_meta_t collect_func_args(
     struct func_args_meta_t res = {0};
 
     struct function_declaration_args_node_t *args = node->args;
-    struct function_declaration_arg_node_t *arg = NULL;
+    struct function_declaration_arg_node_t  *arg = NULL;
     while (args != NULL) {
         if (args->rest != NULL) {
             res.n++;

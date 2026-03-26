@@ -4,38 +4,69 @@
 #include "regs.h"
 
 enum location_type {
-    LOC_GPR_REGISTER = 0,
-    LOC_SSE_REGISTER,
-    LOC_SYMBOL_OFFSET,
-    LOC_STACK_OFFSET,
-    LOC_SCALED,
+    /* A single GPR register. */
+    LOC_GPR = 0,
+    /* A single SSE register. */
+    LOC_SSE,
+    /* Longer (9..16 bytes) value in GPR and GPR registers. */
+    LOC_GPR_GPR,
+    /* Longer (9..16 bytes) value in GPR and SSE registers. */
+    LOC_GPR_SSE,
+    /* Longer (9..16 bytes) value in SSE and GPR registers. */
+    LOC_SSE_GPR,
+    /* Longer (9..16 bytes) value in SSE and SSE registers. */
+    LOC_SSE_SSE,
+    /* Pointer to data is stored in a GPR register. */
+    LOC_PTR_IN_GPR,
+    /* Pointer to data is stored on the stack. */
+    LOC_PTR_ON_STACK,
+    /* Offset on the stack relative to rbp. */
+    LOC_STACK,
+    /* Symbol. */
+    LOC_SYMBOL,
+    /* Int literal. */
     LOC_INT_LITERAL,
+    /* Uint literal. */
     LOC_UINT_LITERAL,
+    /* Double literal. */
     LOC_DOUBLE_LITERAL
 };
 
 struct location_t {
     enum location_type type;
-    size_t             mem_len;
+
+    /* True data length is used to copy data between places.
+     * When the data is split between 2 chunks, the first one will always be of 8
+     * bytes; the second chunk, thus, will have true_len - 8 of meaningful data. */
+    size_t true_len;
+
+    /* Same as above, used to copying. */
+    size_t alignment;
+
     union {
-        gpr_reg_t gpr_reg;
-
-        sse_reg_t sse_reg;
-
         struct {
-            const char *symbol;
-            int64_t     offset;
-        } symbol;
+            union {
+                gpr_reg_t gpr_reg1;
+                sse_reg_t sse_reg1;
+            };
+            union {
+                gpr_reg_t gpr_reg2;
+                sse_reg_t sse_reg2;
+            };
+        };
+
+        const char *symbol;
 
         // offset from rbp: rbp + stack_offset
         int64_t stack_offset;
 
+        /* uncomment when the time comes
         struct {
             gpr_reg_t base;
             gpr_reg_t index;
             uint8_t   scale;
             int64_t   offset;
-        } scaled;
+        } scaled;*/
 
         int64_t int_literal;
 
@@ -44,15 +75,3 @@ struct location_t {
         double double_literal;
     };
 };
-
-void loc_init_gpr(struct location_t *loc, size_t mem_len, gpr_reg_t gpr_reg);
-void loc_init_sse(struct location_t *loc, size_t mem_len, sse_reg_t sse_reg);
-void loc_init_symbol(struct location_t *loc, size_t mem_len, const char *symbol,
-                     int64_t offset);
-void loc_init_stack(struct location_t *loc, size_t mem_len, int64_t offset);
-void loc_init_scaled(struct location_t *loc, size_t mem_len, gpr_reg_t base,
-                     gpr_reg_t index, uint8_t scale, int64_t offset);
-void loc_init_int(struct location_t *loc, size_t mem_len, int64_t lit);
-void loc_init_uint(struct location_t *loc, size_t mem_len, uint64_t lit);
-void loc_init_double(struct location_t *loc, size_t mem_len, double lit);
-

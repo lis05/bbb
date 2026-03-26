@@ -10,8 +10,7 @@
 struct vmap_t {
     size_t             n;
     const char       **names;  // may be null
-    struct location_t *locs_chunk1;
-    struct location_t *locs_chunk2;  // not applicable if not applicable lol
+    struct location_t *locs;
 };
 
 void vmap_destroy(struct vmap_t *vmap);

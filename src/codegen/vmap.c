@@ -6,8 +6,7 @@ static const char *chunk_to_name[] = {"INT", "SSE", "MEM"};
 
 void vmap_destroy(struct vmap_t *vmap) {
     free(vmap->names);
-    free(vmap->locs_chunk1);
-    free(vmap->locs_chunk2);
+    free(vmap->locs);
 }
 
 struct vmap_t vmap_args(const struct vmap_args_request_t *req) {
@@ -31,12 +30,8 @@ struct vmap_t vmap_args(const struct vmap_args_request_t *req) {
         log_assert(answer.names != NULL);
         memcpy(answer.names, req->names, answer.n * sizeof(const char *));
     }
-    answer.locs_chunk1 =
-        (struct location_t *)malloc(req->n * sizeof(struct location_t));
-    log_assert(answer.locs_chunk1 != NULL);
-    answer.locs_chunk2 =
-        (struct location_t *)malloc(req->n * sizeof(struct location_t));
-    log_assert(answer.locs_chunk2 != NULL);
+    answer.locs = (struct location_t *)malloc(req->n * sizeof(struct location_t));
+    log_assert(answer.locs != NULL);
 
     // ==================================== actual algo
 
@@ -64,18 +59,38 @@ struct vmap_t vmap_args(const struct vmap_args_request_t *req) {
         if (how_many_chunks >= 3) {
             log_pure("=== 3 or more chunks, goes as a pointer\n");
             if (usable_gpr_ptr < TOTAL_GPR) {
-                log_pure("=== ^^^ goes into %s\n", usable_gpr[usable_gpr_ptr]->qname);
-                struct location_t loc;
-                loc_init_gpr(&loc, mem_len, usable_gpr[usable_gpr_ptr++]);
-                answer.locs_chunk1[i] = loc;
+                log_pure("=== ^^^ goes into %s\n",
+                         usable_gpr[usable_gpr_ptr]->qname);
+                struct location_t loc = {
+                    .type = LOC_PTR_IN_GPR,
+                    .true_len = mem_len,
+                    .alignment = align,
+                    .gpr_reg1 = usable_gpr[usable_gpr_ptr++],
+                };
+                answer.locs[i] = loc;
                 log_pure("\n");
-            }
-            else {
+            } else {
                 log_pure("=== ^^^ not enough registers, goes on the stack\n");
-                // sad
-                mem_len = 8;
-                align = 8;
-                goto goes_on_the_stack;
+                size_t aligned_size = 8;
+                log_pure("=== decided: goes on the stack: aligned_to8_size=%zu\n",
+                         aligned_size);
+                size_t old_rbp_offset = rbp_offset;
+                rbp_offset = (rbp_offset + 7) & ~7;
+                log_pure("=== aligned rbp: %zu -> %zu\n", old_rbp_offset,
+                         rbp_offset);
+                old_rbp_offset = rbp_offset;
+                rbp_offset += aligned_size;
+                log_pure("=== item location: rbp + %zu\n", old_rbp_offset);
+                log_pure("=== rbp changes from %zu to %zu\n", old_rbp_offset,
+                         rbp_offset);
+                struct location_t loc = {
+                    .type = LOC_PTR_ON_STACK,
+                    .true_len = mem_len,
+                    .alignment = align,
+                    .stack_offset = old_rbp_offset,
+                };
+                answer.locs[i] = loc;
+                log_pure("\n");
             }
             continue;
         }
@@ -103,41 +118,81 @@ struct vmap_t vmap_args(const struct vmap_args_request_t *req) {
         }
 
         // goes into registers, finally
-
-        if (chunk1 == VMAP_CHUNK_INT) {
-            struct location_t loc;
-            loc_init_gpr(&loc, MIN(mem_len, 8), usable_gpr[usable_gpr_ptr++]);
-            log_pure("=== chunk1 goes into %s\n", loc.gpr_reg->qname);
-            answer.locs_chunk1[i] = loc;
-        } else if (chunk1 == VMAP_CHUNK_SSE) {
-            struct location_t loc;
-            loc_init_sse(&loc, MIN(mem_len, 8), usable_sse[usable_sse_ptr++]);
-            log_pure("=== chunk1 goes into %s\n", loc.sse_reg->name);
-            answer.locs_chunk1[i] = loc;
-        }
-
         if (mem_len <= 8) {
-            log_pure("\n");
-            continue;
+            if (chunk1 == VMAP_CHUNK_INT) {
+                struct location_t loc = {
+                    .type = LOC_GPR,
+                    .true_len = mem_len,
+                    .alignment = align,
+                    .gpr_reg1 = usable_gpr[usable_gpr_ptr++],
+                };
+                log_pure("=== chunk1 goes into %s\n", loc.gpr_reg1->qname);
+                answer.locs[i] = loc;
+            } else {
+                struct location_t loc = {
+                    .type = LOC_SSE,
+                    .true_len = mem_len,
+                    .alignment = align,
+                    .sse_reg1 = usable_sse[usable_sse_ptr++],
+                };
+                log_pure("=== chunk1 goes into %s\n", loc.sse_reg1->name);
+                answer.locs[i] = loc;
+            }
+        } else {
+            if (chunk1 == VMAP_CHUNK_INT && chunk2 == VMAP_CHUNK_INT) {
+                struct location_t loc = {
+                    .type = LOC_GPR_GPR,
+                    .true_len = mem_len,
+                    .alignment = align,
+                    .gpr_reg1 = usable_gpr[usable_gpr_ptr++],
+                    .gpr_reg2 = usable_gpr[usable_gpr_ptr++],
+                };
+                log_pure("=== chunk1 goes into %s\n", loc.gpr_reg1->qname);
+                log_pure("=== chunk2 goes into %s\n", loc.gpr_reg2->qname);
+                answer.locs[i] = loc;
+            } else if (chunk1 == VMAP_CHUNK_INT && chunk2 == VMAP_CHUNK_SSE) {
+                struct location_t loc = {
+                    .type = LOC_GPR_SSE,
+                    .true_len = mem_len,
+                    .alignment = align,
+                    .gpr_reg1 = usable_gpr[usable_gpr_ptr++],
+                    .sse_reg2 = usable_sse[usable_sse_ptr++],
+                };
+                log_pure("=== chunk1 goes into %s\n", loc.gpr_reg1->qname);
+                log_pure("=== chunk2 goes into %s\n", loc.sse_reg2->name);
+                answer.locs[i] = loc;
+            } else if (chunk1 == VMAP_CHUNK_SSE && chunk2 == VMAP_CHUNK_INT) {
+                struct location_t loc = {
+                    .type = LOC_SSE_GPR,
+                    .true_len = mem_len,
+                    .alignment = align,
+                    .sse_reg1 = usable_sse[usable_sse_ptr++],
+                    .gpr_reg2 = usable_gpr[usable_gpr_ptr++],
+                };
+                log_pure("=== chunk1 goes into %s\n", loc.sse_reg1->name);
+                log_pure("=== chunk2 goes into %s\n", loc.gpr_reg2->qname);
+                answer.locs[i] = loc;
+            } else {
+                struct location_t loc = {
+                    .type = LOC_SSE_SSE,
+                    .true_len = mem_len,
+                    .alignment = align,
+                    .sse_reg1 = usable_sse[usable_sse_ptr++],
+                    .sse_reg2 = usable_sse[usable_sse_ptr++],
+                };
+                log_pure("=== chunk1 goes into %s\n", loc.sse_reg1->name);
+                log_pure("=== chunk2 goes into %s\n", loc.sse_reg2->name);
+                answer.locs[i] = loc;
+            }
         }
 
-        if (chunk2 == VMAP_CHUNK_INT) {
-            struct location_t loc;
-            loc_init_gpr(&loc, MIN(mem_len - 8, 8), usable_gpr[usable_gpr_ptr++]);
-            log_pure("=== chunk2 goes into %s\n", loc.gpr_reg->qname);
-            answer.locs_chunk2[i] = loc;
-        } else if (chunk2 == VMAP_CHUNK_SSE) {
-            struct location_t loc;
-            loc_init_sse(&loc, MIN(mem_len - 8, 8), usable_sse[usable_sse_ptr++]);
-            log_pure("=== chunk2 goes into %s\n", loc.sse_reg->name);
-            answer.locs_chunk2[i] = loc;
-        }
-
+        log_pure("\n");
         continue;
 
     goes_on_the_stack:
         size_t aligned_size = (mem_len + 7) & ~7;
-        log_pure("=== decided: goes on the stack: aligned_to8_size=%zu\n", aligned_size);
+        log_pure("=== decided: goes on the stack: aligned_to8_size=%zu\n",
+                 aligned_size);
         size_t old_rbp_offset = rbp_offset;
         rbp_offset = (rbp_offset + align - 1) & ~(align - 1);
         log_pure("=== aligned rbp: %zu -> %zu\n", old_rbp_offset, rbp_offset);
@@ -145,9 +200,13 @@ struct vmap_t vmap_args(const struct vmap_args_request_t *req) {
         rbp_offset += aligned_size;
         log_pure("=== item location: rbp + %zu\n", old_rbp_offset);
         log_pure("=== rbp changes from %zu to %zu\n", old_rbp_offset, rbp_offset);
-        struct location_t loc;
-        loc_init_stack(&loc, mem_len, old_rbp_offset);
-        answer.locs_chunk1[i] = loc;
+        struct location_t loc = {
+            .type = LOC_STACK,
+            .true_len = mem_len,
+            .alignment = align,
+            .stack_offset = old_rbp_offset,
+        };
+        answer.locs[i] = loc;
         log_pure("\n");
         continue;
     }
