@@ -28,6 +28,8 @@ static cb_t gen_extern_decl(int                                     indent,
                             const struct extern_declaration_node_t *node);
 static cb_t gen_layout_decl(int                                     indent,
                             const struct layout_declaration_node_t *node);
+static cb_t gen_function_declaration(int indent,
+                                     const struct function_declaration_node_t *node);
 
 struct scope_t global_scope;
 
@@ -86,7 +88,11 @@ static cb_t gen_program(int indent, const struct program_node_t *node) {
         }
         cb_glue_back(&res, &other);
     } else if (node->fn_decl != NULL) {
-        // todo
+        cb_t other = gen_function_declaration(indent, node->fn_decl);
+        if (!cb_is_valid(&other)) {
+            return other;
+        }
+        cb_glue_back(&res, &other);
     } else if (node->nasm_b != NULL) {
         // todo
     }
@@ -313,8 +319,9 @@ struct func_args_meta_t {
     const char **names;
     size_t      *mem_len;
     size_t      *align;
-    uint8_t     *chunk;
-    const char **layout;  // exclusive with chunk
+    uint8_t     *chunk1;
+    uint8_t     *chunk2;
+    const char **layout;  // exclusive with chunks
     tfrag_t     *frags;
 };
 
@@ -322,14 +329,15 @@ static void destroy_func_args_meta(struct func_args_meta_t *meta) {
     free(meta->names);
     free(meta->mem_len);
     free(meta->align);
-    free(meta->chunk);
+    free(meta->chunk1);
+    free(meta->chunk2);
     free(meta->layout);
     free(meta->frags);
 }
 
 static struct func_args_meta_t collect_func_args(
     const struct function_declaration_node_t *node, int *error) {
-    log_debug("Collecting func_args_meta_t for '%s'\n", node->name);
+    log_debug("=== Collecting func_args_meta_t for '%s'\n", node->name->name);
     *error = 0;
 
     struct func_args_meta_t res = {0};
@@ -337,7 +345,7 @@ static struct func_args_meta_t collect_func_args(
     struct function_declaration_args_node_t *args = node->args;
     struct function_declaration_arg_node_t  *arg = NULL;
     while (args != NULL) {
-        if (args->rest != NULL) {
+        if (args->arg != NULL) {
             res.n++;
         }
         args = args->rest;
@@ -355,8 +363,10 @@ static struct func_args_meta_t collect_func_args(
     log_assert(res.mem_len != NULL);
     res.align = (size_t *)malloc(sizeof(size_t) * res.n);
     log_assert(res.align != NULL);
-    res.chunk = (uint8_t *)malloc(sizeof(uint8_t) * res.n);
-    log_assert(res.chunk != NULL);
+    res.chunk1 = (uint8_t *)malloc(sizeof(uint8_t) * res.n);
+    log_assert(res.chunk1 != NULL);
+    res.chunk2 = (uint8_t *)malloc(sizeof(uint8_t) * res.n);
+    log_assert(res.chunk2 != NULL);
     res.layout = (const char **)malloc(sizeof(const char *) * res.n);
     log_assert(res.layout != NULL);
     res.frags = (tfrag_t *)malloc(sizeof(tfrag_t) * res.n);
@@ -367,27 +377,73 @@ static struct func_args_meta_t collect_func_args(
     size_t mem_len, align;
     while (args != NULL) {
         if ((arg = args->arg) != NULL) {
-            log_debug(" - %zu:\n", i);
+            log_debug(" - %zu (%s):\n", i, arg->name->name);
             res.names[i] = arg->name->name;
 
-            if (util_get_mem_len(arg->mem_len, &mem_len)) {
+            mem_len = 8;
+            if (arg->mem_len != NULL && util_get_mem_len(arg->mem_len, &mem_len)) {
                 goto l_error;
             }
             res.mem_len[i] = mem_len;
             log_debug("   - mem_len=%zu\n", mem_len);
 
-            if (util_get_align(arg->align, &align)) {
+            align = 8;
+            if (arg->align != NULL && util_get_align(arg->align, &align)) {
                 goto l_error;
             }
             res.align[i] = align;
             log_debug("   - align=%zu\n", align);
 
-            // todo dumb ahh
+            int         chunk1 = VMAP_CHUNK_INT, chunk2 = VMAP_CHUNK_NONE;
+            const char *layout = NULL;
+            if (arg->abi_class != NULL) {
+                switch (util_get_abi_class(arg->abi_class, &chunk1, &chunk2, &layout)) {
+                case -1:
+                    goto l_error;
+                case 0:
+                    log_debug("   - chunk1=%d\n", chunk1);
+                    log_debug("   - chunk2=%d\n", chunk2);
+                    break;
+                case 1:
+                    log_debug("   - layout=%s\n", layout);
+                    break;
+                }
+            }
+            res.chunk1[i] = chunk1;
+            res.chunk2[i] = chunk2;
+            res.layout[i] = layout;
+
+            res.frags[i] = arg->frag;
         }
+
+        i--;
+        args = args->rest;
     }
+    log_assert(i + 1 == 0);
+    log_debug("=== done\n");
+    return res;
 
 l_error:
     *error = 1;
     destroy_func_args_meta(&res);
     return (struct func_args_meta_t){0};
+}
+
+static cb_t gen_function_declaration(int indent,
+                                     const struct function_declaration_node_t *node) {
+
+    log_debug("Entered with indent=%d\n", indent);
+    log_assert(node != NULL);
+
+    cb_t res;
+    cb_init(&res);
+
+    int meta_error;
+    struct func_args_meta_t args_meta = collect_func_args(node, &meta_error);
+    if (meta_error) {
+        destroy_func_args_meta(&args_meta);
+        return cb_invalid();
+    }
+
+    return res;
 }

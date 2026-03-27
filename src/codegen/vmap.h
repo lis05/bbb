@@ -6,6 +6,7 @@
 #define VMAP_CHUNK_INT 0
 #define VMAP_CHUNK_SSE 1
 #define VMAP_CHUNK_MEM 2
+#define VMAP_CHUNK_NONE 3
 
 struct vmap_t {
     size_t             n;
