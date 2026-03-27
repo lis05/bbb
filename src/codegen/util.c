@@ -83,8 +83,9 @@ int util_get_align(const struct name_node_t *node, size_t *res) {
         goto error;
     }
 
-    if (__builtin_popcount(num) != 1) {
-        context_msg(&node->frag, "Error: alignment should be a power of 2.\n");
+    if (__builtin_popcount(num) != 1 || num > 16) {
+        context_msg(&node->frag,
+                    "Error: alignment can be either 1, 2, 4, 8, or 16.\n");
         return -1;
     }
 
@@ -170,8 +171,7 @@ int util_get_abi_class(const struct abi_class_node_t *node, int *chunk1, int *ch
         if (layout != NULL) {
             *layout = node->layout->name + 1;
         }
-    }
-    else if (layout != NULL) {
+    } else if (layout != NULL) {
         *layout = NULL;
     }
 
@@ -180,4 +180,32 @@ int util_get_abi_class(const struct abi_class_node_t *node, int *chunk1, int *ch
 error:
     context_msg(&node->frag, "Error: invalid abi classification.\n");
     return -1;
+}
+
+int util_get_chunk(const struct name_node_t *node, int *chunk) {
+    log_assert(node != NULL);
+
+    int is_int = strcmp(node->name, "#int");
+    int is_sse = strcmp(node->name, "#sse");
+    int is_mem = strcmp(node->name, "#mem");
+
+    if (is_int && is_sse && is_mem) {
+        context_msg(&node->frag, "Error: invalid chunk classification.\n");
+        return -1;
+    }
+
+    if (chunk != NULL) {
+        if (is_int == 0) {
+            *chunk = VMAP_CHUNK_INT;
+        } else if (is_sse == 0) {
+            *chunk = VMAP_CHUNK_SSE;
+        } else if (is_mem == 0) {
+            *chunk = VMAP_CHUNK_MEM;
+        }
+    }
+    return 0;
+}
+
+uint64_t util_align_up(uint64_t value, uint64_t alignment) {
+    return (value + alignment - 1) & ~(alignment - 1);
 }

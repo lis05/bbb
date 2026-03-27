@@ -24,7 +24,7 @@ struct vmap_args_request_t {
     size_t       n;
     const char **names;
     size_t      *mem_len;
-    uint8_t     *align;  // alignment bigger than 16 is not possible. also must be
+    size_t      *align;  // alignment bigger than 16 is not possible. also must be
                          // a power of two.
     uint8_t *chunk1;
     uint8_t *chunk2;  // only 2 chunks can be specified.
@@ -35,6 +35,7 @@ struct vmap_t vmap_args(const struct vmap_args_request_t *req);
 
 // maps arguments passed to function to their locations after they are copied by bbb
 // on the stack. these locations MUST be on the stack.
+// assumes that a new stack frame has been created, and rbp is at [rbp]
 struct vmap_t vmap_args_copy(const struct vmap_args_request_t *req);
 
 // ===============================

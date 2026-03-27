@@ -1,6 +1,7 @@
 #include "vmap.h"
 
 #include "regs.h"
+#include "util.h"
 
 static const char *chunk_to_name[] = {"INT", "SSE", "MEM"};
 
@@ -75,7 +76,7 @@ struct vmap_t vmap_args(const struct vmap_args_request_t *req) {
                 log_pure("=== decided: goes on the stack: aligned_to8_size=%zu\n",
                          aligned_size);
                 size_t old_rbp_offset = rbp_offset;
-                rbp_offset = (rbp_offset + 7) & ~7;
+                rbp_offset = util_align_up(rbp_offset, 8);
                 log_pure("=== aligned rbp: %zu -> %zu\n", old_rbp_offset,
                          rbp_offset);
                 old_rbp_offset = rbp_offset;
@@ -190,11 +191,11 @@ struct vmap_t vmap_args(const struct vmap_args_request_t *req) {
         continue;
 
     goes_on_the_stack:
-        size_t aligned_size = (mem_len + 7) & ~7;
+        size_t aligned_size = util_align_up(mem_len, 8);
         log_pure("=== decided: goes on the stack: aligned_to8_size=%zu\n",
                  aligned_size);
         size_t old_rbp_offset = rbp_offset;
-        rbp_offset = (rbp_offset + align - 1) & ~(align - 1);
+        rbp_offset = util_align_up(rbp_offset, align);
         log_pure("=== aligned rbp: %zu -> %zu\n", old_rbp_offset, rbp_offset);
         old_rbp_offset = rbp_offset;
         rbp_offset += aligned_size;
@@ -216,4 +217,63 @@ struct vmap_t vmap_args(const struct vmap_args_request_t *req) {
 
 #undef TOTAL_GPR
 #undef TOTAL_SSE
+}
+
+struct vmap_t vmap_args_copy(const struct vmap_args_request_t *req) {
+    log_debug("=== ABI VMAP_ARGS_COPY REQUEST n=%zu ===\n", req->n);
+
+    struct vmap_t answer = {0};
+
+    answer.n = req->n;
+    if (req->names != NULL) {
+        answer.names = (const char **)malloc(sizeof(const char *) * answer.n);
+        log_assert(answer.names != NULL);
+        memcpy(answer.names, req->names, answer.n * sizeof(const char *));
+    }
+    answer.locs = (struct location_t *)malloc(sizeof(struct location_t) * answer.n);
+    log_assert(answer.locs != NULL);
+
+    // stack:
+    // [rbp+16]: old rps pointed here, and it was aligned to 16
+    // [rbp+8]:  ret
+    // [rbp]:    rbp
+    //
+    // so we know that [rbp] is aligned by 16.
+    size_t offset = 0;  // and this is also aligned
+
+    for (size_t i = 0; i < answer.n; i++) {
+        log_debug(" - %d (%s):\n", i,
+                  answer.names == NULL ? "NONAME" : answer.names[i]);
+        size_t             mem_len = req->mem_len[i];
+        size_t             align = req->align[i];
+        size_t             true_len = mem_len;
+        size_t             true_align = true_align;
+        enum location_type type = LOC_STACK;
+
+        log_debug("   - mem_len=%zu\n", mem_len);
+        log_debug("   - align=%zu\n", align);
+
+        if (mem_len > 16) {
+            log_debug("   - will be a pointer, so mem_len=align=8\n");
+            type = LOC_PTR_ON_STACK;
+            mem_len = 8;
+            align = 8;
+        }
+
+        log_debug("   - offset %zu -> %zu\n", offset, offset + mem_len);
+        offset += mem_len;
+        offset = util_align_up(offset, align);
+        log_debug("   - aligned to %zu\n", offset);
+
+        struct location_t loc = {
+            .type = type,
+            .true_len = true_len,
+            .alignment = true_align,
+            .stack_offset = -(int64_t)offset,
+        };
+        answer.locs[i] = loc;
+        log_pure("\n");
+    }
+
+    return answer;
 }

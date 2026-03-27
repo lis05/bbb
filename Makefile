@@ -133,7 +133,7 @@ $(TEST_BINS): build/tests/% : obj/tests/%.o $(BBB_LIB) | build/tests
 
 .PHONY: tests
 tests: $(TEST_BINS)
-	@./scripts/tests.sh $^
+	@./scripts/tests.sh build/tests $(test)
 
 .PHONY: debug
 debug:

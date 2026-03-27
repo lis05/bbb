@@ -304,6 +304,36 @@ static cb_t gen_layout_decl(int                                     indent,
         i++;
         items = items->rest;
     }
+
+    int chunk;
+    layout.chunk1 = VMAP_CHUNK_NONE;
+    layout.chunk2 = VMAP_CHUNK_NONE;
+
+    if (node->chunk1 != NULL) {
+        switch (util_get_chunk(node->chunk1, &chunk)) {
+            case -1:
+                free(layout.fields);
+                free(layout.offsets);
+                return cb_invalid();
+            case 0:
+                layout.chunk1 = chunk;
+            }
+    }
+    if (node->chunk2 != NULL) {
+        switch (util_get_chunk(node->chunk2, &chunk)) {
+            case -1:
+                free(layout.fields);
+                free(layout.offsets);
+                return cb_invalid();
+            case 0:
+                layout.chunk2 = chunk;
+            }
+    }
+    log_debug(" - chunk1: %zu\n", (size_t)layout.chunk1);
+    EXPLAIN(res, indent + CB_TAB, "chunk1's id is %zu\n", (size_t)layout.chunk1);
+    log_debug(" - chunk2: %zu\n", (size_t)layout.chunk2);
+    EXPLAIN(res, indent + CB_TAB, "chunk2's id is %zu\n", (size_t)layout.chunk2);
+
     EXPLAIN_NL(res);
     log_assert(layout.n == n);
 
@@ -380,6 +410,14 @@ static struct func_args_meta_t collect_func_args(
             log_debug(" - %zu (%s):\n", i, arg->name->name);
             res.names[i] = arg->name->name;
 
+            for (size_t ii = i + 1; ii < res.n; ii++) {
+                if (strcmp(res.names[i], res.names[ii]) == 0) {
+                    context_msg(&res.frags[ii], "Error: duplicate parameter.\n");
+                    goto l_error;
+                }
+            }
+
+
             mem_len = 8;
             if (arg->mem_len != NULL && util_get_mem_len(arg->mem_len, &mem_len)) {
                 goto l_error;
@@ -397,7 +435,8 @@ static struct func_args_meta_t collect_func_args(
             int         chunk1 = VMAP_CHUNK_INT, chunk2 = VMAP_CHUNK_NONE;
             const char *layout = NULL;
             if (arg->abi_class != NULL) {
-                switch (util_get_abi_class(arg->abi_class, &chunk1, &chunk2, &layout)) {
+                switch (
+                    util_get_abi_class(arg->abi_class, &chunk1, &chunk2, &layout)) {
                 case -1:
                     goto l_error;
                 case 0:
@@ -429,21 +468,95 @@ l_error:
     return (struct func_args_meta_t){0};
 }
 
-static cb_t gen_function_declaration(int indent,
-                                     const struct function_declaration_node_t *node) {
-
+static cb_t gen_function_declaration(
+    int indent, const struct function_declaration_node_t *node) {
     log_debug("Entered with indent=%d\n", indent);
     log_assert(node != NULL);
 
     cb_t res;
     cb_init(&res);
 
-    int meta_error;
+    int                     meta_error;
     struct func_args_meta_t args_meta = collect_func_args(node, &meta_error);
     if (meta_error) {
         destroy_func_args_meta(&args_meta);
         return cb_invalid();
     }
 
+    EXPLAIN(res, indent, "Function '%s' begins here.\n", node->name->name);
+    if (node->vis != NULL) {
+        if (strcmp(util_get_visibility(node->vis), "global") == 0) {
+            cb_add_back(&res, indent, "global %s\n", node->name->name);
+        } else {
+            context_msg(&node->vis->frag, "Error: invalid visibility.\n");
+            destroy_func_args_meta(&args_meta);
+            return cb_invalid();
+        }
+    }
+
+    cb_add_back(&res, indent, "%s:\n", node->name->name);
+    cb_add_back(&res, indent + 4, "push rbp\n");
+    cb_add_back(&res, indent + 4, "mov rbp, rsp\n");
+
+    struct vmap_t args_mapping = {0};
+    struct vmap_t args_copy_mapping = {0};
+
+    log_debug(" - constructing vmap_args_request_t\n");
+    struct vmap_args_request_t args_request = {0};
+    args_request.n = args_meta.n;
+    args_request.names = (const char **)memdup_safe(
+        args_meta.names, args_meta.n * sizeof(const char *));
+    log_assert(args_request.n == 0 || args_request.names != NULL);  // must be nonnull
+    args_request.mem_len =
+        (size_t *)memdup_safe(args_meta.mem_len, args_meta.n * sizeof(size_t));
+    args_request.align =
+        (size_t *)memdup_safe(args_meta.align, args_meta.n * sizeof(size_t));
+
+    // chunks may come from a layout
+    args_request.chunk1 =
+        (uint8_t *)memdup_safe(args_meta.chunk1, args_meta.n * sizeof(uint8_t));
+    args_request.chunk2 =
+        (uint8_t *)memdup_safe(args_meta.chunk2, args_meta.n * sizeof(uint8_t));
+    for (size_t i = 0; i < args_meta.n; i++) {
+        if (args_meta.layout[i] != NULL) {
+            log_debug("   - argument %zu (%s) is classified using a layout %s\n", i,
+                      args_request.names[i], args_meta.layout[i]);
+
+            if (!layouts_has(args_meta.layout[i])) {
+                context_msg(&args_meta.frags[i],
+                            "Error: the layout referenced here has not been "
+                            "declared yet.\n");
+                goto g_error;
+            }
+
+            struct layout_t layout = layouts_find(args_meta.layout[i]);
+            args_request.chunk1[i] =
+                layout.chunk1 == VMAP_CHUNK_NONE ? VMAP_CHUNK_INT : layout.chunk1;
+            args_request.chunk2[i] =
+                layout.chunk2 == VMAP_CHUNK_NONE ? VMAP_CHUNK_INT : layout.chunk2;
+        }
+    }
+    log_debug(" - done creating vmap_args_request_t\n");
+
+    log_debug(" - running vmap_args()\n");
+    args_mapping = vmap_args(&args_request);
+    log_debug(" - done running vmap_args()\n");
+
+    log_debug(" - running vmap_args_copy()\n");
+    args_copy_mapping = vmap_args_copy(&args_request);
+    log_debug(" - done running vmap_args()\n");
+
+
     return res;
+
+g_error:
+    free(args_request.names);
+    free(args_request.mem_len);
+    free(args_request.align);
+    free(args_request.chunk1);
+    free(args_request.chunk2);
+    destroy_func_args_meta(&args_meta);
+    vmap_destroy(&args_mapping);
+    vmap_destroy(&args_copy_mapping);
+    return cb_invalid();
 }

@@ -1,9 +1,9 @@
+#include <errno.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 
 #include "log.h"
 
@@ -12,3 +12,14 @@
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) < (y) ? (y) : (x))
+
+#define memdup_safe(ptr, size)          \
+    ({                                  \
+        void *res = NULL;               \
+        if ((ptr) != NULL) {            \
+            res = malloc(size);         \
+            log_assert(res != NULL);    \
+            memcpy(res, (ptr), (size)); \
+        }                               \
+        res;                            \
+    })

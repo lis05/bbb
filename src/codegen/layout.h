@@ -7,6 +7,8 @@ struct layout_t {
     const char **fields;
     size_t *offsets;
     size_t total_size;
+    uint8_t chunk1;
+    uint8_t chunk2;
 };
 
 void layouts_register(const char *name, struct layout_t layout);
