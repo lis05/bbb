@@ -1,12 +1,12 @@
 #include "gen.h"
 
 #include "../parser/error.h"
+#include "fc.h"
 #include "layout.h"
 #include "scope.h"
 #include "settings.h"
 #include "util.h"
 #include "vmap.h"
-#include "fc.h"
 
 #define EXPLAIN(cbref, indent, ...)                          \
     do {                                                     \
@@ -312,23 +312,23 @@ static cb_t gen_layout_decl(int                                     indent,
 
     if (node->chunk1 != NULL) {
         switch (util_get_chunk(node->chunk1, &chunk)) {
-            case -1:
-                free(layout.fields);
-                free(layout.offsets);
-                return cb_invalid();
-            case 0:
-                layout.chunk1 = chunk;
-            }
+        case -1:
+            free(layout.fields);
+            free(layout.offsets);
+            return cb_invalid();
+        case 0:
+            layout.chunk1 = chunk;
+        }
     }
     if (node->chunk2 != NULL) {
         switch (util_get_chunk(node->chunk2, &chunk)) {
-            case -1:
-                free(layout.fields);
-                free(layout.offsets);
-                return cb_invalid();
-            case 0:
-                layout.chunk2 = chunk;
-            }
+        case -1:
+            free(layout.fields);
+            free(layout.offsets);
+            return cb_invalid();
+        case 0:
+            layout.chunk2 = chunk;
+        }
     }
     log_debug(" - chunk1: %zu\n", (size_t)layout.chunk1);
     EXPLAIN(res, indent + CB_TAB, "chunk1's id is %zu\n", (size_t)layout.chunk1);
@@ -417,7 +417,6 @@ static struct func_args_meta_t collect_func_args(
                     goto l_error;
                 }
             }
-
 
             mem_len = 8;
             if (arg->mem_len != NULL && util_get_mem_len(arg->mem_len, &mem_len)) {
@@ -521,7 +520,8 @@ static cb_t gen_function_declaration(
     args_request.n = args_meta.n;
     args_request.names = (const char **)memdup_safe(
         args_meta.names, args_meta.n * sizeof(const char *));
-    log_assert(args_request.n == 0 || args_request.names != NULL);  // must be nonnull
+    log_assert(args_request.n == 0 ||
+               args_request.names != NULL);  // must be nonnull
     args_request.mem_len =
         (size_t *)memdup_safe(args_meta.mem_len, args_meta.n * sizeof(size_t));
     args_request.align =
@@ -573,12 +573,15 @@ static cb_t gen_function_declaration(
     // copy arguments onto the stack
     log_debug(" - copying arguments onto the stack\n");
     for (size_t i = 0; i < args_mapping.n; i++) {
-        cb_t b = loc_args_copy(indent, &args_mapping.locs[i], &args_copy_mapping.locs[i]);
+        cb_t b = loc_args_copy(indent, &args_mapping.locs[i],
+                               &args_copy_mapping.locs[i], &fc.lblg);
         if (!cb_is_valid(&b)) {
-            context_msg(&args_meta.frags[i], "Error: copying arguments onto the stack has failed.\n");
+            context_msg(&args_meta.frags[i],
+                        "Error: copying arguments onto the stack has failed.\n");
             goto g_error;
         }
-        EXPLAIN(res, indent, "Copy %zu-th argument ('%s') onto the stack.\n", i, args_mapping.names[i]);
+        EXPLAIN(res, indent, "Copy %zu-th argument ('%s') onto the stack.\n", i,
+                args_mapping.names[i]);
         cb_glue_back(&res, &b);
         cb_add_back(&res, indent, "\n");
     }
@@ -588,7 +591,14 @@ static cb_t gen_function_declaration(
     cb_add_back(&res, indent, "pop rbp\n");
 
     cb_add_back(&res, indent, "\n");
-    cb_add_back(&res, indent, "ret\n");
+    if (strcmp(node->name->name, "_start") == 0) {
+        cb_add_back(&res, indent, "; Generated automatically for _start\n");
+        cb_add_back(&res, indent, "mov rax, 60\n");
+        cb_add_back(&res, indent, "xor rdi, rdi\n");
+        cb_add_back(&res, indent, "syscall\n");
+    } else {
+        cb_add_back(&res, indent, "ret\n");
+    }
     EXPLAIN(res, indent - CB_TAB, "End of function '%s'.\n", node->name->name);
     cb_add_back(&res, indent, "\n");
 

@@ -1,2 +1,3 @@
 clear; make && ./build/bbb -vvvvPlce /tmp/prog.bbb -o /tmp/prog.nasm && cat \
-/tmp/prog.nasm && nasm -felf64 /tmp/prog.nasm -o /tmp/pro
+/tmp/prog.nasm && nasm -felf64 /tmp/prog.nasm -o /tmp/prog.o && ld /tmp/prog.o -o \
+/tmp/prog

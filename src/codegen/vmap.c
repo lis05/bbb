@@ -3,7 +3,7 @@
 #include "regs.h"
 #include "util.h"
 
-static const char *chunk_to_name[] = {"INT", "SSE", "MEM"};
+static const char *chunk_to_name[] = {"INT", "SSE", "MEM", "NONE"};
 
 void vmap_destroy(struct vmap_t *vmap) {
     free(vmap->names);
