@@ -2,6 +2,7 @@
 
 #include "../common/common.h"
 #include "regs.h"
+#include "cb.h"
 
 enum location_type {
     /* A single GPR register. */
@@ -75,3 +76,11 @@ struct location_t {
         double double_literal;
     };
 };
+
+/* Copies data between two locations. LOC_PTR_IN_REG and LOC_PTR_ON_STACK are
+ * treated as simply 8-byte long data, and are not *dereferenced* if ykwim.
+ *
+ * This function should only be used to transfer function arguments from their
+ * locations onto the stack. It uses R10 register.*/
+cb_t loc_args_copy(int indent, struct location_t *from,
+                          struct location_t *to);

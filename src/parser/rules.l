@@ -55,6 +55,9 @@
     } while(0)
 %}
 
+%option nounput
+%option noinput
+
 NAME                                    [a-zA-Z_][a-zA-Z_0-9]*
 GP_REGISTER                             r([abcd]x|si|di|sp|bp|[8-9]|1[0-5])
 REGISTER                                ({GP_REGISTER}|xmm([0-9]|1[0-5]))

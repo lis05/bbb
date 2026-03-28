@@ -6,6 +6,7 @@
 #include "settings.h"
 #include "util.h"
 #include "vmap.h"
+#include "fc.h"
 
 #define EXPLAIN(cbref, indent, ...)                          \
     do {                                                     \
@@ -189,8 +190,8 @@ static cb_t gen_extern_decl(int                                     indent,
         if (scope_has(&global_scope, node->name->name)) {
             log_debug(" - symbol already in the global scope.\n");
             context_msg(&node->name->frag,
-                        "Note: the compiler is already aware of this symbol.\n");
-            return res;
+                        "Error: the compiler is already aware of this symbol.\n");
+            return cb_invalid();
         }
 
         struct location_t loc = {
@@ -468,6 +469,11 @@ l_error:
     return (struct func_args_meta_t){0};
 }
 
+/*
+ * ==========================================
+ * From this point onwards, everything will be inside of functions...
+ */
+
 static cb_t gen_function_declaration(
     int indent, const struct function_declaration_node_t *node) {
     log_debug("Entered with indent=%d\n", indent);
@@ -475,6 +481,13 @@ static cb_t gen_function_declaration(
 
     cb_t res;
     cb_init(&res);
+
+    if (scope_has(&global_scope, node->name->name)) {
+        log_debug(" - symbol already in the global scope.\n");
+        context_msg(&node->name->frag,
+                    "Note: the compiler is already aware of this symbol.\n");
+        return cb_invalid();
+    }
 
     int                     meta_error;
     struct func_args_meta_t args_meta = collect_func_args(node, &meta_error);
@@ -495,8 +508,10 @@ static cb_t gen_function_declaration(
     }
 
     cb_add_back(&res, indent, "%s:\n", node->name->name);
-    cb_add_back(&res, indent + 4, "push rbp\n");
-    cb_add_back(&res, indent + 4, "mov rbp, rsp\n");
+    indent += CB_TAB;
+    cb_add_back(&res, indent, "push rbp\n");
+    cb_add_back(&res, indent, "mov rbp, rsp\n");
+    cb_add_back(&res, indent, "\n");
 
     struct vmap_t args_mapping = {0};
     struct vmap_t args_copy_mapping = {0};
@@ -536,27 +551,75 @@ static cb_t gen_function_declaration(
                 layout.chunk2 == VMAP_CHUNK_NONE ? VMAP_CHUNK_INT : layout.chunk2;
         }
     }
-    log_debug(" - done creating vmap_args_request_t\n");
+    log_debug("   - done creating vmap_args_request_t\n");
 
     log_debug(" - running vmap_args()\n");
     args_mapping = vmap_args(&args_request);
-    log_debug(" - done running vmap_args()\n");
+    log_debug("   - done running vmap_args()\n");
 
     log_debug(" - running vmap_args_copy()\n");
     args_copy_mapping = vmap_args_copy(&args_request);
-    log_debug(" - done running vmap_args()\n");
+    log_debug("   - done running vmap_args()\n");
 
+    // TODO: add return value request
+
+    struct function_context_t fc;
+    fc_init(&fc);
+
+    // TODO: gather local variables and add them to the context
+    //
+    // TODO: dive into body
+
+    // copy arguments onto the stack
+    log_debug(" - copying arguments onto the stack\n");
+    for (size_t i = 0; i < args_mapping.n; i++) {
+        cb_t b = loc_args_copy(indent, &args_mapping.locs[i], &args_copy_mapping.locs[i]);
+        if (!cb_is_valid(&b)) {
+            context_msg(&args_meta.frags[i], "Error: copying arguments onto the stack has failed.\n");
+            goto g_error;
+        }
+        EXPLAIN(res, indent, "Copy %zu-th argument ('%s') onto the stack.\n", i, args_mapping.names[i]);
+        cb_glue_back(&res, &b);
+        cb_add_back(&res, indent, "\n");
+    }
+    log_debug("   - done copying\n");
+
+    cb_add_back(&res, indent, "mov rsp, rbp\n");
+    cb_add_back(&res, indent, "pop rbp\n");
+
+    cb_add_back(&res, indent, "\n");
+    cb_add_back(&res, indent, "ret\n");
+    EXPLAIN(res, indent - CB_TAB, "End of function '%s'.\n", node->name->name);
+    cb_add_back(&res, indent, "\n");
+
+    struct location_t loc = {
+        .type = LOC_SYMBOL,
+        .true_len = 0,
+        .alignment = 0,
+        .symbol = node->name->name,
+    };
+    log_debug(" - adding location to global scope.\n");
+    scope_add(&global_scope, node->name->name, loc);
 
     return res;
 
 g_error:
+    // args request
     free(args_request.names);
     free(args_request.mem_len);
     free(args_request.align);
     free(args_request.chunk1);
     free(args_request.chunk2);
+
+    // args meta
     destroy_func_args_meta(&args_meta);
+
+    // mappings
     vmap_destroy(&args_mapping);
     vmap_destroy(&args_copy_mapping);
+
+    // function context
+    scope_destroy(&fc.local_scope);
+
     return cb_invalid();
 }

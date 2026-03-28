@@ -1,5 +1,6 @@
 #include "util.h"
 
+#include "kw.h"
 #include "../parser/error.h"
 #include "layout.h"
 #include "vmap.h"
@@ -19,17 +20,16 @@ const char *util_get_visibility(const struct name_node_t *node) {
 int util_get_mem_len(const struct name_node_t *node, size_t *res) {
     log_assert(node != NULL);
 
-    char  *str = NULL;
+    const char  *str = NULL;
     char  *ptr;
     size_t num;
 
     if (strstr(node->name, "m(sizeof ") == node->name &&
         node->name[strlen(node->name) - 1] == ')') {
-        str = strdup(node->name + strlen("m(sizeof "));
+        str = token_move(strdup(node->name + strlen("m(sizeof ")));
         *strchr(str, ')') = '\0';
 
         if (!layouts_has(str)) {
-            free(str);
             context_msg(
                 &node->frag,
                 "Error: the layout referenced here has not been declared yet.\n");
@@ -40,10 +40,9 @@ int util_get_mem_len(const struct name_node_t *node, size_t *res) {
             *res = layouts_find(str).total_size;
         }
 
-        free(str);
         return 0;
     } else if (node->name[0] == 'm') {
-        str = strdup(node->name + 1);
+        str = token_move(strdup(node->name + 1));
     } else {
         goto error;
     }
@@ -60,7 +59,6 @@ int util_get_mem_len(const struct name_node_t *node, size_t *res) {
     return 0;
 
 error:
-    free(str);
     context_msg(&node->frag, "Error: invalid memory length specifier.\n");
     return 1;
 }
@@ -68,12 +66,12 @@ error:
 int util_get_align(const struct name_node_t *node, size_t *res) {
     log_assert(node != NULL);
 
-    char  *str = NULL;
+    const char  *str = NULL;
     char  *ptr;
     size_t num;
 
     if (strstr(node->name, "align") == node->name) {
-        str = strdup(node->name + 5);
+        str = token_move(strdup(node->name + 5));
     } else {
         goto error;
     }
@@ -96,7 +94,6 @@ int util_get_align(const struct name_node_t *node, size_t *res) {
     return 0;
 
 error:
-    free(str);
     context_msg(&node->frag, "Error: invalid alignment specifier.\n");
     return -1;
 }
@@ -114,9 +111,9 @@ int util_get_abi_class(const struct abi_class_node_t *node, int *chunk1, int *ch
         }
         res = 0;
 
-        is_int = strcmp(node->chunk1->name, "#int");
-        is_sse = strcmp(node->chunk1->name, "#sse");
-        is_mem = strcmp(node->chunk1->name, "#mem");
+        is_int = strcmp(node->chunk1->name, KW_CHUNK_INT);
+        is_sse = strcmp(node->chunk1->name, KW_CHUNK_SSE);
+        is_mem = strcmp(node->chunk1->name, KW_CHUNK_MEM);
 
         if (is_int && is_sse && is_mem) {
             goto error;
@@ -141,9 +138,9 @@ int util_get_abi_class(const struct abi_class_node_t *node, int *chunk1, int *ch
         }
         res = 0;
 
-        is_int = strcmp(node->chunk2->name, "#int");
-        is_sse = strcmp(node->chunk2->name, "#sse");
-        is_mem = strcmp(node->chunk2->name, "#mem");
+        is_int = strcmp(node->chunk2->name, KW_CHUNK_INT);
+        is_sse = strcmp(node->chunk2->name, KW_CHUNK_SSE);
+        is_mem = strcmp(node->chunk2->name, KW_CHUNK_MEM);
 
         if (is_int && is_sse && is_mem) {
             goto error;
@@ -185,9 +182,9 @@ error:
 int util_get_chunk(const struct name_node_t *node, int *chunk) {
     log_assert(node != NULL);
 
-    int is_int = strcmp(node->name, "#int");
-    int is_sse = strcmp(node->name, "#sse");
-    int is_mem = strcmp(node->name, "#mem");
+    int is_int = strcmp(node->name, KW_CHUNK_INT);
+    int is_sse = strcmp(node->name, KW_CHUNK_SSE);
+    int is_mem = strcmp(node->name, KW_CHUNK_MEM);
 
     if (is_int && is_sse && is_mem) {
         context_msg(&node->frag, "Error: invalid chunk classification.\n");
