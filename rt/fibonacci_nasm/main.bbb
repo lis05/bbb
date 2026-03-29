@@ -1,0 +1,49 @@
+%nasm
+
+section .data
+    fmt db "%zu", 10, 0
+
+section .text
+global main
+main:
+    enter 0, 0
+    push r12
+    push r13
+    push r14
+    push 0
+
+    %define n r12
+    %define a r13
+    %define b r14
+
+    mov n, 15
+    mov a, 0
+    mov b, 1
+
+    push 0 ; for alignment
+
+    .loop:
+        test n, n
+        jz .end
+
+        xor rax, rax
+        lea rdi, [rel fmt]
+        mov rsi, a
+        extern printf
+        call printf wrt ..plt
+
+        add a, b
+        xchg a, b
+        dec n
+        jmp .loop
+
+    .end:
+
+    pop r14
+    pop r14
+    pop r13
+    pop r12
+    leave
+    ret
+
+%endnasm
