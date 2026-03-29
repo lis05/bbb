@@ -6,6 +6,8 @@
 #include "lblg.h"
 
 struct function_context_t {
+    // im tired of writing comments
+    const char *return_point_label;
     // this will never change
     struct location_t return_value;
     // this will never change either

@@ -2,6 +2,7 @@
 
 #include "../parser/error.h"
 #include "fc.h"
+#include "kw.h"
 #include "layout.h"
 #include "scope.h"
 #include "settings.h"
@@ -31,6 +32,13 @@ static cb_t gen_layout_decl(int                                     indent,
                             const struct layout_declaration_node_t *node);
 static cb_t gen_function_declaration(int indent,
                                      const struct function_declaration_node_t *node);
+static cb_t gen_body(int indent, const struct body_node_t *node,
+                     struct function_context_t *fc);
+static cb_t gen_body_list(int indent, const struct body_list_node_t *node,
+                          struct function_context_t *fc);
+static cb_t gen_statement(int indent, const struct statement_node_t *node,
+                          struct function_context_t *fc);
+static cb_t gen_nasm_block(int indent, const struct name_node_t *node);
 
 struct scope_t global_scope;
 
@@ -95,7 +103,11 @@ static cb_t gen_program(int indent, const struct program_node_t *node) {
         }
         cb_glue_back(&res, &other);
     } else if (node->nasm_b != NULL) {
-        // todo
+        cb_t other = gen_nasm_block(indent, node->nasm_b);
+        if (!cb_is_valid(&other)) {
+            return other;
+        }
+        cb_glue_back(&res, &other);
     }
 
     return res;
@@ -118,17 +130,20 @@ static cb_t gen_global_variable_decl(
         if (vis != NULL && strcmp(vis, "global") == 0) {
             is_global = 1;
         } else {
+            cb_destroy(&res);
             return cb_invalid();
         }
     }
     log_debug(" - global: %d\n", is_global);
 
     if (node->mem_len != NULL && util_get_mem_len(node->mem_len, &mem_len)) {
+        cb_destroy(&res);
         return cb_invalid();
     }
     log_debug(" - mem_len: %zu\n", mem_len);
 
     if (node->align != NULL && util_get_align(node->align, &align)) {
+        cb_destroy(&res);
         return cb_invalid();
     }
     log_debug(" - align: %zu\n", align);
@@ -147,6 +162,7 @@ static cb_t gen_global_variable_decl(
         log_debug(" - symbol already in the global scope.\n");
         context_msg(&node->name->frag,
                     "Error: the compiler is already aware of this symbol.\n");
+        cb_destroy(&res);
         return cb_invalid();
     }
 
@@ -174,7 +190,7 @@ static cb_t gen_extern_decl(int                                     indent,
     if (strcmp(node->kw->name, "extern") == 0) {
         log_debug("Generating extern declaration for '%s'\n", node->name->name);
 
-        EXPLAIN(res, indent, "Extern daclaration.\n");
+        EXPLAIN(res, indent, "Extern declaration.\n");
 
         char *line =
             (char *)malloc(strlen("extern ") + strlen(node->name->name) + 1 + 1);
@@ -185,12 +201,14 @@ static cb_t gen_extern_decl(int                                     indent,
         log_debug(" - appending '%s'\n", line);
         strcat(line, "\n");
         cb_add_back(&res, indent, line);
+        cb_add_back(&res, 0, "\n");
         free(line);
 
         if (scope_has(&global_scope, node->name->name)) {
             log_debug(" - symbol already in the global scope.\n");
             context_msg(&node->name->frag,
                         "Error: the compiler is already aware of this symbol.\n");
+            cb_destroy(&res);
             return cb_invalid();
         }
 
@@ -226,6 +244,7 @@ static cb_t gen_extern_decl(int                                     indent,
         return res;
     } else {
         context_msg(&node->frag, "Unknown declaration (wrong keyword)\n");
+        cb_destroy(&res);
         return cb_invalid();
     }
 }
@@ -241,6 +260,7 @@ static cb_t gen_layout_decl(int                                     indent,
     if (layouts_has(node->name->name) == 1) {
         context_msg(&node->name->frag,
                     "Error: layout with the same name already exists.\n");
+        cb_destroy(&res);
         return cb_invalid();
     }
 
@@ -252,6 +272,7 @@ static cb_t gen_layout_decl(int                                     indent,
 
     while (items != NULL) {
         if (items->mem_len != NULL && util_get_mem_len(items->mem_len, &mem_len)) {
+            cb_destroy(&res);
             return cb_invalid();
         }
         layout.total_size += mem_len;
@@ -279,12 +300,14 @@ static cb_t gen_layout_decl(int                                     indent,
     EXPLAIN(res, indent, "Layout '%s' is defined as:\n", node->name->name);
     while (items != NULL) {
         if (items->mem_len != NULL && util_get_mem_len(items->mem_len, &mem_len)) {
+            cb_destroy(&res);
             return cb_invalid();  // cant happen but ok
         }
         if (layout_has_field(&layout, items->name->name) == 1) {
             context_msg(&items->name->frag, "Error: duplicate layout field.\n");
             free(layout.fields);
             free(layout.offsets);
+            cb_destroy(&res);
             return cb_invalid();
         }
         if (strcmp(items->name->name, "_") != 0) {
@@ -315,6 +338,7 @@ static cb_t gen_layout_decl(int                                     indent,
         case -1:
             free(layout.fields);
             free(layout.offsets);
+            cb_destroy(&res);
             return cb_invalid();
         case 0:
             layout.chunk1 = chunk;
@@ -325,6 +349,7 @@ static cb_t gen_layout_decl(int                                     indent,
         case -1:
             free(layout.fields);
             free(layout.offsets);
+            cb_destroy(&res);
             return cb_invalid();
         case 0:
             layout.chunk2 = chunk;
@@ -485,6 +510,7 @@ static cb_t gen_function_declaration(
         log_debug(" - symbol already in the global scope.\n");
         context_msg(&node->name->frag,
                     "Note: the compiler is already aware of this symbol.\n");
+        cb_destroy(&res);
         return cb_invalid();
     }
 
@@ -492,9 +518,11 @@ static cb_t gen_function_declaration(
     struct func_args_meta_t args_meta = collect_func_args(node, &meta_error);
     if (meta_error) {
         destroy_func_args_meta(&args_meta);
+        cb_destroy(&res);
         return cb_invalid();
     }
 
+    cb_add_back(&res, indent, "section .text\n");
     EXPLAIN(res, indent, "Function '%s' begins here.\n", node->name->name);
     if (node->vis != NULL) {
         if (strcmp(util_get_visibility(node->vis), "global") == 0) {
@@ -502,6 +530,7 @@ static cb_t gen_function_declaration(
         } else {
             context_msg(&node->vis->frag, "Error: invalid visibility.\n");
             destroy_func_args_meta(&args_meta);
+            cb_destroy(&res);
             return cb_invalid();
         }
     }
@@ -587,18 +616,23 @@ static cb_t gen_function_declaration(
     }
     log_debug("   - done copying\n");
 
+    EXPLAIN(res, indent, "Function body begins here.\n");
+    cb_t body = gen_body(indent, node->body, &fc);
+    if (!cb_is_valid(&body)) {
+        goto g_error;
+    }
+    cb_glue_back(&res, &body);
+    EXPLAIN(res, indent, "Function body ends here.\n");
+    EXPLAIN_NL(res);
+
+    EXPLAIN(res, indent, "This is the return point of the function.\n");
+    cb_add_back(&res, indent, "%s:\n", fc.return_point_label);
+
+    // end of this function
     cb_add_back(&res, indent, "mov rsp, rbp\n");
     cb_add_back(&res, indent, "pop rbp\n");
+    cb_add_back(&res, indent, "ret\n");
 
-    cb_add_back(&res, indent, "\n");
-    if (strcmp(node->name->name, "_start") == 0) {
-        cb_add_back(&res, indent, "; Generated automatically for _start\n");
-        cb_add_back(&res, indent, "mov rax, 60\n");
-        cb_add_back(&res, indent, "xor rdi, rdi\n");
-        cb_add_back(&res, indent, "syscall\n");
-    } else {
-        cb_add_back(&res, indent, "ret\n");
-    }
     EXPLAIN(res, indent - CB_TAB, "End of function '%s'.\n", node->name->name);
     cb_add_back(&res, indent, "\n");
 
@@ -631,5 +665,85 @@ g_error:
     // function context
     scope_destroy(&fc.local_scope);
 
+    cb_destroy(&res);
+    return cb_invalid();
+}
+
+static cb_t gen_body(int indent, const struct body_node_t *node,
+                     struct function_context_t *fc) {
+    log_assert(node != NULL);
+    return gen_body_list(indent, node->list, fc);
+}
+
+static cb_t gen_body_list(int indent, const struct body_list_node_t *node,
+                          struct function_context_t *fc) {
+    log_debug("Entered with indent=%d\n", indent);
+    log_assert(node != NULL);
+
+    cb_t res;
+    cb_init(&res);
+
+    while (node != NULL) {
+        if (node->s != NULL) {
+            cb_t s = gen_statement(indent, node->s, fc);
+            cb_glue_front(&res, &s);
+        }
+
+        node = node->rest;
+    }
+
+    return res;
+}
+static cb_t gen_statement(int indent, const struct statement_node_t *node,
+                          struct function_context_t *fc) {
+    log_debug("Entered with indent=%d\n", indent);
+    log_assert(node != NULL);
+
+    if (node->nasm != NULL) {
+        cb_t res = gen_nasm_block(indent, node->nasm);
+        return res;
+    }
+    return cb_invalid();
+}
+
+static cb_t gen_nasm_block(int indent, const struct name_node_t *node) {
+    log_debug("Entered with indent=%d\n", indent);
+    log_assert(node != NULL);
+
+    cb_t res;
+    cb_init(&res);
+
+    char *orig;
+    char *str = orig = strdup(node->name);
+    log_assert(str != NULL);
+    if (strstr(str, KW_NASM_START) != str) {
+        goto error;
+    }
+
+    str += strlen(KW_NASM_START);
+
+    char *end = strstr(str, KW_NASM_END);
+    if (end == NULL) {
+        goto error;
+    }
+
+    while (str < end && *(str) == ' ') str++;
+    while (str < end && *(str) == '\n') str++;
+    while (str < end && *(end - 1) == ' ') end--;
+    while (str < end && *(end - 1) == '\n') end--;
+    *end = '\n';
+    *(end + 1) = '\0';
+
+    cb_add_back(&res, 0, "\n");
+    cb_add_back(&res, 0, "%s", str);
+    cb_add_back(&res, 0, "\n");
+
+    free(orig);
+    return res;
+
+error:
+    context_msg(&node->frag, "Error: invalid NASM block.\n");
+    cb_destroy(&res);
+    free(orig);
     return cb_invalid();
 }

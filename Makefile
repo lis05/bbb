@@ -120,6 +120,15 @@ fresh:
 pt: $(BBB)
 	./scripts/pt.sh $(BBB) $(pttest)
 
+RT_TEST_DIRS = $(wildcard rt/*/)
+
+.PHONY: rt $(RT_TEST_DIRS)
+rt: $(RT_TEST_DIRS)
+
+$(RT_TEST_DIRS): $(BBB)
+	@echo "--- Running test $@ ---"
+	@make --no-print-directory -C $@ verify
+
 # tests?
 TEST_BINS := $(patsubst obj/tests/%.o,build/tests/%,$(TEST_OBJECTS))
 BBB_LIB := $(filter-out obj/main.o,$(OBJECTS))

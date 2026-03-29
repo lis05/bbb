@@ -1,0 +1,14 @@
+%nasm
+section .data
+    msg db "Hello, world!", 10, 0
+%endnasm
+
+extern printf
+
+main: global fn() {
+%nasm
+    xor rax, rax
+    lea rdi, [rel msg]
+    call printf wrt ..plt
+%endnasm
+}

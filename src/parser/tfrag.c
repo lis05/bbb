@@ -31,4 +31,3 @@ void tfrag_combine(tfrag_t *res, tfrag_t *first, tfrag_t *second) {
                        ? second->end_col
                        : MAX(first->end_col, second->end_col);
 }
-

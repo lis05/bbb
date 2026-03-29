@@ -48,25 +48,9 @@ const char *token_get(const char *string) {
 }
 
 const char *token_move(const char *string) {
-    for (int i = 0; i < tokens_len; i++) {
-        if (strcmp(string, tokens[i]) == 0) {
-            return tokens[i];
-        }
-    }
-
-    if (tokens_len == tokens_cap) {
-        tokens_cap *= 2;
-        tokens = realloc(tokens, tokens_cap * sizeof(char *));
-        if (tokens == NULL) {
-            log_crit("Failed to resize the tokens table.\n");
-        }
-    }
-
-    if ((tokens[tokens_len++] = (char*)string) == NULL) {
-        log_crit("Failed to add a new tokens.\n");
-    }
-
-    return tokens[tokens_len - 1];
+    const char *ans = token_get(string);
+    free((char *)string);
+    return ans;
 }
 
 int token_exists(const char *string) {
