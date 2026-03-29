@@ -1,5 +1,5 @@
 #!/bin/env bash
-if [ "$(./main)" == "Hello, world!" ]; then
+if [ "$(./main.bin)" == "Hello, world!" ]; then
     echo "Success!"
 else
     echo "Failed!"

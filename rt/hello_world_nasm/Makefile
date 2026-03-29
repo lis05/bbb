@@ -4,7 +4,7 @@ OBJ = $(patsubst %.bbb,%.o,$(wildcard *.bbb))
 OBJ += $(patsubst %.nasm,%.o,$(wildcard *.nasm))
 OBJ += $(patsubst %.c,%.o,$(wildcard *.c))
 
-main: $(OBJ)
+main.bin: $(OBJ)
 	gcc -g $(OBJ) -o $@
 
 %.o: %.basm
@@ -29,5 +29,5 @@ debug:
 	@echo OBJ = $(OBJ)
 
 .PHONY: verify
-verify: main
+verify: main.bin
 	@bash verify.sh
