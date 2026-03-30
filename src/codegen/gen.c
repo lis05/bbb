@@ -23,6 +23,11 @@
         }                                   \
     } while (0)
 
+#define LOG_ENTER(frag_ptr, indent)                                   \
+    log_debug("Entered source %zu:%zu ... %zu:%zu with indent=%zu\n", \
+              (frag_ptr)->begin_line + 1, (frag_ptr)->begin_col + 1,  \
+              (frag_ptr)->end_line + 1, (frag_ptr)->end_col, (indent));
+
 static cb_t gen_program(int indent, const struct program_node_t *node);
 static cb_t gen_global_variable_decl(
     int indent, const struct global_variable_declaration_node_t *node);
@@ -38,9 +43,13 @@ static cb_t gen_body_list(int indent, const struct body_list_node_t *node,
                           struct function_context_t *fc);
 static cb_t gen_statement(int indent, const struct statement_node_t *node,
                           struct function_context_t *fc);
+static cb_t gen_variable_declaration(int indent,
+                                     const struct variable_declaration_node_t *node,
+                                     struct function_context_t                *fc);
 static cb_t gen_nasm_block(int indent, const struct name_node_t *node);
 
-struct scope_t global_scope;
+/* Has lower priority than local scope. */
+static struct scope_t global_scope;
 
 cb_t gen(struct program_node_t *prog) {
     cb_t res;
@@ -64,8 +73,8 @@ cb_t gen(struct program_node_t *prog) {
 }
 
 static cb_t gen_program(int indent, const struct program_node_t *node) {
-    log_debug("Entered with indent=%d\n", indent);
     log_assert(node != NULL);
+    LOG_ENTER(&node->frag, indent);
 
     cb_t res;
     cb_init(&res);
@@ -115,8 +124,8 @@ static cb_t gen_program(int indent, const struct program_node_t *node) {
 
 static cb_t gen_global_variable_decl(
     int indent, const struct global_variable_declaration_node_t *node) {
-    log_debug("Entered with indent=%d\n", indent);
     log_assert(node != NULL);
+    LOG_ENTER(&node->frag, indent);
 
     cb_t res;
     cb_init(&res);
@@ -181,8 +190,8 @@ static cb_t gen_global_variable_decl(
 
 static cb_t gen_extern_decl(int                                     indent,
                             const struct extern_declaration_node_t *node) {
-    log_debug("Entered with indent=%d\n", indent);
     log_assert(node != NULL);
+    LOG_ENTER(&node->frag, indent);
 
     cb_t res;
     cb_init(&res);
@@ -251,8 +260,8 @@ static cb_t gen_extern_decl(int                                     indent,
 
 static cb_t gen_layout_decl(int                                     indent,
                             const struct layout_declaration_node_t *node) {
-    log_debug("Entered with indent=%d\n", indent);
     log_assert(node != NULL);
+    LOG_ENTER(&node->frag, indent);
 
     cb_t res;
     cb_init(&res);
@@ -496,12 +505,14 @@ l_error:
 /*
  * ==========================================
  * From this point onwards, everything will be inside of functions...
+ *
+ *                          ^^^^^^^^^^ lmao no, nasm blocks lol
  */
 
 static cb_t gen_function_declaration(
     int indent, const struct function_declaration_node_t *node) {
-    log_debug("Entered with indent=%d\n", indent);
     log_assert(node != NULL);
+    LOG_ENTER(&node->frag, indent);
 
     cb_t res;
     cb_init(&res);
@@ -537,9 +548,6 @@ static cb_t gen_function_declaration(
 
     cb_add_back(&res, indent, "%s:\n", node->name->name);
     indent += CB_TAB;
-    cb_add_back(&res, indent, "push rbp\n");
-    cb_add_back(&res, indent, "mov rbp, rsp\n");
-    cb_add_back(&res, indent, "\n");
 
     struct vmap_t args_mapping = {0};
     struct vmap_t args_copy_mapping = {0};
@@ -590,16 +598,45 @@ static cb_t gen_function_declaration(
     args_copy_mapping = vmap_args_copy(&args_request);
     log_debug("   - done running vmap_args()\n");
 
-    // TODO: add return value request
-
     struct function_context_t fc;
     fc_init(&fc);
 
-    // TODO: gather local variables and add them to the context
-    //
-    // TODO: dive into body
+    if (args_copy_mapping.n > 0) {
+        fc.stack_offset =
+            args_copy_mapping.locs[args_copy_mapping.n - 1].stack_offset;
+    }
 
-    // copy arguments onto the stack
+    for (size_t i = 0; i < args_copy_mapping.n; i++) {
+        log_debug(" - adding %zu-th function param to scope.\n", i);
+        scope_add(&fc.local_scope, args_copy_mapping.names[i],
+                  args_copy_mapping.locs[i]);
+    }
+
+    // TODO: add return value request
+
+    cb_t body = gen_body(indent, node->body, &fc);
+    if (!cb_is_valid(&body)) {
+        goto g_error;
+    }
+
+    int64_t frame_size = -fc.stack_offset;
+    log_assert(frame_size >= 0);
+    log_debug(" - frame size: %" PRId64 "\n", frame_size);
+
+    /* =============================================
+     * new stack frame
+     */
+
+    cb_add_back(&res, indent, "push rbp\n");
+    cb_add_back(&res, indent, "mov rbp, rsp\n");
+    EXPLAIN(res, indent, "Space for local variables.\n");
+    cb_add_back(&res, indent, "sub rsp, %zu\n", (size_t)frame_size);
+    cb_add_back(&res, indent, "\n");
+
+    /* ============================================
+     * copy arguments onto the stack
+     */
+
     log_debug(" - copying arguments onto the stack\n");
     for (size_t i = 0; i < args_mapping.n; i++) {
         cb_t b = loc_args_copy(indent, &args_mapping.locs[i],
@@ -609,21 +646,38 @@ static cb_t gen_function_declaration(
                         "Error: copying arguments onto the stack has failed.\n");
             goto g_error;
         }
-        EXPLAIN(res, indent, "Copy %zu-th argument ('%s') onto the stack.\n", i,
-                args_mapping.names[i]);
+        if (args_copy_mapping.locs[i].true_len <= 16) {
+            EXPLAIN(res, indent,
+                    "Copy %zu-th argument ('%s', %zu bytes) onto the stack at rbp - "
+                    "%" PRId64 ".\n",
+                    i, args_copy_mapping.names[i],
+                    args_copy_mapping.locs[i].true_len,
+                    -(args_copy_mapping.locs[i].stack_offset));
+        } else {
+            EXPLAIN(res, indent,
+                    "Copy %zu-th argument ('%s', pointer) onto the stack at rbp - "
+                    "%" PRId64 ".\n",
+                    i, args_copy_mapping.names[i],
+                    -(args_copy_mapping.locs[i].stack_offset));
+        }
         cb_glue_back(&res, &b);
         cb_add_back(&res, indent, "\n");
     }
     log_debug("   - done copying\n");
 
+    /* ============================================
+     * function body
+     */
+
     EXPLAIN(res, indent, "Function body begins here.\n");
-    cb_t body = gen_body(indent, node->body, &fc);
-    if (!cb_is_valid(&body)) {
-        goto g_error;
-    }
     cb_glue_back(&res, &body);
+
     EXPLAIN(res, indent, "Function body ends here.\n");
     EXPLAIN_NL(res);
+
+    /* ============================================
+     * end of function, destruction of the stack frame
+     */
 
     EXPLAIN(res, indent, "This is the return point of the function.\n");
     cb_add_back(&res, indent, "%s:\n", fc.return_point_label);
@@ -677,38 +731,129 @@ static cb_t gen_body(int indent, const struct body_node_t *node,
 
 static cb_t gen_body_list(int indent, const struct body_list_node_t *node,
                           struct function_context_t *fc) {
-    log_debug("Entered with indent=%d\n", indent);
     log_assert(node != NULL);
+    LOG_ENTER(&node->frag, indent);
 
     cb_t res;
     cb_init(&res);
 
-    while (node != NULL) {
-        if (node->s != NULL) {
-            cb_t s = gen_statement(indent, node->s, fc);
-            cb_glue_front(&res, &s);
-        }
+    // we need to handle statements from top to bottom...
 
-        node = node->rest;
+    if (node->rest != NULL) {
+        cb_t r = gen_body_list(indent, node->rest, fc);
+        if (!cb_is_valid(&r)) {
+            cb_destroy(&res);
+            return cb_invalid();
+        }
+        cb_glue_back(&res, &r);
+    }
+
+    if (node->s != NULL) {
+        cb_t s = gen_statement(indent, node->s, fc);
+        if (!cb_is_valid(&s)) {
+            cb_destroy(&res);
+            return cb_invalid();
+        }
+        cb_glue_back(&res, &s);
     }
 
     return res;
 }
 static cb_t gen_statement(int indent, const struct statement_node_t *node,
                           struct function_context_t *fc) {
-    log_debug("Entered with indent=%d\n", indent);
     log_assert(node != NULL);
+    LOG_ENTER(&node->frag, indent);
 
-    if (node->nasm != NULL) {
+    if (node->vdecl != NULL) {
+        cb_t res = gen_variable_declaration(indent, node->vdecl, fc);
+        return res;
+    } else if (node->nasm != NULL) {
         cb_t res = gen_nasm_block(indent, node->nasm);
         return res;
     }
     return cb_invalid();
 }
 
-static cb_t gen_nasm_block(int indent, const struct name_node_t *node) {
-    log_debug("Entered with indent=%d\n", indent);
+/*
+ * So this works, but it is kinda weird. Code like this will be possible:
+ * a: m8
+ * CAN ACCESS a HERE
+ *
+ * if (...) {
+ *     b: m8
+ *     CAN ACCESS a HERE
+ *     CAN ACCESS b HERE
+ * }
+ *
+ * CAN ACCESS a HERE
+ * CAN ACCESS b HERE
+ *
+ * if (...) {
+ *     c: m8
+ *     CAN ACCESS a HERE
+ *     CAN ACCESS b HERE
+ *     CAN ACCESS c HERE
+ * }
+ *
+ * CAN ACCESS a HERE
+ * CAN ACCESS b HERE
+ * CAN ACCESS c HERE
+ *
+ * this is easy to fix but i am lazy. fix: first parse all local variables, add them
+ * to scope. OR make scopes that can remove variables that are outside of their
+ * scope. Like each scope has a counter and variables get removed if their counter is
+ * bigger than the scope's
+ */
+
+static cb_t gen_variable_declaration(int indent,
+                                     const struct variable_declaration_node_t *node,
+                                     struct function_context_t                *fc) {
     log_assert(node != NULL);
+    LOG_ENTER(&node->frag, indent);
+
+    cb_t res;
+    cb_init(&res);
+
+    if (scope_has(&fc->local_scope, node->name->name)) {
+        context_msg(&node->frag, "Error: duplicate local variable.\n");
+        cb_destroy(&res);
+        return cb_invalid();
+    }
+
+    size_t mem_len = 8;
+    size_t align = 8;
+
+    if (node->mem_len != NULL && util_get_mem_len(node->mem_len, &mem_len)) {
+        cb_destroy(&res);
+        return cb_invalid();
+    }
+    if (node->align != NULL && util_get_align(node->align, &align)) {
+        cb_destroy(&res);
+        return cb_invalid();
+    }
+
+    log_debug(" - var '%s' of mem_len=%zu and align=%zu changes rbp:\n",
+              node->name->name, mem_len, align);
+    log_debug("   ^ from %" PRId64 "\n", fc->stack_offset);
+    fc->stack_offset -= mem_len;
+    fc->stack_offset = util_align_stack_down(fc->stack_offset, align);
+    log_debug("   ^ to %" PRId64 "\n", fc->stack_offset);
+
+    struct location_t loc = {
+        .type = LOC_STACK,
+        .true_len = mem_len,
+        .alignment = align,
+        .stack_offset = fc->stack_offset,
+    };
+
+    scope_add(&fc->local_scope, node->name->name, loc);
+
+    return res;
+}
+
+static cb_t gen_nasm_block(int indent, const struct name_node_t *node) {
+    log_assert(node != NULL);
+    LOG_ENTER(&node->frag, indent);
 
     cb_t res;
     cb_init(&res);

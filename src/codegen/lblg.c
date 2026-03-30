@@ -25,6 +25,6 @@ const char *lblg_gen(struct label_generator_t *lblg) {
         log_assert(lblg->labels != NULL);
     }
 
-    log_assert(-1 != asprintf(lblg->labels + lblg->n, ".L%zu", lblg->n));
+    log_assert(-1 != asprintf(lblg->labels + lblg->n, ".bbb_L%zu", lblg->n));
     return lblg->labels[lblg->n++];
 }

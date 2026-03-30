@@ -206,3 +206,7 @@ int util_get_chunk(const struct name_node_t *node, int *chunk) {
 uint64_t util_align_up(uint64_t value, uint64_t alignment) {
     return (value + alignment - 1) & ~(alignment - 1);
 }
+
+int64_t util_align_stack_down(int64_t offset, size_t alignment) {
+    return -util_align_up(-offset, alignment);
+}

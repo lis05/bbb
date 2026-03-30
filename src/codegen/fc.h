@@ -6,17 +6,13 @@
 #include "lblg.h"
 
 struct function_context_t {
-    // im tired of writing comments
-    const char *return_point_label;
-    // this will never change
-    struct location_t return_value;
-    // this will never change either
-    struct scope_t local_scope; // includes function arguments
-    // this will also never change
-    struct label_generator_t lblg;
-    // these two will change
+    int64_t stack_offset;
+    FINAL const char *return_point_label;
+    FINAL struct location_t return_value;
+    FINAL struct scope_t local_scope;
+    FINAL struct label_generator_t lblg;
     struct gpr_pool_t gpr_pool;
     struct sse_pool_t sse_pool;
 };
 
-void fc_init(struct function_context_t *fc);
+void fc_init(NONULL struct function_context_t *fc);
