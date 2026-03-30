@@ -46,7 +46,8 @@ static cb_t gen_statement(int indent, const struct statement_node_t *node,
 static cb_t gen_variable_declaration(int indent,
                                      const struct variable_declaration_node_t *node,
                                      struct function_context_t                *fc);
-static cb_t gen_nasm_block(int indent, const struct name_node_t *node);
+static cb_t gen_nasm_block(int indent, const struct name_node_t *node,
+                           struct function_context_t *fc);
 
 /* Has lower priority than local scope. */
 static struct scope_t global_scope;
@@ -112,7 +113,7 @@ static cb_t gen_program(int indent, const struct program_node_t *node) {
         }
         cb_glue_back(&res, &other);
     } else if (node->nasm_b != NULL) {
-        cb_t other = gen_nasm_block(indent, node->nasm_b);
+        cb_t other = gen_nasm_block(indent, node->nasm_b, NULL);
         if (!cb_is_valid(&other)) {
             return other;
         }
@@ -768,7 +769,7 @@ static cb_t gen_statement(int indent, const struct statement_node_t *node,
         cb_t res = gen_variable_declaration(indent, node->vdecl, fc);
         return res;
     } else if (node->nasm != NULL) {
-        cb_t res = gen_nasm_block(indent, node->nasm);
+        cb_t res = gen_nasm_block(indent, node->nasm, fc);
         return res;
     }
     return cb_invalid();
@@ -851,7 +852,23 @@ static cb_t gen_variable_declaration(int indent,
     return res;
 }
 
-static cb_t gen_nasm_block(int indent, const struct name_node_t *node) {
+/*
+ * 1. Tokens like $var are replaced with:
+ *   - rel <symbol>
+ *   - rbp + <offset>
+ *   - <register name>
+ *   depending on the location of the variable.
+ *
+ * TODO: think how to allow nasm like msg db "$hello" to not be replaced with
+ * locations...
+ */
+
+static int is_name(char c) {
+    return isalnum((unsigned char)c) || c == '_';
+}
+
+static cb_t gen_nasm_block(int indent, const struct name_node_t *node,
+                           struct function_context_t *fc) {
     log_assert(node != NULL);
     LOG_ENTER(&node->frag, indent);
 
@@ -880,7 +897,95 @@ static cb_t gen_nasm_block(int indent, const struct name_node_t *node) {
     *(end + 1) = '\0';
 
     cb_add_back(&res, 0, "\n");
-    cb_add_back(&res, 0, "%s", str);
+
+    while (str + 1 < end) {
+        char *line_end = strchr(str, '\n');
+        *line_end = '\0';
+
+        char *line = strdup(str);
+        log_assert(line != NULL);
+        char *placeholder;
+
+        str = line_end + 1;
+        log_debug(" - checking line '%s' for placeholders..\n", line);
+
+        while (1) {
+            if ((placeholder = strchr(line, '$')) == NULL) {
+                break;
+            }
+
+            char *placeholder_end = placeholder + 1;
+            while (is_name(*placeholder_end)) {
+                placeholder_end++;
+            }
+
+            size_t len = placeholder_end - placeholder;
+            if (len <= 1) {
+                context_msg(&node->frag, "Error: invalid placeholder.\n");
+                free(line);
+                cb_destroy(&res);
+                return cb_invalid();
+            }
+
+            char *cutout = memdup_safe(placeholder, len + 1);
+            cutout[len] = '\0';
+
+            log_assert(*(cutout++) == '$');
+
+            struct location_t loc;
+
+            if (fc != NULL && scope_has(&fc->local_scope, cutout)) {
+                loc = scope_get(&fc->local_scope, cutout);
+            } else if (scope_has(&global_scope, cutout)) {
+                loc = scope_get(&global_scope, cutout);
+            } else {
+                context_msg(
+                    &node->frag,
+                    "Error: the compiler is unaware of the placeholder '%s'.",
+                    cutout - 1);
+                free(cutout - 1);
+                free(line);
+                cb_destroy(&res);
+                return cb_invalid();
+            }
+
+            char *new_line;
+            *placeholder = '\0';         // before $
+            placeholder_end[-1] = '\0';  // last char of placeholder
+            if (loc.type == LOC_GPR || loc.type == LOC_PTR_IN_GPR) {
+                log_assert(-1 != asprintf(&new_line, "%s%s%s", line,
+                                          loc.gpr_reg1->qname, placeholder_end));
+            } else if (loc.type == LOC_SSE) {
+                log_assert(-1 != asprintf(&new_line, "%s%s%s", line,
+                                          loc.sse_reg1->name, placeholder_end));
+            } else if (loc.type == LOC_STACK || loc.type == LOC_PTR_ON_STACK) {
+                log_assert(-1 != asprintf(&new_line, "%s%s%s", line,
+                                          fmt_stack_offset(loc.stack_offset),
+                                          placeholder_end));
+            } else if (loc.type == LOC_SYMBOL) {
+                log_assert(-1 != asprintf(&new_line, "%srel %s%s", line, loc.symbol,
+                                          placeholder_end));
+            } else {
+                context_msg(&node->frag,
+                            "Error: placeholder '%s' cannot be substituted.\n",
+                            cutout - 1);
+                free(cutout - 1);
+                free(line);
+                cb_destroy(&res);
+                return cb_invalid();
+            }
+
+            free(line);
+            line = new_line;
+            free(cutout - 1);
+            // repeat..
+        }
+
+        cb_add_back(&res, 0, "%s\n", line);
+        free(line);
+    }
+
+    // cb_add_back(&res, 0, "%s", str);
     cb_add_back(&res, 0, "\n");
 
     free(orig);

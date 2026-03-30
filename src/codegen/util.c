@@ -210,3 +210,19 @@ uint64_t util_align_up(uint64_t value, uint64_t alignment) {
 int64_t util_align_stack_down(int64_t offset, size_t alignment) {
     return -util_align_up(-offset, alignment);
 }
+
+ONETIME const char *fmt_stack_offset(int64_t offset) {
+#define N 128
+    static char buf[N];
+
+    if (offset > 0) {
+        snprintf(buf, N, "rbp + %zu", (size_t)offset);
+    } else if (offset < 0) {
+        snprintf(buf, N, "rbp - %zu", (size_t)(-offset));
+    } else {
+        snprintf(buf, N, "rbp");
+    }
+
+    return buf;
+#undef N
+}

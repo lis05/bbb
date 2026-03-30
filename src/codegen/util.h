@@ -13,3 +13,4 @@ int util_get_abi_class(const struct abi_class_node_t *node, int *chunk1, int *ch
 int util_get_chunk(const struct name_node_t *node, int *chunk);
 uint64_t util_align_up(uint64_t value, uint64_t alignment);
 int64_t util_align_stack_down(int64_t offset, size_t alignment);
+ONETIME const char *fmt_stack_offset(int64_t offset);

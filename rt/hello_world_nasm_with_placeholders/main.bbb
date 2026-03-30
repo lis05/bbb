@@ -1,0 +1,16 @@
+%nasm
+section .data
+    hello_world db "Hello world! argc=%zu", 0xA, 0
+%endnasm
+
+extern printf
+nasm hello_world
+
+main: global fn(argc: m4 align4, argv: m8) {
+%nasm
+    mov rax, 1
+    lea rdi, [$hello_world]
+    mov esi, dword [$argc]
+    call printf wrt ..plt
+%endnasm
+}

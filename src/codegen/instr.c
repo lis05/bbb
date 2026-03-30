@@ -1,20 +1,5 @@
 #include "instr.h"
-
-static const char *fmt_stack_offset(int64_t offset) {
-#define N 128
-    static char buf[N];
-
-    if (offset > 0) {
-        snprintf(buf, N, "rbp + %zu", (size_t)offset);
-    } else if (offset < 0) {
-        snprintf(buf, N, "rbp - %zu", (size_t)(-offset));
-    } else {
-        snprintf(buf, N, "rbp");
-    }
-
-    return buf;
-#undef N
-}
+#include "util.h"
 
 int instr_move_gpr_into_mem(cb_t *cb, int indent, gpr_reg_t reg, size_t len,
                             int64_t stack_offset, gpr_reg_t temp) {
