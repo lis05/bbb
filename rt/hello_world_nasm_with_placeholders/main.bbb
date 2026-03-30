@@ -9,7 +9,7 @@ nasm hello_world
 main: global fn(argc: m4 align4, argv: m8) {
 %nasm
     mov rax, 1
-    lea rdi, [$hello_world]
+    lea rdi, [rel $hello_world]
     mov esi, dword [$argc]
     call printf wrt ..plt
 %endnasm

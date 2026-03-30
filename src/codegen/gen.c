@@ -963,7 +963,7 @@ static cb_t gen_nasm_block(int indent, const struct name_node_t *node,
                                           fmt_stack_offset(loc.stack_offset),
                                           placeholder_end));
             } else if (loc.type == LOC_SYMBOL) {
-                log_assert(-1 != asprintf(&new_line, "%srel %s%s", line, loc.symbol,
+                log_assert(-1 != asprintf(&new_line, "%s%s%s", line, loc.symbol,
                                           placeholder_end));
             } else {
                 context_msg(&node->frag,

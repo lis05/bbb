@@ -1,0 +1,44 @@
+%nasm
+section .data
+    fmt db "%zu", 10, 0
+%endnasm
+
+nasm fmt
+
+main: global fn() {
+    n: m8
+    a: m8
+    b: m8
+
+%nasm
+    mov qword [$n], 15
+    mov qword [$a], 0
+    mov qword [$b], 1
+
+    push 0 ; for alignment
+
+    .loop:
+        cmp qword [$n], 0
+        jz .end
+
+        xor rax, rax
+        lea rdi, [rel $fmt]
+        mov rsi, qword [$a]
+        extern printf
+        call printf wrt ..plt
+
+        mov rax, qword [$b]
+        add qword [$a], rax
+
+        mov rax, [$a]
+        xchg rax, qword [$b]
+        mov qword [$a], rax
+
+        dec qword [$n]
+        jmp .loop
+
+    .end:
+
+    pop rax
+%endnasm
+}
