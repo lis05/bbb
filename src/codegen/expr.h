@@ -11,6 +11,10 @@ struct expr_gen_t {
     struct location_t loc;
 };
 
+struct expr_gen_t expr_gen_invalid();
+int expr_gen_is_valid(struct expr_gen_t *eg);
+void expr_gen_destroy(struct expr_gen_t *eg);
+
 struct expr_gen_t gen_expression(int indent, struct expression_node_t *node,
                                  struct function_context_t *fc);
 struct expr_gen_t gen_logical_or(int indent, struct logical_or_node_t *node,
@@ -94,3 +98,7 @@ struct expr_gen_t gen_name(int indent, struct name_node_t *node,
         struct literal_node_t *: gen_literal,                             \
         struct name_node_t *: gen_name)(indent, node, fc)
 
+/* Generate v(L) and a(L) as described in docs/codegen_v2.md
+ * These functions might use registers - make sure to save/restore pools? */
+struct expr_gen_t loc_v(tfrag_t *frag, int indent, struct location_t loc, struct function_context_t *fc);
+struct expr_gen_t loc_a(tfrag_t *frag, int indent, struct location_t loc, struct function_context_t *fc);

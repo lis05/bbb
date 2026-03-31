@@ -55,6 +55,11 @@ int instr_move_gpr_into_mem(cb_t *cb, int indent, gpr_reg_t reg, size_t len,
     return 0;
 }
 
+int instr_move_gpr_into_gpr(cb_t *cb, int indent, gpr_reg_t from, gpr_reg_t to) {
+    cb_add_back(cb, indent, "mov %s, %s\n", to->qname, from->qname);
+    return 0;
+}
+
 int instr_move_sse_into_mem(cb_t *cb, int indent, sse_reg_t reg, size_t len,
                             int64_t stack_offset, gpr_reg_t temp1, gpr_reg_t temp2) {
     if (len > 8) {

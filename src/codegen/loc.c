@@ -86,3 +86,23 @@ error:
     return cb_invalid();
 }
 
+cb_t loc_move_data(int indent, struct location_t from, struct location_t to,
+                   size_t len, gpr_reg_t helper1, gpr_reg_t helper2,
+                   size_t *helpers_used) {
+    if (helpers_used != 0)
+        *helpers_used = 0;
+    cb_t res = {0};
+    cb_init(&res);
+
+    if (from.type == LOC_GPR && to.type == LOC_GPR) {
+        if (instr_move_gpr_into_gpr(&res, indent, from.gpr_reg1, to.gpr_reg1)) {
+            goto error;
+        }
+    }
+
+    return res;
+
+error:
+    cb_destroy(&res);
+    return cb_invalid();
+}

@@ -1,18 +1,121 @@
+#include "gen.h"
 #include "expr.h"
+
+#define SAVE_CONTEXT(fc_ptr, context_save) ((context_save) = *(fc_ptr))
+#define RESTORE_CONTEXT(fc_ptr, context_save) (*(fc_ptr) = (context_save))
+
+struct expr_gen_t expr_gen_invalid() {
+    return (struct expr_gen_t){.cb = cb_invalid()};
+}
+int expr_gen_is_valid(struct expr_gen_t *eg) {
+    return cb_is_valid(&eg->cb);
+}
+void expr_gen_destroy(struct expr_gen_t *eg) {
+    if (expr_gen_is_valid(eg)) {
+        cb_destroy(&eg->cb);
+    }
+}
+
+struct expr_gen_t loc_v(tfrag_t *frag, int indent, struct location_t loc,
+                        struct function_context_t *fc) {
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    if (loc.type == LOC_GPR || loc.type == LOC_SSE || loc.type == LOC_INT_LITERAL ||
+        loc.type == LOC_UINT_LITERAL) {
+        res.loc = loc;
+        return res;
+    }
+
+    context_msg(frag, "Error: cannot calculate value.\n");
+    expr_gen_destroy(&res);
+    return expr_gen_invalid();
+}
+
+struct expr_gen_t loc_a(tfrag_t *frag, int indent, struct location_t loc,
+                        struct function_context_t *fc) {
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    if (loc.type == LOC_GPR || loc.type == LOC_SSE) {
+        res.loc = loc;
+        return res;
+    }
+
+    context_msg(frag, "Error: cannot calculate address.\n");
+    expr_gen_destroy(&res);
+    return expr_gen_invalid();
+}
 
 struct expr_gen_t gen_expression(int indent, struct expression_node_t *node,
                                  struct function_context_t *fc) {
     log_assert(node != NULL);
-    // LOG_ENTER(&node->frag, indent);
 
     if (node->other != NULL) {
         return gen_expr(indent, node->other, fc);
     }
+    LOG_ENTER(&node->frag, indent);
 
+    struct function_context_t context_save = {0};
     struct expr_gen_t res = {0};
+    struct expr_gen_t left = {0};
+    struct expr_gen_t right = {0};
+    struct expr_gen_t addr = {0};
+    struct expr_gen_t value = {0};
+    cb_t last = {0};
+
+    SAVE_CONTEXT(fc, context_save);
     cb_init(&res.cb);
 
+    left = gen_expr(indent, node->arg1, fc);
+    if (!expr_gen_is_valid(&left)) {
+        goto error;
+    }
+
+    right = gen_expr(indent, node->arg2, fc);
+    if (!expr_gen_is_valid(&right)) {
+        goto error;
+    }
+
+    addr = loc_a(&node->arg1->frag, indent, left.loc, fc);
+    if (!expr_gen_is_valid(&addr)) {
+        goto error;
+    }
+
+    value = loc_v(&node->arg2->frag, indent, right.loc, fc);
+    if (!expr_gen_is_valid(&value)) {
+        goto error;
+    }
+
+    cb_glue_back(&res.cb, &left.cb);
+    cb_glue_back(&res.cb, &right.cb);
+    cb_glue_back(&res.cb, &addr.cb);
+    cb_glue_back(&res.cb, &value.cb);
+
+    // TODO: get size from op
+
+    last = loc_move_data(indent, value.loc, addr.loc, 8, NULL, NULL, NULL);
+    if (!cb_is_valid(&last)) {
+        goto error;
+    }
+    cb_glue_back(&res.cb, &last);
+
+    res.loc = left.loc;
+    log_debug(" - assignment operator\n");
+
+end:
+    RESTORE_CONTEXT(fc, context_save);
     return res;
+
+error:
+    expr_gen_destroy(&res);
+    expr_gen_destroy(&left);
+    expr_gen_destroy(&right);
+    expr_gen_destroy(&addr);
+    expr_gen_destroy(&value);
+    cb_destroy(&last);
+    res = expr_gen_invalid();
+    goto end;
 }
 
 struct expr_gen_t gen_logical_or(int indent, struct logical_or_node_t *node,
@@ -368,11 +471,13 @@ struct expr_gen_t gen_literal(int indent, struct literal_node_t *node,
             log_debug(" - reusing string literal: %s\n", str);
         } else {
             const char *lbl = lblg_gen_string_lit();
-            char *cpy = strdup(str);
+            char *cpy = malloc(strlen(str) + 1 + 2);
             log_assert(cpy != NULL);
-            cpy[strlen(cpy) - 1] = '\0';
-            cb_add_back(&data_section, CB_TAB, "%s db `%s`\n", lbl,
-                        cpy + 1);
+            strcpy(cpy, str);
+            cpy[strlen(str) - 1] = '\\';
+            cpy[strlen(str)] = '0';
+            cpy[strlen(str) + 1] = '\0';
+            cb_add_back(&data_section, CB_TAB, "%s db `%s`\n", lbl, cpy + 1);
             free(cpy);
             res.loc = (struct location_t){
                 .type = LOC_SYMBOL,
@@ -381,8 +486,7 @@ struct expr_gen_t gen_literal(int indent, struct literal_node_t *node,
                 .symbol = token_move(memdup_safe(lbl, strlen(lbl) + 1)),
             };
             scope_add(&global_scope, name, res.loc);
-            log_debug(" - new string literal: %s (symbol %s)\n", str,
-                      lbl);
+            log_debug(" - new string literal: %s (symbol %s)\n", str, lbl);
         }
     } else if (node->type == LIT_NAME) {
         if (scope_has(&fc->local_scope, node->name_lit->name)) {

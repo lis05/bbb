@@ -100,7 +100,7 @@ void cb_glue_back(cb_t *cb, cb_t *glue_me) {
 
 void cb_destroy(cb_t *cb) {
     free(cb->lines);
-    cb->size = cb->cap = 0;
+    *cb = cb_invalid();
 }
 
 cb_t cb_invalid() {

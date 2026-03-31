@@ -1,0 +1,26 @@
+%nasm
+    msg db `MSG: %zu\n\0`
+%endnasm
+
+extern printf
+
+main: global fn(argc: m4 align4, argv: m8) {
+    x: alias rdi
+    y: alias r10
+
+%nasm
+    xor $y, $y
+%endnasm
+
+    y = x = y = x = y = x;
+
+%nasm
+    mov esi, r10d
+%endnasm
+
+%nasm
+    mov rax, 1
+    lea rdi, [rel msg]
+    call printf wrt ..plt
+%endnasm
+}
