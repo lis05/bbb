@@ -1,0 +1,10 @@
+extern printf
+main: global fn(argc: m4 align4, argv: m8) {
+    "Hello, world! argc=%u\n"; // should produce _str_lit_0
+%nasm
+    mov rax, 1
+    lea rdi, [rel _str_lit_0]
+    mov esi, dword [$argc]
+    call printf wrt ..plt
+%endnasm
+}

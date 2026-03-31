@@ -1,0 +1,404 @@
+#include "expr.h"
+
+struct expr_gen_t gen_expression(int indent, struct expression_node_t *node,
+                                 struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    if (node->other != NULL) {
+        return gen_expr(indent, node->other, fc);
+    }
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_logical_or(int indent, struct logical_or_node_t *node,
+                                 struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    if (node->other != NULL) {
+        return gen_expr(indent, node->other, fc);
+    }
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_logical_and(int indent, struct logical_and_node_t *node,
+                                  struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    if (node->other != NULL) {
+        return gen_expr(indent, node->other, fc);
+    }
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_bitwise_or(int indent, struct bitwise_or_node_t *node,
+                                 struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    if (node->other != NULL) {
+        return gen_expr(indent, node->other, fc);
+    }
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_bitwise_xor(int indent, struct bitwise_xor_node_t *node,
+                                  struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    if (node->other != NULL) {
+        return gen_expr(indent, node->other, fc);
+    }
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_bitwise_and(int indent, struct bitwise_and_node_t *node,
+                                  struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    if (node->other != NULL) {
+        return gen_expr(indent, node->other, fc);
+    }
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_equality(int indent, struct equality_node_t *node,
+                               struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    if (node->other != NULL) {
+        return gen_expr(indent, node->other, fc);
+    }
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_relational(int indent, struct relational_node_t *node,
+                                 struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    if (node->other != NULL) {
+        return gen_expr(indent, node->other, fc);
+    }
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_additive(int indent, struct additive_node_t *node,
+                               struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    if (node->other != NULL) {
+        return gen_expr(indent, node->other, fc);
+    }
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_multiplicative(int indent, struct multiplicative_node_t *node,
+                                     struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    if (node->other != NULL) {
+        return gen_expr(indent, node->other, fc);
+    }
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_prefix_op(int indent, struct prefix_op_node_t *node,
+                                struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_cast_op(int indent, struct cast_op_node_t *node,
+                              struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_address_op(int indent, struct address_op_node_t *node,
+                                 struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_sizeof_op(int indent, struct sizeof_op_node_t *node,
+                                struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_tetriary(int indent, struct tetriary_node_t *node,
+                               struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    if (node->secondary != NULL) {
+        return gen_expr(indent, node->secondary, fc);
+    }
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_suffix_op(int indent, struct suffix_op_node_t *node,
+                                struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_function_call_op_arg(int indent,
+                                           struct function_call_op_arg_node_t *node,
+                                           struct function_context_t          *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_function_call_op_args(
+    int indent, struct function_call_op_args_node_t *node,
+    struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_function_call_op(int                             indent,
+                                       struct function_call_op_node_t *node,
+                                       struct function_context_t      *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_dereference_op(int indent, struct dereference_op_node_t *node,
+                                     struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_layout_access_op(int                             indent,
+                                       struct layout_access_op_node_t *node,
+                                       struct function_context_t      *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_secondary(int indent, struct secondary_node_t *node,
+                                struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    if (node->primary != NULL) {
+        return gen_expr(indent, node->primary, fc);
+    }
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_primary(int indent, struct primary_node_t *node,
+                              struct function_context_t *fc) {
+    log_assert(node != NULL);
+    // LOG_ENTER(&node->frag, indent);
+
+    if (node->literal != NULL) {
+        return gen_expr(indent, node->literal, fc);
+    }
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    return res;
+}
+
+struct expr_gen_t gen_literal(int indent, struct literal_node_t *node,
+                              struct function_context_t *fc) {
+    log_assert(node != NULL);
+    LOG_ENTER(&node->frag, indent);
+
+    struct expr_gen_t res = {0};
+    cb_init(&res.cb);
+
+    if (node->type == LIT_INT) {
+        res.loc = (struct location_t){
+            .type = LOC_INT_LITERAL,
+            .true_len = 8,
+            .alignment = 8,
+            .int_literal = node->int_lit,
+        };
+        log_debug(" - int literal: %" PRId64 "\n", node->int_lit);
+    } else if (node->type == LIT_UINT) {
+        res.loc = (struct location_t){
+            .type = LOC_UINT_LITERAL,
+            .true_len = 8,
+            .alignment = 8,
+            .uint_literal = node->uint_lit,
+        };
+        log_debug(" - int literal: %" PRIu64 "\n", node->uint_lit);
+    } else if (node->type == LIT_DOUBLE) {
+        char  *name;
+        size_t repr;
+        memcpy(&repr, &node->double_lit, sizeof(size_t));
+
+        log_assert(-1 != asprintf(&name, " __lit__f%zu", repr));
+        name = (char *)token_move(name);
+        if (scope_has(&global_scope, name)) {
+            res.loc = scope_get(&global_scope, name);
+            log_debug(" - reusing double literal: %.17g\n", node->double_lit);
+        } else {
+            const char *lbl = lblg_gen_double_lit();
+            cb_add_back(&data_section, CB_TAB, "%s dq %.17g\n", lbl,
+                        node->double_lit);
+            res.loc = (struct location_t){
+                .type = LOC_SYMBOL,
+                .true_len = 8,
+                .alignment = 8,
+                .symbol = token_move(memdup_safe(lbl, strlen(lbl) + 1)),
+            };
+            scope_add(&global_scope, name, res.loc);
+            log_debug(" - new double literal: %.17g (symbol %s)\n", node->double_lit,
+                      lbl);
+        }
+    } else if (node->type == LIT_STRING) {
+        char *name;
+
+        const char *str = node->frag.token;
+        log_assert(-1 != asprintf(&name, " __lit__s%s", str));
+        name = (char *)token_move(name);
+        if (scope_has(&global_scope, name)) {
+            res.loc = scope_get(&global_scope, name);
+            log_debug(" - reusing string literal: %s\n", str);
+        } else {
+            const char *lbl = lblg_gen_string_lit();
+            char *cpy = strdup(str);
+            log_assert(cpy != NULL);
+            cpy[strlen(cpy) - 1] = '\0';
+            cb_add_back(&data_section, CB_TAB, "%s db `%s`\n", lbl,
+                        cpy + 1);
+            free(cpy);
+            res.loc = (struct location_t){
+                .type = LOC_SYMBOL,
+                .true_len = 8,  // why not len(name)? because
+                .alignment = 8,
+                .symbol = token_move(memdup_safe(lbl, strlen(lbl) + 1)),
+            };
+            scope_add(&global_scope, name, res.loc);
+            log_debug(" - new string literal: %s (symbol %s)\n", str,
+                      lbl);
+        }
+    } else if (node->type == LIT_NAME) {
+        if (scope_has(&fc->local_scope, node->name_lit->name)) {
+            res.loc = scope_get(&fc->local_scope, node->name_lit->name);
+            log_debug(" - found name '%s' in local scope\n", node->name_lit->name);
+        } else if (scope_has(&global_scope, node->name_lit->name)) {
+            res.loc = scope_get(&global_scope, node->name_lit->name);
+            log_debug(" - found name '%s' in global scope\n", node->name_lit->name);
+        } else {
+            context_msg(&node->name_lit->frag, "Error: unknown name.\n");
+            cb_destroy(&res.cb);
+            return (struct expr_gen_t){.cb = cb_invalid()};
+        }
+    } else {
+        log_crit("lmao how\n");
+    }
+
+    return res;
+}

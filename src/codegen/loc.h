@@ -30,8 +30,6 @@ enum location_type {
     LOC_INT_LITERAL,
     /* Uint literal. */
     LOC_UINT_LITERAL,
-    /* Double literal. */
-    LOC_DOUBLE_LITERAL
 };
 
 struct location_t {
@@ -73,8 +71,6 @@ struct location_t {
         int64_t int_literal;
 
         uint64_t uint_literal;
-
-        double double_literal;
     };
 };
 
