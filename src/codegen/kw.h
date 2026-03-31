@@ -7,3 +7,5 @@
 
 #define KW_NASM_START token_get("%nasm")
 #define KW_NASM_END token_get("%endnasm")
+
+#define KW_ALIAS_REG token_get("reg")

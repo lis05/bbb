@@ -110,6 +110,11 @@ void gpr_pool_init(struct gpr_pool_t *pool) {
 
 struct gpr_pool_item_t *gpr_pool_find_available(struct gpr_pool_t *pool) {
     for (int i = 0; i < GPR_REGS; i++) {
+        if (pool->items[i].available == true && !pool->items[i].abi_protected) {
+            return &pool->items[i];
+        }
+    }
+    for (int i = 0; i < GPR_REGS; i++) {
         if (pool->items[i].available == true) {
             return &pool->items[i];
         }
