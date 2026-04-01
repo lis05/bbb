@@ -2,11 +2,11 @@ MAKEFLAGS += -r
 
 # compiler stuff
 CC := gcc
-CFLAGS := -Wall -Wextra -O2 -g -std=gnu11
+CFLAGS := -Wall -Wextra -O2 -g -std=gnu11 -fno-pie
 
 # linker stuff
 LD := gcc
-LDFLAGS :=
+LDFLAGS := -rdynamic -g -no-pie
 LDLIBS :=
 
 # bbb binary

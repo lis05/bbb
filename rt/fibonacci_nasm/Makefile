@@ -18,7 +18,7 @@ main.bin: $(OBJ)
 
 .PRECIOUS: %.basm
 %.basm: %.bbb $(BBB)
-	$(BBB) -vvvvPlce $< -o $@
+	$(BBB) -vvvvPlces $< -o $@
 
 .PHONY: clean
 clean:

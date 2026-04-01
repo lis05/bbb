@@ -7,6 +7,7 @@
 #define LOG_LEVEL_DEBUG 3
 #define LOG_LEVEL_PURE 4
 
+void set_program_path(const char *path);
 void set_log_level(int level);
 
 void __bbb_log(int level, const char *file, int line, const char *func, char *format,

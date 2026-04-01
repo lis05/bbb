@@ -3,6 +3,7 @@
 #include "stdarg.h"
 
 extern int messages_print_location;
+extern int show_stack_trace;
 
 // for now, only the first line is displayed...
 void __bbb_context_msg(const tfrag_t *frag, const char *format, ...) {

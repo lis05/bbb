@@ -14,7 +14,7 @@ fi
 for file in $tests; do
     echo "================================================"
     echo "==========" $file "=========="
-    ./$1 -vvv -o res.asm -p parser_tests/$file
+    ./$1 -vvv -s -o res.asm -p parser_tests/$file
     echo "================================================"
     if [ "$?" == "0" ]; then
         res="$res\nPassed: $file"

@@ -1,5 +1,5 @@
 clear; make &&
-./build/bbb -vvvvPlce tmp/prog.bbb -o /tmp/prog.nasm &&
+./build/bbb -vvvvPlces tmp/prog.bbb -o /tmp/prog.nasm &&
 cat /tmp/prog.nasm &&
 nasm -g -F dwarf -f elf64 /tmp/prog.nasm -o /tmp/prog.o  &&
 gcc -g /tmp/prog.o -o /tmp/prog &&
