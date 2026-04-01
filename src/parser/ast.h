@@ -431,14 +431,14 @@ struct literal_node_t {
         int64_t             int_lit;
         uint64_t            uint_lit;
         double              double_lit;
-        const char         *string_lit;
+        pstr_t              string_lit;
         struct name_node_t *name_lit;
     };
 };
 
 struct name_node_t {
-    tfrag_t     frag;
-    const char *name;
+    tfrag_t frag;
+    pstr_t  name;
 };
 
 void ast_print_program_node(struct program_node_t *node, int indent);

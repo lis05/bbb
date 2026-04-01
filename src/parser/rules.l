@@ -3,7 +3,6 @@
     #include "ast.h"
     #include "parser.h"
     #include "tfrag.h"
-    #include "token.h"
     #include "rules.tab.h"
     extern void yyerror(const char *);
 
@@ -29,7 +28,7 @@
         count();\
         tfrag_t frag2 = cur_frag;\
         tfrag_combine(&frag, &frag1, &frag2);\
-        frag.token = token_get(yytext);\
+        frag.token = yytext == NULL ? pstr_copy("") : pstr_copy(yytext);\
         error_frag = frag;\
     } while (0)
 
@@ -43,7 +42,7 @@
     #define NAME(frag, str) ({\
         struct name_node_t *res = ALLOC(struct name_node_t);\
         res->frag = (frag);\
-        res->name = token_get(str);\
+        res->name = (str) == NULL ? pstr_copy("") : pstr_copy(str);\
         res;\
     })
 

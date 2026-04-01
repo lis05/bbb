@@ -442,7 +442,7 @@ struct expr_gen_t gen_literal(int indent, struct literal_node_t *node,
         memcpy(&repr, &node->double_lit, sizeof(size_t));
 
         log_assert(-1 != asprintf(&name, " __lit__f%zu", repr));
-        name = (char *)token_move(name);
+        name = (char *)pstr_take(name);
         if (scope_has(&global_scope, name)) {
             res.loc = scope_get(&global_scope, name);
             log_debug(" - reusing double literal: %.17g\n", node->double_lit);
@@ -454,7 +454,7 @@ struct expr_gen_t gen_literal(int indent, struct literal_node_t *node,
                 .type = LOC_SYMBOL,
                 .true_len = 8,
                 .alignment = 8,
-                .symbol = token_move(memdup_safe(lbl, strlen(lbl) + 1)),
+                .symbol = pstr_take(memdup_safe(lbl, strlen(lbl) + 1)),
             };
             scope_add(&global_scope, name, res.loc);
             log_debug(" - new double literal: %.17g (symbol %s)\n", node->double_lit,
@@ -465,7 +465,7 @@ struct expr_gen_t gen_literal(int indent, struct literal_node_t *node,
 
         const char *str = node->frag.token;
         log_assert(-1 != asprintf(&name, " __lit__s%s", str));
-        name = (char *)token_move(name);
+        name = (char *)pstr_take(name);
         if (scope_has(&global_scope, name)) {
             res.loc = scope_get(&global_scope, name);
             log_debug(" - reusing string literal: %s\n", str);
@@ -483,7 +483,7 @@ struct expr_gen_t gen_literal(int indent, struct literal_node_t *node,
                 .type = LOC_SYMBOL,
                 .true_len = 8,  // why not len(name)? because
                 .alignment = 8,
-                .symbol = token_move(memdup_safe(lbl, strlen(lbl) + 1)),
+                .symbol = pstr_take(memdup_safe(lbl, strlen(lbl) + 1)),
             };
             scope_add(&global_scope, name, res.loc);
             log_debug(" - new string literal: %s (symbol %s)\n", str, lbl);

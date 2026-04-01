@@ -9,20 +9,10 @@
 
 #include "log.h"
 #include "tags.h"
+#include "pstr.h"
+#include "mem.h"
 
-#define true ((uint8_t)1)
-#define false ((uint8_t)0)
-
+#define true 1
+#define false 0
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) < (y) ? (y) : (x))
-
-#define memdup_safe(ptr, size)          \
-    ({                                  \
-        void *res = NULL;               \
-        if ((ptr) != NULL) {            \
-            res = malloc(size);         \
-            log_assert(res != NULL);    \
-            memcpy(res, (ptr), (size)); \
-        }                               \
-        res;                            \
-    })

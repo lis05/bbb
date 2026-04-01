@@ -1,6 +1,5 @@
 #include "parser.h"
 #include "error.h"
-#include "token.h"
 
 void yyerror(const char *token) {
     extern tfrag_t error_frag;
@@ -26,8 +25,6 @@ struct program_node_t *parser_parse(const char *filename) {
         log_error("Failed to open %s: %s\n", filename, strerror(errno));
         return NULL;
     }
-
-    tokens_init();
 
     extern tfrag_t cur_frag;
     tfrag_init(&cur_frag, NULL, filename, 0, 0, 0, 0, 0, 0);

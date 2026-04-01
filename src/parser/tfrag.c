@@ -1,7 +1,7 @@
 #include "tfrag.h"
 
-void tfrag_init(tfrag_t *tfrag, const char *token, const char *filename,
-                uint64_t begin, uint64_t end, uint64_t begin_line, uint64_t end_line,
+void tfrag_init(tfrag_t *tfrag, pstr_t token, pstr_t filename, uint64_t begin,
+                uint64_t end, uint64_t begin_line, uint64_t end_line,
                 uint64_t begin_col, uint64_t end_col) {
     tfrag->token = token;
     tfrag->filename = filename;

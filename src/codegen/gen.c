@@ -1,4 +1,5 @@
 #include "gen.h"
+
 #include "expr.h"
 
 static cb_t gen_program(int indent, const struct program_node_t *node);
@@ -25,7 +26,7 @@ static cb_t gen_nasm_block(int indent, const struct name_node_t *node,
                            struct function_context_t *fc);
 
 struct scope_t global_scope;
-cb_t data_section;
+cb_t           data_section;
 
 cb_t gen(struct program_node_t *prog) {
     cb_t res;
@@ -533,20 +534,21 @@ static cb_t gen_function_declaration(
     log_debug(" - constructing vmap_args_request_t\n");
     struct vmap_args_request_t args_request = {0};
     args_request.n = args_meta.n;
-    args_request.names = (const char **)memdup_safe(
-        args_meta.names, args_meta.n * sizeof(const char *));
-    log_assert(args_request.n == 0 ||
-               args_request.names != NULL);  // must be nonnull
-    args_request.mem_len =
-        (size_t *)memdup_safe(args_meta.mem_len, args_meta.n * sizeof(size_t));
-    args_request.align =
-        (size_t *)memdup_safe(args_meta.align, args_meta.n * sizeof(size_t));
+    if (args_request.n != 0) {
+        args_request.names = (const char **)memdup_safe(
+            args_meta.names, args_meta.n * sizeof(const char *));
+        log_assert(args_request.names != NULL);
+        args_request.mem_len =
+            (size_t *)memdup_safe(args_meta.mem_len, args_meta.n * sizeof(size_t));
+        args_request.align =
+            (size_t *)memdup_safe(args_meta.align, args_meta.n * sizeof(size_t));
 
-    // chunks may come from a layout
-    args_request.chunk1 =
-        (uint8_t *)memdup_safe(args_meta.chunk1, args_meta.n * sizeof(uint8_t));
-    args_request.chunk2 =
-        (uint8_t *)memdup_safe(args_meta.chunk2, args_meta.n * sizeof(uint8_t));
+        // chunks may come from a layout
+        args_request.chunk1 =
+            (uint8_t *)memdup_safe(args_meta.chunk1, args_meta.n * sizeof(uint8_t));
+        args_request.chunk2 =
+            (uint8_t *)memdup_safe(args_meta.chunk2, args_meta.n * sizeof(uint8_t));
+    }
     for (size_t i = 0; i < args_meta.n; i++) {
         if (args_meta.layout[i] != NULL) {
             log_debug("   - argument %zu (%s) is classified using a layout %s\n", i,
@@ -751,8 +753,7 @@ static cb_t gen_statement(int indent, const struct statement_node_t *node,
     } else if (node->nasm != NULL) {
         cb_t res = gen_nasm_block(indent, node->nasm, fc);
         return res;
-    }
-    else if (node->expr != NULL) {
+    } else if (node->expr != NULL) {
         struct expr_gen_t res = gen_expr(indent, node->expr, fc);
         return res.cb;
     }
@@ -895,9 +896,10 @@ static cb_t gen_register_alias(int indent, const struct register_alias_node_t *n
         return cb_invalid();
     }
     if (item->abi_protected) {
-        context_msg(&node->frag,
-                    "Note: will use register %s which might cause ABI-related issues.\n",
-                    item->reg->qname);
+        context_msg(
+            &node->frag,
+            "Note: will use register %s which might cause ABI-related issues.\n",
+            item->reg->qname);
     }
     if (!item->available) {
         context_msg(&node->frag, "Note: register %s is already in use.\n",

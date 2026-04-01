@@ -24,9 +24,10 @@ int util_get_mem_len(const struct name_node_t *node, size_t *res) {
     char  *ptr;
     size_t num;
 
+
     if (strstr(node->name, "m(sizeof ") == node->name &&
         node->name[strlen(node->name) - 1] == ')') {
-        str = token_move(strdup(node->name + strlen("m(sizeof ")));
+        str = pstr_take(strdup(node->name + strlen("m(sizeof ")));
         *strchr(str, ')') = '\0';
 
         if (!layouts_has(str)) {
@@ -42,7 +43,7 @@ int util_get_mem_len(const struct name_node_t *node, size_t *res) {
 
         return 0;
     } else if (node->name[0] == 'm') {
-        str = token_move(strdup(node->name + 1));
+        str = pstr_take(strdup(node->name + 1));
     } else {
         goto error;
     }
@@ -71,7 +72,7 @@ int util_get_align(const struct name_node_t *node, size_t *res) {
     size_t num;
 
     if (strstr(node->name, "align") == node->name) {
-        str = token_move(strdup(node->name + 5));
+        str = pstr_take(strdup(node->name + 5));
     } else {
         goto error;
     }

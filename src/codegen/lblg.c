@@ -1,8 +1,5 @@
 #include "lblg.h"
 
-#include "../common/common.h"
-#include "../parser/token.h"
-
 void lblg_init(struct label_generator_t *lblg) {
     lblg->n = 0;
     lblg->cap = 1;
