@@ -973,8 +973,7 @@ char *yytext;
     } while (0)
 
     #define ALLOC(t) ({\
-        t *res = (t*)malloc(sizeof(t));\
-        log_assert(res != NULL);\
+        t *res = (t*)calloc_safe(1, sizeof(t));\
         *res = (t){0};\
         res;\
     })
@@ -992,10 +991,10 @@ char *yytext;
         yylval.name = NAME(frag, frag.token);\
         return ret_code;\
     } while(0)
-#line 996 "src/parser/lex.yy.c"
+#line 995 "src/parser/lex.yy.c"
 #define YY_NO_INPUT 1
 
-#line 999 "src/parser/lex.yy.c"
+#line 998 "src/parser/lex.yy.c"
 
 #define INITIAL 0
 #define NASM_BLOCK_STATE 1
@@ -1211,10 +1210,10 @@ YY_DECL
 		}
 
 	{
-#line 69 "src/parser/rules.l"
+#line 68 "src/parser/rules.l"
 
 
-#line 1218 "src/parser/lex.yy.c"
+#line 1217 "src/parser/lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1279,332 +1278,332 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 71 "src/parser/rules.l"
+#line 70 "src/parser/rules.l"
 { PRINT("[LINE-COMMENT]\n"); count(); }
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 72 "src/parser/rules.l"
+#line 71 "src/parser/rules.l"
 { PRINT("[MULTILINE-COMMENT]\n"); count(); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 73 "src/parser/rules.l"
+#line 72 "src/parser/rules.l"
 { PRINT("[MEMORY_LENGTH_PREFIX: '%s']\n", yytext); RET_NAME(MEMORY_LENGTH_PREFIX); }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 74 "src/parser/rules.l"
+#line 73 "src/parser/rules.l"
 { PRINT("[MEMORY_LENGTH_SIMPLE: '%s']\n", yytext); RET_NAME(MEMORY_LENGTH_SIMPLE); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 75 "src/parser/rules.l"
+#line 74 "src/parser/rules.l"
 { PRINT("[ALIGNMENT_SIMPLE: '%s']\n", yytext); RET_NAME(ALIGNMENT_SIMPLE); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 76 "src/parser/rules.l"
+#line 75 "src/parser/rules.l"
 { PRINT("[CHUNK_CLASS_MEM]\n"); RET_NAME(CHUNK_CLASS_MEM); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 77 "src/parser/rules.l"
+#line 76 "src/parser/rules.l"
 { PRINT("[CHUNK_CLASS_SSE]\n"); RET_NAME(CHUNK_CLASS_SSE); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 78 "src/parser/rules.l"
+#line 77 "src/parser/rules.l"
 { PRINT("[CHUNK_CLASS_INT]\n"); RET_NAME(CHUNK_CLASS_INT); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 79 "src/parser/rules.l"
+#line 78 "src/parser/rules.l"
 { PRINT("[CHUNK_CLASS_LAYOUT: '%s']\n", yytext); RET_NAME(CHUNK_CLASS_LAYOUT); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 80 "src/parser/rules.l"
+#line 79 "src/parser/rules.l"
 { PRINT("[GP_REGISTER: '%s']\n", yytext); RET_NAME(GP_REGISTER); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 81 "src/parser/rules.l"
+#line 80 "src/parser/rules.l"
 { PRINT("[REGISTER: '%s']\n", yytext); RET_NAME(REGISTER); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 82 "src/parser/rules.l"
+#line 81 "src/parser/rules.l"
 { PRINT("[GLOBAL]\n"); RET_NAME(GLOBAL); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 83 "src/parser/rules.l"
+#line 82 "src/parser/rules.l"
 { PRINT("[LAYOUT]\n"); RET_NAME(LAYOUT); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 84 "src/parser/rules.l"
+#line 83 "src/parser/rules.l"
 { PRINT("[EXTERN]\n"); RET_NAME(EXTERN); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 85 "src/parser/rules.l"
+#line 84 "src/parser/rules.l"
 { PRINT("[NASM]\n"); RET_NAME(NASM); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 86 "src/parser/rules.l"
+#line 85 "src/parser/rules.l"
 { PRINT("[FN]\n"); RET_NAME(FN); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 87 "src/parser/rules.l"
+#line 86 "src/parser/rules.l"
 { PRINT("[NASM_BLOCK_START]\n"); BEGIN(NASM_BLOCK_STATE); yymore(); }
 	YY_BREAK
 
 case 18:
 YY_RULE_SETUP
-#line 89 "src/parser/rules.l"
+#line 88 "src/parser/rules.l"
 { PRINT("[NASM_BLOCK: '%s']\n", yytext); BEGIN(INITIAL); RET_NAME(NASM_BLOCK); }
 	YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-#line 90 "src/parser/rules.l"
+#line 89 "src/parser/rules.l"
 { yymore(); }
 	YY_BREAK
 
 case 20:
 YY_RULE_SETUP
-#line 92 "src/parser/rules.l"
+#line 91 "src/parser/rules.l"
 { PRINT("[IF]\n"); RET_NAME(IF); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 93 "src/parser/rules.l"
+#line 92 "src/parser/rules.l"
 { PRINT("[ELSE]\n"); RET_NAME(ELSE); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 94 "src/parser/rules.l"
+#line 93 "src/parser/rules.l"
 { PRINT("[GOTO]\n"); RET_NAME(GOTO); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 95 "src/parser/rules.l"
+#line 94 "src/parser/rules.l"
 { PRINT("[LOOP]\n"); RET_NAME(LOOP); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 96 "src/parser/rules.l"
+#line 95 "src/parser/rules.l"
 { PRINT("[BREAK]\n"); RET_NAME(BREAK); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 97 "src/parser/rules.l"
+#line 96 "src/parser/rules.l"
 { PRINT("[CONTINUE]\n"); RET_NAME(CONTINUE); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 98 "src/parser/rules.l"
+#line 97 "src/parser/rules.l"
 { PRINT("[RET]\n"); RET_NAME(RET); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 99 "src/parser/rules.l"
+#line 98 "src/parser/rules.l"
 { PRINT("[AVOID]\n"); RET_NAME(AVOID); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 100 "src/parser/rules.l"
+#line 99 "src/parser/rules.l"
 { PRINT("[ALIAS]\n"); RET_NAME(ALIAS); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 101 "src/parser/rules.l"
+#line 100 "src/parser/rules.l"
 { PRINT("[REG]\n"); RET_NAME(REG); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 102 "src/parser/rules.l"
+#line 101 "src/parser/rules.l"
 { PRINT("[SIZEOF]\n"); RET_NAME(SIZEOF); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 103 "src/parser/rules.l"
+#line 102 "src/parser/rules.l"
 { PRINT("[LOGICAL_OR: '%s']\n", yytext); RET_NAME(LOGICAL_OR); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 104 "src/parser/rules.l"
+#line 103 "src/parser/rules.l"
 { PRINT("[LOGICAL_AND: '%s']\n", yytext); RET_NAME(LOGICAL_AND); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 105 "src/parser/rules.l"
+#line 104 "src/parser/rules.l"
 { PRINT("[INCREMENT: '%s']\n", yytext); RET_NAME(INCREMENT); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 106 "src/parser/rules.l"
+#line 105 "src/parser/rules.l"
 { PRINT("[DECREMENT: '%s']\n", yytext); RET_NAME(DECREMENT); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 107 "src/parser/rules.l"
+#line 106 "src/parser/rules.l"
 { PRINT("[PLUS: '%s']\n", yytext); RET_NAME(PLUS); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 108 "src/parser/rules.l"
+#line 107 "src/parser/rules.l"
 { PRINT("[MINUS: '%s']\n", yytext); RET_NAME(MINUS); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 109 "src/parser/rules.l"
+#line 108 "src/parser/rules.l"
 { PRINT("[MULTIPLY: '%s']\n", yytext); RET_NAME(MULTIPLY); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 110 "src/parser/rules.l"
+#line 109 "src/parser/rules.l"
 { PRINT("[DIVIDE: '%s']\n", yytext); RET_NAME(DIVIDE); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 111 "src/parser/rules.l"
+#line 110 "src/parser/rules.l"
 { PRINT("[REMAINDER: '%s']\n", yytext); RET_NAME(REMAINDER); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 112 "src/parser/rules.l"
+#line 111 "src/parser/rules.l"
 { PRINT("[BITWISE_AND: '%s']\n", yytext); RET_NAME(BITWISE_AND); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 113 "src/parser/rules.l"
+#line 112 "src/parser/rules.l"
 { PRINT("[BITWISE_OR: '%s']\n", yytext); RET_NAME(BITWISE_OR); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 114 "src/parser/rules.l"
+#line 113 "src/parser/rules.l"
 { PRINT("[BITWISE_XOR: '%s']\n", yytext); RET_NAME(BITWISE_XOR); }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 115 "src/parser/rules.l"
+#line 114 "src/parser/rules.l"
 { PRINT("[LOGICAL_NOT: '%s']\n", yytext); RET_NAME(LOGICAL_NOT); }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 116 "src/parser/rules.l"
+#line 115 "src/parser/rules.l"
 { PRINT("[BITWISE_NOT: '%s']\n", yytext); RET_NAME(BITWISE_NOT); }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 117 "src/parser/rules.l"
+#line 116 "src/parser/rules.l"
 { PRINT("[LESS_EQUAL: '%s']\n", yytext); RET_NAME(LESS_EQUAL); }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 118 "src/parser/rules.l"
+#line 117 "src/parser/rules.l"
 { PRINT("[GREATER_EQUAL: '%s']\n", yytext); RET_NAME(GREATER_EQUAL); }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 119 "src/parser/rules.l"
+#line 118 "src/parser/rules.l"
 { PRINT("[LESS_THAN: '%s']\n", yytext); RET_NAME(LESS_THAN); }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 120 "src/parser/rules.l"
+#line 119 "src/parser/rules.l"
 { PRINT("[GREATER_THAN: '%s']\n", yytext); RET_NAME(GREATER_THAN); }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 121 "src/parser/rules.l"
+#line 120 "src/parser/rules.l"
 { PRINT("[EQUALS: '%s']\n", yytext); RET_NAME(EQUALS); }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 122 "src/parser/rules.l"
+#line 121 "src/parser/rules.l"
 { PRINT("[NOT_EQUALS: '%s']\n", yytext); RET_NAME(NOT_EQUALS); }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 123 "src/parser/rules.l"
+#line 122 "src/parser/rules.l"
 { PRINT("[ASSIGN: '%s']\n", yytext); RET_NAME(ASSIGN); }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 124 "src/parser/rules.l"
+#line 123 "src/parser/rules.l"
 { PRINT("[CAST: '%s']\n", yytext); RET_NAME(CAST); }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 125 "src/parser/rules.l"
+#line 124 "src/parser/rules.l"
 { PRINT("[CALL]\n"); RET_NAME(CALL); }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 126 "src/parser/rules.l"
+#line 125 "src/parser/rules.l"
 { PRINT("[ACCESS: '%s']\n", yytext); RET_NAME(ACCESS); }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 127 "src/parser/rules.l"
+#line 126 "src/parser/rules.l"
 { PRINT("[ROB]: (\n"); RET_NAME(ROB); }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 128 "src/parser/rules.l"
+#line 127 "src/parser/rules.l"
 { PRINT("[RCB]: )\n"); RET_NAME(RCB); }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 129 "src/parser/rules.l"
+#line 128 "src/parser/rules.l"
 { PRINT("[SOB]: [\n"); RET_NAME(SOB); }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 130 "src/parser/rules.l"
+#line 129 "src/parser/rules.l"
 { PRINT("[SCB]: ]\n"); RET_NAME(SCB); }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 131 "src/parser/rules.l"
+#line 130 "src/parser/rules.l"
 { PRINT("[COB]: {\n"); RET_NAME(COB); }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 132 "src/parser/rules.l"
+#line 131 "src/parser/rules.l"
 { PRINT("[CCB]: }\n"); RET_NAME(CCB); }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 133 "src/parser/rules.l"
+#line 132 "src/parser/rules.l"
 { PRINT("[ARROW]\n"); RET_NAME(ARROW); }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 134 "src/parser/rules.l"
+#line 133 "src/parser/rules.l"
 { PRINT("[COLON]\n"); RET_NAME(COLON); }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 135 "src/parser/rules.l"
+#line 134 "src/parser/rules.l"
 { PRINT("[SEMICOLON]\n"); RET_NAME(SEMICOLON); }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 136 "src/parser/rules.l"
+#line 135 "src/parser/rules.l"
 { PRINT("[COMMA]\n"); RET_NAME(COMMA); }
 	YY_BREAK
 case 65:
 /* rule 65 can match eol */
 YY_RULE_SETUP
-#line 137 "src/parser/rules.l"
+#line 136 "src/parser/rules.l"
 {
     PRINT("[STRING: '%s']\n", yytext);
     tfrag_t frag;
@@ -1619,12 +1618,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 148 "src/parser/rules.l"
+#line 147 "src/parser/rules.l"
 { PRINT("[NAME: '%s']\n", yytext); RET_NAME(NAME); }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 149 "src/parser/rules.l"
+#line 148 "src/parser/rules.l"
 {
     PRINT("[INT: '%s']\n", yytext);
     tfrag_t frag;
@@ -1646,7 +1645,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 167 "src/parser/rules.l"
+#line 166 "src/parser/rules.l"
 {
     PRINT("[UINT: '%s']\n", yytext);
     tfrag_t frag;
@@ -1668,7 +1667,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 185 "src/parser/rules.l"
+#line 184 "src/parser/rules.l"
 {
     PRINT("[DOUBLE: '%s']\n", yytext);
     tfrag_t frag;
@@ -1684,20 +1683,20 @@ YY_RULE_SETUP
 case 70:
 /* rule 70 can match eol */
 YY_RULE_SETUP
-#line 196 "src/parser/rules.l"
+#line 195 "src/parser/rules.l"
 { count(); }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 197 "src/parser/rules.l"
+#line 196 "src/parser/rules.l"
 { count(); yyerror("Unexpected character"); }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 198 "src/parser/rules.l"
+#line 197 "src/parser/rules.l"
 ECHO;
 	YY_BREAK
-#line 1701 "src/parser/lex.yy.c"
+#line 1700 "src/parser/lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(NASM_BLOCK_STATE):
 	yyterminate();
@@ -2666,7 +2665,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 198 "src/parser/rules.l"
+#line 197 "src/parser/rules.l"
 
 static void count_char(char c) {
     cur_frag.begin++;
@@ -2732,8 +2731,7 @@ static const char *parse_string(const char *str) {
 
     res[res_i++] = '\0';
 
-    char *new_res = malloc(sizeof(char) * res_i);
-    memcpy(new_res, res, sizeof(char) * res_i);
+    char *new_res = memdup_safe(res, sizeof(char) * res_i);
     free(res);
 
     return new_res;

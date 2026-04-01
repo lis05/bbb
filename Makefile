@@ -135,6 +135,7 @@ BBB_LIB := $(filter-out obj/main.o,$(OBJECTS))
 
 # tests compilation
 obj/tests/%.o: src/tests/%.c $(TEST_HEADERS) $(BBB_LIB) | obj/tests
+	# fix this not working when make clean and make tests TODO
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(TEST_BINS): build/tests/% : obj/tests/%.o $(BBB_LIB) | build/tests

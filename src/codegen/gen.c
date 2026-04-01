@@ -992,10 +992,9 @@ static cb_t gen_nasm_block(int indent, const struct name_node_t *node,
                 return cb_invalid();
             }
 
-            char *cutout = memdup_safe(placeholder, len + 1);
-            cutout[len] = '\0';
-
-            log_assert(*(cutout++) == '$');
+            char *cutout = memdup_safe(placeholder + 1, len);
+            cutout[len - 1] = '\0';
+            cutout = pstr_take(cutout);
 
             struct location_t loc;
 
@@ -1007,8 +1006,7 @@ static cb_t gen_nasm_block(int indent, const struct name_node_t *node,
                 context_msg(
                     &node->frag,
                     "Error: the compiler is unaware of the placeholder '%s'.",
-                    cutout - 1);
-                free(cutout - 1);
+                    cutout);
                 free(line);
                 cb_destroy(&res);
                 return cb_invalid();
@@ -1033,8 +1031,7 @@ static cb_t gen_nasm_block(int indent, const struct name_node_t *node,
             } else {
                 context_msg(&node->frag,
                             "Error: placeholder '%s' cannot be substituted.\n",
-                            cutout - 1);
-                free(cutout - 1);
+                            cutout);
                 free(line);
                 cb_destroy(&res);
                 return cb_invalid();
@@ -1042,7 +1039,6 @@ static cb_t gen_nasm_block(int indent, const struct name_node_t *node,
 
             free(line);
             line = new_line;
-            free(cutout - 1);
             // repeat..
         }
 

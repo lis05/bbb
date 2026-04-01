@@ -33,8 +33,7 @@
     } while (0)
 
     #define ALLOC(t) ({\
-        t *res = (t*)malloc(sizeof(t));\
-        log_assert(res != NULL);\
+        t *res = (t*)calloc_safe(1, sizeof(t));\
         *res = (t){0};\
         res;\
     })
@@ -260,8 +259,7 @@ static const char *parse_string(const char *str) {
 
     res[res_i++] = '\0';
 
-    char *new_res = malloc(sizeof(char) * res_i);
-    memcpy(new_res, res, sizeof(char) * res_i);
+    char *new_res = memdup_safe(res, sizeof(char) * res_i);
     free(res);
 
     return new_res;

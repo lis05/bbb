@@ -42,3 +42,6 @@
 
 /* Integer is a status code (0 is success, everything else is failure). */
 #define STATUSCODE
+
+/* Integer is a boolean (1 is true, 0 is false). */
+#define BOOL
