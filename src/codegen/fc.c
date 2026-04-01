@@ -1,6 +1,6 @@
 #include "fc.h"
 
-void fc_init(NONULL struct function_context_t *fc) {
+void fc_init(struct function_context_t *fc NONULL) MEMSAFE {
     fc->stack_offset = 0;
     fc->return_value = (struct location_t){0};
     scope_init(&fc->local_scope);

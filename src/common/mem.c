@@ -27,3 +27,19 @@ void *NONULL MUSTFREE realloc_safe(void *ptr NONULL SINK, size_t size) MEMSAFE {
     log_assert(res != NULL);
     return res;
 }
+
+char *NONULL MUSTFREE asprintf_safe(const char *fmt NONULL, ...) MEMSAFE {
+    log_assert(fmt != NULL);
+
+    va_list ap;
+    char   *res = NULL;
+
+    va_start(ap, fmt);
+    int status = vasprintf(&res, fmt, ap);
+    va_end(ap);
+
+    log_assert(status != -1);
+    log_assert(res != NULL);
+
+    return res;
+}

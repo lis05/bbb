@@ -21,9 +21,6 @@
  * unsuccessful operation, an empty result, or something else. */
 #define YESNULL
 
-/* Suggests that the item will never change it's value after it is assigned. */
-#define FINAL
-
 /* Suggests that the string originates from a static buffer and should be used
  * immediatelly.*/
 #define ONETIME
