@@ -21,10 +21,9 @@ void layouts_register(const char *name, struct layout_t layout) {
 
     if (layouts_size == layouts_cap) {
         layouts_cap *= 2;
-        layout_names = (const char **)realloc(layout_names, sizeof(const char *) * layouts_cap);
-        log_assert(layout_names != NULL);
-        layouts = (struct layout_t *)realloc(layouts, sizeof(struct layout_t) * layouts_cap);
-        log_assert(layouts != NULL);
+        layout_names =
+            realloc_safe(layout_names, sizeof(const char *) * layouts_cap);
+        layouts = realloc_safe(layouts, sizeof(struct layout_t) * layouts_cap);
     }
 
     layout_names[layouts_size] = name;
