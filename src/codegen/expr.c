@@ -442,7 +442,7 @@ struct expr_gen_t gen_literal(int indent, struct literal_node_t *node,
         size_t repr;
         memcpy(&repr, &node->double_lit, sizeof(size_t));
 
-        log_assert(-1 != asprintf(&name, " __lit__f%zu", repr));
+        name = asprintf_safe("__lit__f%zu", repr);
         name = (char *)pstr_take(name);
         if (scope_has(&global_scope, name)) {
             res.loc = scope_get(&global_scope, name);
@@ -465,7 +465,7 @@ struct expr_gen_t gen_literal(int indent, struct literal_node_t *node,
         char *name;
 
         const char *str = node->frag.token;
-        log_assert(-1 != asprintf(&name, " __lit__s%s", str));
+        name = asprintf_safe("__lit__s%s", str);
         name = (char *)pstr_take(name);
         if (scope_has(&global_scope, name)) {
             res.loc = scope_get(&global_scope, name);

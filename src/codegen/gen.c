@@ -1004,18 +1004,18 @@ static cb_t gen_nasm_block(int indent, const struct name_node_t *node,
             *placeholder = '\0';         // before $
             placeholder_end[-1] = '\0';  // last char of placeholder
             if (loc.type == LOC_GPR || loc.type == LOC_PTR_IN_GPR) {
-                log_assert(-1 != asprintf(&new_line, "%s%s%s", line,
-                                          loc.gpr_reg1->qname, placeholder_end));
+                new_line = asprintf_safe("%s%s%s", line, loc.gpr_reg1->qname,
+                                         placeholder_end);
             } else if (loc.type == LOC_SSE) {
-                log_assert(-1 != asprintf(&new_line, "%s%s%s", line,
-                                          loc.sse_reg1->name, placeholder_end));
+                new_line = asprintf_safe("%s%s%s", line, loc.sse_reg1->name,
+                                         placeholder_end);
             } else if (loc.type == LOC_STACK || loc.type == LOC_PTR_ON_STACK) {
-                log_assert(-1 != asprintf(&new_line, "%s%s%s", line,
-                                          fmt_stack_offset(loc.stack_offset),
-                                          placeholder_end));
+                new_line =
+                    asprintf_safe("%s%s%s", line, fmt_stack_offset(loc.stack_offset),
+                                  placeholder_end);
             } else if (loc.type == LOC_SYMBOL) {
-                log_assert(-1 != asprintf(&new_line, "%s%s%s", line, loc.symbol,
-                                          placeholder_end));
+                new_line =
+                    asprintf_safe("%s%s%s", line, loc.symbol, placeholder_end);
             } else {
                 context_msg(&node->frag,
                             "Error: placeholder '%s' cannot be substituted.\n",
