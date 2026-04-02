@@ -933,8 +933,7 @@ static cb_t gen_nasm_block(int indent, const struct name_node_t *node,
     cb_init(&res);
 
     char *orig;
-    char *str = orig = strdup(node->name);
-    log_assert(str != NULL);
+    char *str = orig = strdup_safe(node->name);
     if (strstr(str, KW_NASM_START) != str) {
         goto error;
     }
@@ -957,8 +956,7 @@ static cb_t gen_nasm_block(int indent, const struct name_node_t *node,
         char *line_end = strchr(str, '\n');
         *line_end = '\0';
 
-        char *line = strdup(str);
-        log_assert(line != NULL);
+        char *line = strdup_safe(str);
         char *placeholder;
 
         str = line_end + 1;
@@ -982,9 +980,9 @@ static cb_t gen_nasm_block(int indent, const struct name_node_t *node,
                 return cb_invalid();
             }
 
-            char *cutout = memdup_safe(placeholder + 1, len);
-            cutout[len - 1] = '\0';
-            cutout = pstr_take(cutout);
+            char *_cutout = memdup_safe(placeholder + 1, len);
+            _cutout[len - 1] = '\0';
+            pstr_t cutout = pstr_take(_cutout);
 
             struct location_t loc;
 

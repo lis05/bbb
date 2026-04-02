@@ -2694,8 +2694,7 @@ static void count() {
 }
 
 static const char *parse_string(const char *str) {
-    char *res = strdup(str);
-    log_assert(res != NULL);
+    char *res = strdup_safe(str);
     int   res_i = 0;
     const char *ptr = str;
 

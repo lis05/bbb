@@ -1,7 +1,7 @@
 #include "util.h"
 
-#include "kw.h"
 #include "../parser/error.h"
+#include "kw.h"
 #include "layout.h"
 #include "vmap.h"
 
@@ -20,14 +20,13 @@ const char *util_get_visibility(const struct name_node_t *node) {
 int util_get_mem_len(const struct name_node_t *node, size_t *res) {
     log_assert(node != NULL);
 
-    const char  *str = NULL;
-    char  *ptr;
-    size_t num;
-
+    const char *str = NULL;
+    char       *ptr;
+    size_t      num;
 
     if (strstr(node->name, "m(sizeof ") == node->name &&
         node->name[strlen(node->name) - 1] == ')') {
-        str = pstr_take(strdup(node->name + strlen("m(sizeof ")));
+        str = pstr_take(strdup_safe(node->name + strlen("m(sizeof ")));
         *strchr(str, ')') = '\0';
 
         if (!layouts_has(str)) {
@@ -43,7 +42,7 @@ int util_get_mem_len(const struct name_node_t *node, size_t *res) {
 
         return 0;
     } else if (node->name[0] == 'm') {
-        str = pstr_take(strdup(node->name + 1));
+        str = pstr_take(strdup_safe(node->name + 1));
     } else {
         goto error;
     }
@@ -67,12 +66,12 @@ error:
 int util_get_align(const struct name_node_t *node, size_t *res) {
     log_assert(node != NULL);
 
-    const char  *str = NULL;
-    char  *ptr;
-    size_t num;
+    const char *str = NULL;
+    char       *ptr;
+    size_t      num;
 
     if (strstr(node->name, "align") == node->name) {
-        str = pstr_take(strdup(node->name + 5));
+        str = pstr_take(strdup_safe(node->name + 5));
     } else {
         goto error;
     }
