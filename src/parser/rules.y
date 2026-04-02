@@ -8,8 +8,11 @@
 
     void yyerror(const char *s);
 
+    #define YYMALLOC(sz) calloc_safe(1, sz)
+    #define YYFREE(p) free(p)
+
     #define ALLOC(t) ({\
-        t *res = (t*)malloc(sizeof(t));\
+        t *res = calloc_safe(1, sizeof(t));\
         log_assert(res != NULL);\
         *res = (t){0};\
         res;\

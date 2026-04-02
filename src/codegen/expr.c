@@ -1,5 +1,6 @@
-#include "gen.h"
 #include "expr.h"
+
+#include "gen.h"
 
 #define SAVE_CONTEXT(fc_ptr, context_save) ((context_save) = *(fc_ptr))
 #define RESTORE_CONTEXT(fc_ptr, context_save) (*(fc_ptr) = (context_save))
@@ -57,12 +58,12 @@ struct expr_gen_t gen_expression(int indent, struct expression_node_t *node,
     LOG_ENTER(&node->frag, indent);
 
     struct function_context_t context_save = {0};
-    struct expr_gen_t res = {0};
-    struct expr_gen_t left = {0};
-    struct expr_gen_t right = {0};
-    struct expr_gen_t addr = {0};
-    struct expr_gen_t value = {0};
-    cb_t last = {0};
+    struct expr_gen_t         res = {0};
+    struct expr_gen_t         left = {0};
+    struct expr_gen_t         right = {0};
+    struct expr_gen_t         addr = {0};
+    struct expr_gen_t         value = {0};
+    cb_t                      last = {0};
 
     SAVE_CONTEXT(fc, context_save);
     cb_init(&res.cb);
@@ -471,8 +472,7 @@ struct expr_gen_t gen_literal(int indent, struct literal_node_t *node,
             log_debug(" - reusing string literal: %s\n", str);
         } else {
             const char *lbl = lblg_gen_string_lit();
-            char *cpy = malloc(strlen(str) + 1 + 2);
-            log_assert(cpy != NULL);
+            char       *cpy = calloc_safe(strlen(str) + 1 + 2, sizeof(char));
             strcpy(cpy, str);
             cpy[strlen(str) - 1] = '\\';
             cpy[strlen(str)] = '0';

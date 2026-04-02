@@ -27,12 +27,10 @@ struct vmap_t vmap_args(const struct vmap_args_request_t *req) {
     struct vmap_t answer = {0};
     answer.n = req->n;
     if (req->names != NULL) {
-        answer.names = (const char **)malloc(req->n * sizeof(const char *));
-        log_assert(answer.names != NULL);
+        answer.names = calloc_safe(req->n, sizeof(const char *));
         memcpy(answer.names, req->names, answer.n * sizeof(const char *));
     }
-    answer.locs = (struct location_t *)malloc(req->n * sizeof(struct location_t));
-    log_assert(answer.locs != NULL);
+    answer.locs = calloc_safe(req->n, sizeof(struct location_t));
 
     // ==================================== actual algo
 
@@ -226,12 +224,10 @@ struct vmap_t vmap_args_copy(const struct vmap_args_request_t *req) {
 
     answer.n = req->n;
     if (req->names != NULL) {
-        answer.names = (const char **)malloc(sizeof(const char *) * answer.n);
-        log_assert(answer.names != NULL);
+        answer.names = calloc_safe(answer.n, sizeof(const char *));
         memcpy(answer.names, req->names, answer.n * sizeof(const char *));
     }
-    answer.locs = (struct location_t *)malloc(sizeof(struct location_t) * answer.n);
-    log_assert(answer.locs != NULL);
+    answer.locs = calloc_safe(answer.n, sizeof(struct location_t));
 
     // stack:
     // [rbp+16]: old rps pointed here, and it was aligned to 16

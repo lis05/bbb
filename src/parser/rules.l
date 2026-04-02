@@ -18,6 +18,9 @@
 
     static const char *parse_string(const char *data);
 
+    #define YYMALLOC(sz) calloc_safe(1, sz)
+    #define YYFREE(p) free(p)
+
     extern int print_lexemes;
     #define PRINT(...) do {\
         if (print_lexemes) printf(__VA_ARGS__);\

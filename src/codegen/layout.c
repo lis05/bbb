@@ -11,10 +11,8 @@ static void layouts_init() {
     if (layouts == 0) {
         layouts_size = 0;
         layouts_cap = 1;
-        layout_names = (const char **)malloc(sizeof(const char *));
-        log_assert(layout_names != NULL);
-        layouts = (struct layout_t *)malloc(sizeof(struct layout_t));
-        log_assert(layouts != NULL);
+        layout_names = calloc_safe(1, sizeof(const char *));
+        layouts = calloc_safe(1, sizeof(struct layout_t));
     }
 }
 

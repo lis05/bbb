@@ -180,9 +180,8 @@ static cb_t gen_extern_decl(int                                     indent,
 
         EXPLAIN(res, indent, "Extern declaration.\n");
 
-        char *line =
-            (char *)malloc(strlen("extern ") + strlen(node->name->name) + 1 + 1);
-        log_assert(line != NULL);
+        char *line = calloc_safe(
+            strlen("extern ") + strlen(node->name->name) + 1 + 1, sizeof(char));
 
         strcpy(line, "extern ");
         strcat(line, node->name->name);
@@ -275,10 +274,8 @@ static cb_t gen_layout_decl(int                                     indent,
     log_debug(" - fields without paddings: %zu\n", layout.n);
     log_debug(" - total size: %zu\n", layout.total_size);
     items = node->items;
-    layout.fields = (const char **)malloc(sizeof(const char *) * layout.n);
-    log_assert(layout.fields != NULL);
-    layout.offsets = (size_t *)malloc(sizeof(const char *) * layout.total_size);
-    log_assert(layout.offsets != NULL);
+    layout.fields = calloc_safe(layout.n, sizeof(const char *));
+    layout.offsets = calloc_safe(layout.n, sizeof(const char *));
 
     size_t n = layout.n;
     layout.n = 0;
@@ -401,20 +398,13 @@ static struct func_args_meta_t collect_func_args(
         return res;
     }
 
-    res.names = (const char **)malloc(sizeof(const char *) * res.n);
-    log_assert(res.names != NULL);
-    res.mem_len = (size_t *)malloc(sizeof(size_t) * res.n);
-    log_assert(res.mem_len != NULL);
-    res.align = (size_t *)malloc(sizeof(size_t) * res.n);
-    log_assert(res.align != NULL);
-    res.chunk1 = (uint8_t *)malloc(sizeof(uint8_t) * res.n);
-    log_assert(res.chunk1 != NULL);
-    res.chunk2 = (uint8_t *)malloc(sizeof(uint8_t) * res.n);
-    log_assert(res.chunk2 != NULL);
-    res.layout = (const char **)malloc(sizeof(const char *) * res.n);
-    log_assert(res.layout != NULL);
-    res.frags = (tfrag_t *)malloc(sizeof(tfrag_t) * res.n);
-    log_assert(res.frags != NULL);
+    res.names = calloc_safe(res.n, sizeof(const char *));
+    res.mem_len = calloc_safe(res.n, sizeof(size_t));
+    res.align = calloc_safe(res.n, sizeof(size_t));
+    res.chunk1 = calloc_safe(res.n, sizeof(uint8_t));
+    res.chunk2 = calloc_safe(res.n, sizeof(uint8_t));
+    res.layout = calloc_safe(res.n, sizeof(const char *));
+    res.frags = calloc_safe(res.n, sizeof(tfrag_t));
 
     args = node->args;
     size_t i = res.n - 1;
