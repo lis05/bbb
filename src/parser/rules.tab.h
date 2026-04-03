@@ -127,7 +127,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 72 "src/parser/rules.y"
+#line 69 "src/parser/rules.y"
 
     struct program_node_t *program;
     struct global_variable_declaration_node_t *global_variable_declaration;

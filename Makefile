@@ -52,6 +52,7 @@ TEST_OBJECTS += $(patsubst src/tests/%.c,obj/tests/%.o,$(wildcard src/tests/*.c)
 
 # wow
 $(BBB): $(OBJECTS) | obj build
+	make grammar
 	$(LD) $(LDFLAGS) $(LDLIBS) $^ -o $@
 	@echo ""
 	@echo "Compilation successfull!"
