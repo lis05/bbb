@@ -35,38 +35,45 @@ static const struct sse_info _r_xmm13 = {"xmm13"};
 static const struct sse_info _r_xmm14 = {"xmm14"};
 static const struct sse_info _r_xmm15 = {"xmm15"};
 
-gpr_reg_t r_rax = &_r_rax;
-gpr_reg_t r_rbx = &_r_rbx;
-gpr_reg_t r_rcx = &_r_rcx;
-gpr_reg_t r_rdx = &_r_rdx;
-gpr_reg_t r_rdi = &_r_rdi;
-gpr_reg_t r_rsi = &_r_rsi;
-gpr_reg_t r_rsp = &_r_rsp;
-gpr_reg_t r_rbp = &_r_rbp;
-gpr_reg_t r_r8 = &_r_r8;
-gpr_reg_t r_r9 = &_r_r9;
-gpr_reg_t r_r10 = &_r_r10;
-gpr_reg_t r_r11 = &_r_r11;
-gpr_reg_t r_r12 = &_r_r12;
-gpr_reg_t r_r13 = &_r_r13;
-gpr_reg_t r_r14 = &_r_r14;
-gpr_reg_t r_r15 = &_r_r15;
-sse_reg_t r_xmm0 = &_r_xmm0;
-sse_reg_t r_xmm1 = &_r_xmm1;
-sse_reg_t r_xmm2 = &_r_xmm2;
-sse_reg_t r_xmm3 = &_r_xmm3;
-sse_reg_t r_xmm4 = &_r_xmm4;
-sse_reg_t r_xmm5 = &_r_xmm5;
-sse_reg_t r_xmm6 = &_r_xmm6;
-sse_reg_t r_xmm7 = &_r_xmm7;
-sse_reg_t r_xmm8 = &_r_xmm8;
-sse_reg_t r_xmm9 = &_r_xmm9;
-sse_reg_t r_xmm10 = &_r_xmm10;
-sse_reg_t r_xmm11 = &_r_xmm11;
-sse_reg_t r_xmm12 = &_r_xmm12;
-sse_reg_t r_xmm13 = &_r_xmm13;
-sse_reg_t r_xmm14 = &_r_xmm14;
-sse_reg_t r_xmm15 = &_r_xmm15;
+const gpr_reg_t r_rax = &_r_rax;
+const gpr_reg_t r_rbx = &_r_rbx;
+const gpr_reg_t r_rcx = &_r_rcx;
+const gpr_reg_t r_rdx = &_r_rdx;
+const gpr_reg_t r_rdi = &_r_rdi;
+const gpr_reg_t r_rsi = &_r_rsi;
+const gpr_reg_t r_rsp = &_r_rsp;
+const gpr_reg_t r_rbp = &_r_rbp;
+const gpr_reg_t r_r8 = &_r_r8;
+const gpr_reg_t r_r9 = &_r_r9;
+const gpr_reg_t r_r10 = &_r_r10;
+const gpr_reg_t r_r11 = &_r_r11;
+const gpr_reg_t r_r12 = &_r_r12;
+const gpr_reg_t r_r13 = &_r_r13;
+const gpr_reg_t r_r14 = &_r_r14;
+const gpr_reg_t r_r15 = &_r_r15;
+sse_reg_t       r_xmm0 = &_r_xmm0;
+sse_reg_t       r_xmm1 = &_r_xmm1;
+sse_reg_t       r_xmm2 = &_r_xmm2;
+sse_reg_t       r_xmm3 = &_r_xmm3;
+sse_reg_t       r_xmm4 = &_r_xmm4;
+sse_reg_t       r_xmm5 = &_r_xmm5;
+sse_reg_t       r_xmm6 = &_r_xmm6;
+sse_reg_t       r_xmm7 = &_r_xmm7;
+sse_reg_t       r_xmm8 = &_r_xmm8;
+sse_reg_t       r_xmm9 = &_r_xmm9;
+sse_reg_t       r_xmm10 = &_r_xmm10;
+sse_reg_t       r_xmm11 = &_r_xmm11;
+sse_reg_t       r_xmm12 = &_r_xmm12;
+sse_reg_t       r_xmm13 = &_r_xmm13;
+sse_reg_t       r_xmm14 = &_r_xmm14;
+sse_reg_t       r_xmm15 = &_r_xmm15;
+
+const gpr_reg_t r_gpr[GPR_REGS] = {r_rax, r_rbx, r_rcx, r_rdx, r_rdi, r_rsi,
+                                   r_rsp, r_rbp, r_r8,  r_r9,  r_r10, r_r11,
+                                   r_r12, r_r13, r_r14, r_r15};
+// sse_reg_t r_sse[SSE_REGS] = {r_xmm0,  r_xmm1,  r_xmm2,  r_xmm3, r_xmm4,  r_xmm5,
+//                              r_xmm6,  r_xmm7,  r_xmm8,  r_xmm9, r_xmm10, r_xmm11,
+//                              r_xmm12, r_xmm13, r_xmm14, r_xmm15};
 
 void gpr_pool_init(struct gpr_pool_t *pool) {
     pool->items[0].reg = r_rax;
@@ -129,6 +136,24 @@ struct gpr_pool_item_t *gpr_pool_find(struct gpr_pool_t *pool, gpr_reg_t reg) {
         }
     }
     return NULL;
+}
+
+int BOOL gpr_regs_mask_get(gpr_regs_mask_t mask, gpr_reg_t reg) {
+    for (int i = 0; i < GPR_REGS; i++) {
+        if (r_gpr[i] == reg && ((mask >> i) & 1)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void gpr_regs_mask_set(gpr_regs_mask_t *NONULL mask, gpr_reg_t reg, int BOOL value) {
+    for (int i = 0; i < GPR_REGS; i++) {
+        if (r_gpr[i] == reg) {
+            *mask &= ~((uint64_t)(1) << i);
+            *mask ^= ((uint64_t)(1) ^ (value & 1)) << i;
+        }
+    }
 }
 
 void sse_pool_init(struct sse_pool_t *pool) {
