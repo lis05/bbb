@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../common/common.h"
+#include "../parser/tfrag.h"
 #include "cb.h"
 #include "lblg.h"
 #include "regs.h"
@@ -80,9 +81,9 @@ struct location_t {
  * This function should only be used to transfer function arguments from their
  * locations onto the stack. It uses R10 register.*/
 cb_t loc_args_copy(int indent, struct location_t *from, struct location_t *to,
-                   struct label_generator_t *lblg);
+                   struct label_generator_t *lblg, struct gpr_pool_t *pool,
+                   const tfrag_t *frag);
 
 /* Copies a number of bytes from one location to another. */
 cb_t loc_move_data(int indent, struct location_t from, struct location_t to,
-                   size_t len, gpr_reg_t helper1, gpr_reg_t helper2,
-                   size_t *helpers_used);
+                   size_t len, struct gpr_pool_t *pool, const tfrag_t *frag);

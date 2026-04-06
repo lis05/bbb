@@ -609,8 +609,9 @@ static cb_t gen_function_declaration(
 
     log_debug(" - copying arguments onto the stack\n");
     for (size_t i = 0; i < args_mapping.n; i++) {
-        cb_t b = loc_args_copy(indent, &args_mapping.locs[i],
-                               &args_copy_mapping.locs[i], &fc.lblg);
+        cb_t b =
+            loc_args_copy(indent, &args_mapping.locs[i], &args_copy_mapping.locs[i],
+                          &fc.lblg, &fc.gpr_pool, &node->frag);
         if (!cb_is_valid(&b)) {
             context_msg(&args_meta.frags[i],
                         "Error: copying arguments onto the stack has failed.\n");
@@ -884,6 +885,9 @@ static cb_t gen_register_alias(int indent, const struct register_alias_node_t *n
         context_msg(&node->frag, "Error: could not find an available register.\n");
         cb_destroy(&res);
         return cb_invalid();
+    }
+    if (item->avoid) {
+        context_msg(&node->frag, "Note: the register should be avoided.\n");
     }
     if (item->abi_protected) {
         context_msg(

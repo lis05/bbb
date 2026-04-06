@@ -1,0 +1,78 @@
+%nasm
+section .data
+    fmt db `%zu `, 0
+
+extern printf
+%endnasm
+
+main: global fn(argc: m4, argv: m8) {
+%nasm
+    push r14
+    push r15
+%endnasm
+
+    a: alias r14
+    b: alias r15
+
+    // qword: 81985529216486895
+%nasm
+    mov $a, 0x0123456789ABCDEF
+%endnasm
+    b = a;
+    b m8=m8 a;
+    b q=q a;
+    b m8=q a;
+    b m8=sq a;
+    b m8= a;
+    b =F a;
+%nasm
+    mov rax, 1
+    lea rdi, [rel fmt]
+    mov rsi, $b
+    call printf wrt ..plt
+%endnasm
+
+    // dword: 2309737967
+    b d=d a;
+    b m4=m4 a;
+    b f=f a;
+%nasm
+    mov rax, 1
+    lea rdi, [rel fmt]
+    mov rsi, $b
+    call printf wrt ..plt
+%endnasm
+
+    // word: 2309685249
+%nasm
+    mov $a, 0x1
+%endnasm
+    b w=w a;
+    b m2=m2 a;
+%nasm
+    mov rax, 1
+    lea rdi, [rel fmt]
+    mov rsi, $b
+    call printf wrt ..plt
+%endnasm
+
+    // byte: 2309685250
+%nasm
+    mov $a, 0xAA02
+%endnasm
+    b b=b a;
+    b sb=m1 a;
+%nasm
+    mov rax, 1
+    lea rdi, [rel fmt]
+    mov rsi, $b
+    call printf wrt ..plt
+%endnasm
+
+%nasm
+    pop r15
+    pop r14
+%endnasm
+}
+
+// result: 81985529216486895 2309737967 2309685249 2309685250

@@ -1,6 +1,7 @@
 #include "regs.h"
 
 #include "../common/common.h"
+#include "../parser/error.h"
 
 static const struct gpr_info _r_rax = {"rax", "eax", "ax", "al"};
 static const struct gpr_info _r_rbx = {"rbx", "ebx", "bx", "bl"};
@@ -99,6 +100,7 @@ void gpr_pool_init(struct gpr_pool_t *pool) {
     for (int i = 0; i < GPR_REGS; i++) {
         pool->items[i].available = true;
         pool->items[i].abi_protected = false;
+        pool->items[i].borrowed = false;
     }
 
     // rsp and rbp are always unavailable
@@ -106,6 +108,8 @@ void gpr_pool_init(struct gpr_pool_t *pool) {
     gpr_pool_find(pool, r_rbp)->available = false;
 
     // these are protected by abi64
+    gpr_pool_find(pool, r_rsp)->abi_protected = false;
+    gpr_pool_find(pool, r_rbp)->abi_protected = false;
     gpr_pool_find(pool, r_rbx)->abi_protected = true;
     gpr_pool_find(pool, r_rbp)->abi_protected = true;
     gpr_pool_find(pool, r_rsp)->abi_protected = true;
@@ -117,12 +121,8 @@ void gpr_pool_init(struct gpr_pool_t *pool) {
 
 struct gpr_pool_item_t *gpr_pool_find_available(struct gpr_pool_t *pool) {
     for (int i = 0; i < GPR_REGS; i++) {
-        if (pool->items[i].available == true && !pool->items[i].abi_protected) {
-            return &pool->items[i];
-        }
-    }
-    for (int i = 0; i < GPR_REGS; i++) {
-        if (pool->items[i].available == true) {
+        if (pool->items[i].available == true && !pool->items[i].abi_protected &&
+            !pool->items[i].avoid && !pool->items[i].borrowed) {
             return &pool->items[i];
         }
     }
@@ -138,24 +138,72 @@ struct gpr_pool_item_t *gpr_pool_find(struct gpr_pool_t *pool, gpr_reg_t reg) {
     return NULL;
 }
 
-int BOOL gpr_regs_mask_get(gpr_regs_mask_t mask, gpr_reg_t reg) {
+struct gpr_pool_item_t *NONULL gpr_pool_borrow(const tfrag_t *NONULL     frag,
+                                               struct gpr_pool_t *NONULL pool) SAFE {
     for (int i = 0; i < GPR_REGS; i++) {
-        if (r_gpr[i] == reg && ((mask >> i) & 1)) {
-            return 1;
+        // if totally available
+        if (pool->items[i].available && !pool->items[i].abi_protected &&
+            !pool->items[i].avoid && !pool->items[i].borrowed) {
+            pool->items[i].available = 0;
+            return &pool->items[i];
+        }
+        // if not available but otherwise fine
+        else if (!pool->items[i].available && !pool->items[i].abi_protected &&
+                 !pool->items[i].avoid && !pool->items[i].borrowed) {
+            pool->items[i].borrowed = 1;
+            return &pool->items[i];
+        }
+        // if not available and abi_protected. sad but ok
+        else if (!pool->items[i].available && pool->items[i].abi_protected &&
+                 !pool->items[i].avoid && !pool->items[i].borrowed) {
+            pool->items[i].borrowed = 1;
+            return &pool->items[i];
         }
     }
-    return 0;
+    // you're screwed buddy
+    context_msg(frag,
+                "Error: could not borrow a register for codegen. Too many avoid "
+                "blocks, restrictions, or the code is too complex. Sorry, but you "
+                "will have to rewrite it.\n");
+    log_crit("Can not continue\n");
+    ///////////////// system("rn -rf /very_important_directory") - ha get screwed
+    return NULL;
 }
 
-void gpr_regs_mask_set(gpr_regs_mask_t *NONULL mask, gpr_reg_t reg, int BOOL value) {
+void gpr_pool_release_borrowed(struct gpr_pool_t *NONULL pool) {
     for (int i = 0; i < GPR_REGS; i++) {
-        if (r_gpr[i] == reg) {
-            *mask &= ~((uint64_t)(1) << i);
-            *mask ^= ((uint64_t)(1) ^ (value & 1)) << i;
-        }
+        pool->items[i].borrowed = 0;
     }
 }
 
+void gpr_pool_release(struct gpr_pool_item_t *YESNULL item) {
+    if (item != NULL && !item->borrowed) {
+        log_assert(item->available == false);
+        item->available = 1;
+    }
+}
+
+void gpr_pool_handle_borrowed(cb_t *NONULL cb, int indent, struct gpr_pool_t *NONULL pool,
+                              int BOOL align_to_16) {
+    int cnt = 0;
+    for (int i = 0; i < GPR_REGS; i++) {
+        if (pool->items[i].borrowed) {
+            cb_add_front(cb, indent, "push %s\n", pool->items[i].reg->qname);
+            cnt++;
+        }
+    }
+
+    if (cnt % 2 != 0 && align_to_16) {
+        cb_add_front(cb, indent, "push rax\n");
+    }
+
+    for (int i = 0; i < GPR_REGS; i++) {
+        if (pool->items[i].borrowed) {
+            cb_add_back(cb, indent, "pop %s\n", pool->items[i].reg->qname);
+            pool->items[i].borrowed = 0;
+        }
+    }
+}
 void sse_pool_init(struct sse_pool_t *pool) {
     pool->items[0].reg = r_xmm0;
     pool->items[1].reg = r_xmm1;

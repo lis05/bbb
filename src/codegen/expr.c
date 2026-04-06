@@ -41,6 +41,9 @@ struct expr_gen_t loc_a(tfrag_t *frag, int indent, struct location_t loc,
     if (loc.type == LOC_GPR || loc.type == LOC_SSE) {
         res.loc = loc;
         return res;
+    } else if (loc.type == LOC_STACK) {
+        res.loc = loc;
+        return res;
     }
 
     context_msg(frag, "Error: cannot calculate address.\n");
@@ -93,12 +96,24 @@ struct expr_gen_t gen_expression(int indent, struct expression_node_t *node,
     cb_glue_back(&res.cb, &addr.cb);
     cb_glue_back(&res.cb, &value.cb);
 
-    // TODO: get size from op
+    size_t left_size, right_size = 0;
 
-    last = loc_move_data(indent, value.loc, addr.loc, 8, NULL, NULL, NULL);
+    if (util_parse_operator(node->op, &left_size, NULL, &right_size, NULL, NULL)) {
+        goto error;
+    }
+    if (left_size != right_size) {
+        context_msg(
+            &node->op->frag,
+            "Error: cannot assign arguments of different sizes. Did you forget a "
+            "cast?\n");
+        goto error;
+    }
+
+    last = loc_move_data(indent, value.loc, addr.loc, left_size, &fc->gpr_pool, &node->frag);
     if (!cb_is_valid(&last)) {
         goto error;
     }
+    gpr_pool_handle_borrowed(&last, indent, &fc->gpr_pool, false);
     cb_glue_back(&res.cb, &last);
 
     res.loc = left.loc;
