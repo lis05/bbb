@@ -1,0 +1,81 @@
+%nasm
+section .data
+    fmt db `%zu `, 0
+
+extern printf
+%endnasm
+
+main: global fn(argc: m4, argv: m8) {
+%nasm
+    push r14
+%endnasm
+
+    a: alias r14
+    b: m8
+
+    // qword: 81985529216486895
+%nasm
+    mov $a, 0x0123456789ABCDEF
+    mov qword [$b], 0
+%endnasm
+    b = a;
+    b m8=m8 a;
+    b q=q a;
+    b m8=q a;
+    b m8=sq a;
+    b m8= a;
+    b =F a;
+%nasm
+    mov rax, 1
+    lea rdi, [rel fmt]
+    mov rsi, qword [$b]
+    call printf wrt ..plt
+    mov qword [$b], 0
+%endnasm
+
+    // dword: 2309737967
+    b d=d a;
+    b m4=m4 a;
+    b f=f a;
+%nasm
+    mov rax, 1
+    lea rdi, [rel fmt]
+    mov rsi, qword [$b]
+    call printf wrt ..plt
+    mov qword [$b], 0
+%endnasm
+
+    // word: 1
+%nasm
+    mov $a, 0x1
+%endnasm
+    b w=w a;
+    b m2=m2 a;
+%nasm
+    mov rax, 1
+    lea rdi, [rel fmt]
+    mov rsi, qword [$b]
+    call printf wrt ..plt
+    mov qword [$b], 0
+%endnasm
+
+    // byte: 2
+%nasm
+    mov $a, 0xAA02
+%endnasm
+    b b=b a;
+    b sb=m1 a;
+%nasm
+    mov rax, 1
+    lea rdi, [rel fmt]
+    mov rsi, qword [$b]
+    call printf wrt ..plt
+    mov qword [$b], 0
+%endnasm
+
+%nasm
+    pop r14
+%endnasm
+}
+
+// result: 81985529216486895 2309737967 1 2
