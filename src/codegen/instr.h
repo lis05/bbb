@@ -11,20 +11,31 @@
  */
 
 /* Moves data from a GPR register into memory. May overwrite temp. */
-int instr_move_gpr_into_mem(cb_t *cb, int indent, gpr_reg_t reg, size_t len,
-                            int64_t stack_offset, struct gpr_pool_t *pool,
-                            const tfrag_t *frag);
+int STATUSCODE instr_move_gpr_into_mem(cb_t *cb, int indent, gpr_reg_t reg,
+                                       size_t len, int64_t stack_offset,
+                                       struct gpr_pool_t *pool, const tfrag_t *frag);
 
 /* Moves data from a GPR register into a GPR register. */
-int instr_move_gpr_into_gpr(cb_t *cb, int indent, gpr_reg_t from, gpr_reg_t to,
-                            size_t len, const tfrag_t *frag);
+int STATUSCODE instr_move_gpr_into_gpr(cb_t *cb, int indent, gpr_reg_t from,
+                                       gpr_reg_t to, size_t len,
+                                       const tfrag_t *frag);
 
 /* Moves data from an SSE register into memory. May overwrite temp1 and temp2. */
-int instr_move_sse_into_mem(cb_t *cb, int indent, sse_reg_t reg, size_t len,
-                            int64_t stack_offset, struct gpr_pool_t *pool,
-                            const tfrag_t *frag);
+int STATUSCODE instr_move_sse_into_mem(cb_t *cb, int indent, sse_reg_t reg,
+                                       size_t len, int64_t stack_offset,
+                                       struct gpr_pool_t *pool, const tfrag_t *frag);
 
 /* Moves data from memory into memory. May overwrite temp1 and temp2. */
-int instr_move_mem_into_mem(cb_t *cb, int indent, int64_t from_offset, size_t len,
-                            int64_t to_offset, struct label_generator_t *lblg,
-                            struct gpr_pool_t *pool, const tfrag_t *frag);
+int STATUSCODE instr_move_mem_into_mem(cb_t *cb, int indent, int64_t from_offset,
+                                        size_t len, int64_t to_offset,
+                                        struct label_generator_t *lblg,
+                                        struct gpr_pool_t        *pool,
+                                        const tfrag_t            *frag);
+
+/* Moves a signed integer into a GPR register. */
+int STATUSCODE instr_move_int_into_gpr(cb_t *cb, int indent, int64_t lit, size_t len,
+                                       gpr_reg_t reg, const tfrag_t *frag);
+
+/* Moves an unsigned integer into a GPR register. */
+int STATUSCODE instr_move_uint_into_gpr(cb_t *cb, int indent, uint64_t lit, size_t len,
+                                       gpr_reg_t reg, const tfrag_t *frag);

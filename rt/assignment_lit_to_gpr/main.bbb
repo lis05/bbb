@@ -1,0 +1,48 @@
+%nasm
+section .data
+    neg_fmt db `%lld `, 0
+
+extern printf
+%endnasm
+
+main: global fn(argc: m4, argv: m8) {
+    a: alias rcx
+    a = -1;
+%nasm
+    mov rax, 1
+    lea rdi, [rel neg_fmt]
+    mov rsi, $a
+    call printf wrt ..plt
+    mov $a, 0
+%endnasm
+
+    // 00...11...11
+    a d=d -1;
+%nasm
+    mov rax, 1
+    lea rdi, [rel neg_fmt]
+    mov rsi, $a
+    call printf wrt ..plt
+    mov $a, 0
+%endnasm
+
+    a = 1;
+%nasm
+    mov rax, 1
+    lea rdi, [rel neg_fmt]
+    mov rsi, $a
+    call printf wrt ..plt
+    mov $a, 0
+%endnasm
+
+    a d=d 1;
+%nasm
+    mov rax, 1
+    lea rdi, [rel neg_fmt]
+    mov rsi, $a
+    call printf wrt ..plt
+    mov $a, 0
+%endnasm
+}
+
+// result: -1 4294967295 1 1 

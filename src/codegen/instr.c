@@ -3,9 +3,10 @@
 #include "../parser/error.h"
 #include "util.h"
 
-int instr_move_gpr_into_mem(cb_t *cb, int indent, gpr_reg_t reg, size_t len,
-                            int64_t stack_offset, struct gpr_pool_t *pool,
-                            const tfrag_t *frag) {
+int STATUSCODE instr_move_gpr_into_mem(cb_t *cb, int indent, gpr_reg_t reg,
+                                       size_t len, int64_t stack_offset,
+                                       struct gpr_pool_t *pool,
+                                       const tfrag_t     *frag) {
     struct gpr_pool_item_t *temp1 = NULL;
     switch (len) {
     case 8:
@@ -69,8 +70,9 @@ int instr_move_gpr_into_mem(cb_t *cb, int indent, gpr_reg_t reg, size_t len,
     return 0;
 }
 
-int instr_move_gpr_into_gpr(cb_t *cb, int indent, gpr_reg_t from, gpr_reg_t to,
-                            size_t len, const tfrag_t *frag) {
+int STATUSCODE instr_move_gpr_into_gpr(cb_t *cb, int indent, gpr_reg_t from,
+                                       gpr_reg_t to, size_t len,
+                                       const tfrag_t *frag) {
     if (len == 8) {
         cb_add_back(cb, indent, "mov %s, %s\n", to->qname, from->qname);
     } else if (len == 4) {
@@ -89,9 +91,10 @@ int instr_move_gpr_into_gpr(cb_t *cb, int indent, gpr_reg_t from, gpr_reg_t to,
     return 0;
 }
 
-int instr_move_sse_into_mem(cb_t *cb, int indent, sse_reg_t reg, size_t len,
-                            int64_t stack_offset, struct gpr_pool_t *pool,
-                            const tfrag_t *frag) {
+int STATUSCODE instr_move_sse_into_mem(cb_t *cb, int indent, sse_reg_t reg,
+                                       size_t len, int64_t stack_offset,
+                                       struct gpr_pool_t *pool,
+                                       const tfrag_t     *frag) {
     struct gpr_pool_item_t *temp1 = NULL;
     if (len > 8) {
         return -1;
@@ -113,9 +116,11 @@ int instr_move_sse_into_mem(cb_t *cb, int indent, sse_reg_t reg, size_t len,
     }
 }
 
-int instr_move_mem_into_mem(cb_t *cb, int indent, int64_t from_offset, size_t len,
-                            int64_t to_offset, struct label_generator_t *lblg,
-                            struct gpr_pool_t *pool, const tfrag_t *frag) {
+int STATUSCODE instr_move_mem_into_mem(cb_t *cb, int indent, int64_t from_offset,
+                                       size_t len, int64_t to_offset,
+                                       struct label_generator_t *lblg,
+                                       struct gpr_pool_t        *pool,
+                                       const tfrag_t            *frag) {
 #define THRESHOLD 128
     struct gpr_pool_item_t *temp1 = NULL, *temp2 = NULL;
     if (len >= THRESHOLD) {
@@ -201,4 +206,39 @@ int instr_move_mem_into_mem(cb_t *cb, int indent, int64_t from_offset, size_t le
 
     return 0;
 #undef THRESHOLD
+}
+
+int STATUSCODE instr_move_int_into_gpr(cb_t *cb, int indent, int64_t lit, size_t len,
+                                       gpr_reg_t reg, const tfrag_t *frag) {
+    if (len == 8) {
+        cb_add_back(cb, indent, "mov %s, %" PRId64 "\n", reg->qname, lit);
+    } else if (len == 4) {
+        cb_add_back(cb, indent, "mov %s, %" PRId64 "\n", reg->dname, lit);
+    } else if (len == 2) {
+        cb_add_back(cb, indent, "mov %s, %" PRId64 "\n", reg->wname, lit);
+    } else if (len == 1) {
+        cb_add_back(cb, indent, "mov %s, %" PRId64 "\n", reg->bname, lit);
+    } else {
+        context_msg(frag, "Error: can only move 8, 4, 2, or 1 bytes.\n");
+        return -1;
+    }
+    return 0;
+}
+
+int STATUSCODE instr_move_uint_into_gpr(cb_t *cb, int indent, uint64_t lit,
+                                        size_t len, gpr_reg_t reg,
+                                        const tfrag_t *frag) {
+    if (len == 8) {
+        cb_add_back(cb, indent, "mov %s, %" PRIu64 "\n", reg->qname, lit);
+    } else if (len == 4) {
+        cb_add_back(cb, indent, "mov %s, %" PRIu64 "\n", reg->dname, lit);
+    } else if (len == 2) {
+        cb_add_back(cb, indent, "mov %s, %" PRIu64 "\n", reg->wname, lit);
+    } else if (len == 1) {
+        cb_add_back(cb, indent, "mov %s, %" PRIu64 "\n", reg->bname, lit);
+    } else {
+        context_msg(frag, "Error: can only move 8, 4, 2, or 1 bytes.\n");
+        return -1;
+    }
+    return 0;
 }

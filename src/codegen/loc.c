@@ -1,4 +1,5 @@
 #include "loc.h"
+
 #include "../parser/error.h"
 #include "cb.h"
 #include "instr.h"
@@ -103,10 +104,28 @@ cb_t loc_move_data(int indent, struct location_t from, struct location_t to,
             }
             return res;
         }
+    } else if (from.type == LOC_STACK) {
+    } else if (from.type == LOC_INT_LITERAL) {
+        if (to.type == LOC_GPR) {
+            if (instr_move_int_into_gpr(&res, indent, from.int_literal, len,
+                                        to.gpr_reg1, frag)) {
+                goto error;
+            }
+            return res;
+        }
+    } else if (from.type == LOC_UINT_LITERAL) {
+        if (to.type == LOC_GPR) {
+            if (instr_move_uint_into_gpr(&res, indent, from.uint_literal, len,
+                                         to.gpr_reg1, frag)) {
+                goto error;
+            }
+            return res;
+        }
     }
 
 unsupported:
-    context_msg(frag, "Error: unsupported operation.\n");
+    context_msg(frag, "Error: unsupported move between location types %d and %d\n",
+                from.type, to.type);
 error:
     cb_destroy(&res);
     return cb_invalid();
