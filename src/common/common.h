@@ -17,3 +17,9 @@
 #define false 0
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) < (y) ? (y) : (x))
+#define SWAP(x, y)           \
+    do {                     \
+        typeof(x) tmp = (x); \
+        (x) = (y);           \
+        (y) = tmp;           \
+    } while (0)

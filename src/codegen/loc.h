@@ -23,8 +23,8 @@ enum location_type {
     LOC_PTR_IN_GPR,
     /* Pointer to data is stored on the stack. */
     LOC_PTR_ON_STACK,
-    /* Offset on the stack relative to rbp. */
-    LOC_STACK,
+    /* Memory address. */
+    LOC_MEM,
     /* Symbol. */
     LOC_SYMBOL,
     /* Int literal. */
@@ -56,18 +56,15 @@ struct location_t {
             };
         };
 
-        const char *symbol;
-
-        // offset from rbp: rbp + stack_offset
-        int64_t stack_offset;
-
-        /* uncomment when the time comes
+        // base + index * scale + offset
         struct {
             gpr_reg_t base;
             gpr_reg_t index;
-            uint8_t   scale;
-            int64_t   offset;
-        } scaled;*/
+            size_t scale;
+            int64_t offset;
+        };
+
+        const char *symbol;
 
         int64_t int_literal;
 
@@ -85,5 +82,5 @@ cb_t loc_args_copy(int indent, struct location_t *from, struct location_t *to,
                    const tfrag_t *frag);
 
 /* Copies a number of bytes from one location to another. */
-cb_t loc_move_data(int indent, struct location_t from, struct location_t to,
+cb_t loc_move_data(int indent, struct location_t *from, struct location_t *to,
                    size_t len, struct gpr_pool_t *pool, const tfrag_t *frag);

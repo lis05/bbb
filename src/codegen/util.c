@@ -218,19 +218,78 @@ int64_t util_align_stack_down(int64_t offset, size_t alignment) {
     return -util_align_up(-offset, alignment);
 }
 
-ONETIME const char *fmt_stack_offset(int64_t offset) {
-#define N 128
-    static char buf[N];
+struct util_memory_address_t util_get_memory_address(struct location_t *loc) {
+    return (struct util_memory_address_t){
+        .base = loc->base,
+        .index = loc->index,
+        .scale = loc->scale,
+        .offset = loc->offset,
+    };
+}
 
-    if (offset > 0) {
-        snprintf(buf, N, "rbp + %zu", (size_t)offset);
-    } else if (offset < 0) {
-        snprintf(buf, N, "rbp - %zu", (size_t)(-offset));
-    } else {
-        snprintf(buf, N, "rbp");
+struct util_memory_address_t util_get_memory_address2(struct location_t *loc,
+                                                      int64_t            offset) {
+    return (struct util_memory_address_t){
+        .base = loc->base,
+        .index = loc->index,
+        .scale = loc->scale,
+        .offset = loc->offset + offset,
+    };
+}
+
+ONETIME const char *util_format_memory_address2(struct util_memory_address_t addr,
+                                                int64_t offset) {
+    addr.offset += offset;
+    return util_format_memory_address(addr);
+}
+ONETIME const char *util_format_memory_address(struct util_memory_address_t addr) {
+    if (addr.scale != 8 && addr.scale != 4 && addr.scale != 2 && addr.scale != 1 && addr.scale != 0) {
+        return NULL;
     }
 
-    return buf;
+#define N 256
+    static char res[N], temp[N];
+    res[0] = temp[0] = '\0';
+
+    int   f = 0;
+    char *pr = res, *pt = temp;
+
+    log_debug("base %p index %p scale %zu offset %lld\n", addr.base, addr.index,
+              addr.scale, addr.offset);
+
+    if (addr.base != NULL) {
+        snprintf(pr, N, "%s", addr.base->qname);
+        f = 1;
+    }
+
+    if (addr.index != NULL) {
+        if (f == 0) {
+            snprintf(pr, N, "%s * %zu", addr.index->qname, addr.scale);
+        } else {
+            SWAP(pr, pt);
+            snprintf(pr, N, "%s + %s * %zu", pt, addr.index->qname, addr.scale);
+        }
+        f = 1;
+    }
+
+    if (addr.offset > 0) {
+        if (f == 0) {
+            snprintf(pr, N, "%" PRId64, addr.offset);
+        } else {
+            SWAP(pr, pt);
+            snprintf(pr, N, "%s + %" PRId64, pt, addr.offset);
+        }
+    } else if (addr.offset < 0) {
+        if (f == 0) {
+            snprintf(pr, N, "%" PRId64, addr.offset);
+        } else {
+            SWAP(pr, pt);
+            snprintf(pr, N, "%s - %" PRId64, pt, -addr.offset);
+        }
+    }
+
+    return pr;
+
 #undef N
 }
 

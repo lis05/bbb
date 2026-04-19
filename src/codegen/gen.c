@@ -572,8 +572,7 @@ static cb_t gen_function_declaration(
     fc_init(&fc);
 
     if (args_copy_mapping.n > 0) {
-        fc.stack_offset =
-            args_copy_mapping.locs[args_copy_mapping.n - 1].stack_offset;
+        fc.stack_offset = args_copy_mapping.locs[args_copy_mapping.n - 1].offset;
     }
 
     for (size_t i = 0; i < args_copy_mapping.n; i++) {
@@ -609,6 +608,9 @@ static cb_t gen_function_declaration(
 
     log_debug(" - copying arguments onto the stack\n");
     for (size_t i = 0; i < args_mapping.n; i++) {
+        log_debug("   - copying argument %zu\n", i);
+        log_debug("   - loc: %d -> %d\n", args_mapping.locs[i].type,
+                  args_copy_mapping.locs[i].type);
         cb_t b =
             loc_args_copy(indent, &args_mapping.locs[i], &args_copy_mapping.locs[i],
                           &fc.lblg, &fc.gpr_pool, &node->frag);
@@ -623,13 +625,13 @@ static cb_t gen_function_declaration(
                     "%" PRId64 ".\n",
                     i, args_copy_mapping.names[i],
                     args_copy_mapping.locs[i].true_len,
-                    -(args_copy_mapping.locs[i].stack_offset));
+                    -(args_copy_mapping.locs[i].offset));
         } else {
             EXPLAIN(res, indent,
                     "Copy %zu-th argument ('%s', pointer) onto the stack at rbp - "
                     "%" PRId64 ".\n",
                     i, args_copy_mapping.names[i],
-                    -(args_copy_mapping.locs[i].stack_offset));
+                    -(args_copy_mapping.locs[i].offset));
         }
         cb_glue_back(&res, &b);
         cb_add_back(&res, indent, "\n");
@@ -817,10 +819,11 @@ static cb_t gen_variable_declaration(int indent,
     log_debug("   ^ to %" PRId64 "\n", fc->stack_offset);
 
     struct location_t loc = {
-        .type = LOC_STACK,
+        .type = LOC_MEM,
         .true_len = mem_len,
         .alignment = align,
-        .stack_offset = fc->stack_offset,
+        .base = r_rbp,
+        .offset = fc->stack_offset,
     };
 
     scope_add(&fc->local_scope, node->name->name, loc);
@@ -1013,10 +1016,16 @@ static cb_t gen_nasm_block(int indent, const struct name_node_t *node,
             } else if (loc.type == LOC_SSE) {
                 new_line = asprintf_safe("%s%s%s", line, loc.sse_reg1->name,
                                          placeholder_end);
-            } else if (loc.type == LOC_STACK || loc.type == LOC_PTR_ON_STACK) {
-                new_line =
-                    asprintf_safe("%s%s%s", line, fmt_stack_offset(loc.stack_offset),
-                                  placeholder_end);
+            } else if (loc.type == LOC_MEM || loc.type == LOC_PTR_ON_STACK) {
+                new_line = asprintf_safe(
+                    "%s%s%s", line,
+                    util_format_memory_address((struct util_memory_address_t){
+                        .base = loc.base,
+                        .index = loc.index,
+                        .scale = loc.scale,
+                        .offset = loc.offset,
+                    }),
+                    placeholder_end);
             } else if (loc.type == LOC_SYMBOL) {
                 new_line =
                     asprintf_safe("%s%s%s", line, loc.symbol, placeholder_end);

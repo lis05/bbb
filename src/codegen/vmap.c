@@ -86,7 +86,8 @@ struct vmap_t vmap_args(const struct vmap_args_request_t *req) {
                     .type = LOC_PTR_ON_STACK,
                     .true_len = mem_len,
                     .alignment = align,
-                    .stack_offset = old_rbp_offset,
+                    .base = r_rbp,
+                    .offset = old_rbp_offset,
                 };
                 answer.locs[i] = loc;
                 log_pure("\n");
@@ -200,10 +201,11 @@ struct vmap_t vmap_args(const struct vmap_args_request_t *req) {
         log_pure("=== item location: rbp + %zu\n", old_rbp_offset);
         log_pure("=== rbp changes from %zu to %zu\n", old_rbp_offset, rbp_offset);
         struct location_t loc = {
-            .type = LOC_STACK,
+            .type = LOC_MEM,
             .true_len = mem_len,
             .alignment = align,
-            .stack_offset = old_rbp_offset,
+            .base = r_rbp,
+            .offset = old_rbp_offset,
         };
         answer.locs[i] = loc;
         log_pure("\n");
@@ -244,7 +246,7 @@ struct vmap_t vmap_args_copy(const struct vmap_args_request_t *req) {
         size_t             align = req->align[i];
         size_t             true_len = mem_len;
         size_t             true_align = true_align;
-        enum location_type type = LOC_STACK;
+        enum location_type type = LOC_MEM;
 
         log_debug("   - mem_len=%zu\n", mem_len);
         log_debug("   - align=%zu\n", align);
@@ -265,7 +267,8 @@ struct vmap_t vmap_args_copy(const struct vmap_args_request_t *req) {
             .type = type,
             .true_len = true_len,
             .alignment = true_align,
-            .stack_offset = -(int64_t)offset,
+            .base = r_rbp,
+            .offset = -(int64_t)offset,
         };
         answer.locs[i] = loc;
         log_pure("\n");

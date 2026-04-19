@@ -6,13 +6,13 @@
         (req).n = (num);                                           \
         (req).names = NULL;                                        \
         (req).mem_len = (size_t *)malloc(sizeof(size_t) * (num));  \
-        log_assert((req).mem_len != NULL);                          \
+        log_assert((req).mem_len != NULL);                         \
         (req).align = (size_t *)malloc(sizeof(size_t) * (num));    \
-        log_assert((req).align != NULL);                            \
+        log_assert((req).align != NULL);                           \
         (req).chunk1 = (uint8_t *)malloc(sizeof(uint8_t) * (num)); \
-        log_assert((req).chunk1 != NULL);                           \
+        log_assert((req).chunk1 != NULL);                          \
         (req).chunk2 = (uint8_t *)malloc(sizeof(uint8_t) * (num)); \
-        log_assert((req).chunk2 != NULL);                           \
+        log_assert((req).chunk2 != NULL);                          \
     } while (0)
 
 #define DESTROY_VMAP_REQUEST(req) \
@@ -58,9 +58,10 @@
     TASSERT((loc).type == LOC_PTR_IN_GPR && (loc).gpr_reg1 == (reg) && \
             (loc).true_len == t_len);
 
-#define ASSERT_PTR_ON_STACK(loc, offset, t_len)                                 \
-    TASSERT((loc).type == LOC_PTR_ON_STACK && (loc).stack_offset == (offset) && \
-            (loc).true_len == (t_len))
+#define ASSERT_PTR_ON_STACK(loc, _offset, t_len)                     \
+    TASSERT((loc).type == LOC_PTR_ON_STACK && (loc).base == r_rbp && \
+            (loc).offset == (_offset) && (loc).true_len == (t_len))
 
-#define ASSERT_STACK(loc, offset) \
-    TASSERT((loc).type == LOC_STACK && (loc).stack_offset == (offset))
+#define ASSERT_STACK(loc, _offset)                          \
+    TASSERT((loc).type == LOC_MEM && (loc).base == r_rbp && \
+            (loc).offset == (_offset))

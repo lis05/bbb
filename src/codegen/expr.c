@@ -41,7 +41,7 @@ struct expr_gen_t loc_a(tfrag_t *frag, int indent, struct location_t loc,
     if (loc.type == LOC_GPR || loc.type == LOC_SSE) {
         res.loc = loc;
         return res;
-    } else if (loc.type == LOC_STACK) {
+    } else if (loc.type == LOC_MEM) {
         res.loc = loc;
         return res;
     }
@@ -109,7 +109,7 @@ struct expr_gen_t gen_expression(int indent, struct expression_node_t *node,
         goto error;
     }
 
-    last = loc_move_data(indent, value.loc, addr.loc, left_size, &fc->gpr_pool, &node->frag);
+    last = loc_move_data(indent, &value.loc, &addr.loc, left_size, &fc->gpr_pool, &node->frag);
     if (!cb_is_valid(&last)) {
         goto error;
     }

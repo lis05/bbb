@@ -4,14 +4,14 @@
 #include "util.h"
 
 int STATUSCODE instr_move_gpr_into_mem(cb_t *cb, int indent, gpr_reg_t reg,
-                                       size_t len, int64_t stack_offset,
+                                       size_t len, struct util_memory_address_t addr,
                                        struct gpr_pool_t *pool,
                                        const tfrag_t     *frag) {
     struct gpr_pool_item_t *temp1 = NULL;
     switch (len) {
     case 8:
         cb_add_back(cb, indent, "mov qword [%s], %s\n",
-                    fmt_stack_offset(stack_offset), reg->qname);
+                    util_format_memory_address(addr), reg->qname);
         break;
     case 7:
         if (temp1 == NULL)
@@ -19,10 +19,10 @@ int STATUSCODE instr_move_gpr_into_mem(cb_t *cb, int indent, gpr_reg_t reg,
         cb_add_back(cb, indent, "mov %s, %s\n", temp1->reg->qname, reg->qname);
         cb_add_back(cb, indent, "shr %s, 32\n", temp1->reg->qname);
         cb_add_back(cb, indent, "mov word [%s], %s\n",
-                    fmt_stack_offset(stack_offset + 4), temp1->reg->wname);
+                    util_format_memory_address2(addr, 4), temp1->reg->wname);
         cb_add_back(cb, indent, "shr %s, 16\n", temp1->reg->dname);
         cb_add_back(cb, indent, "mov byte [%s], %s\n",
-                    fmt_stack_offset(stack_offset + 6), temp1->reg->bname);
+                    util_format_memory_address2(addr, 6), temp1->reg->bname);
         goto jmp_4bytes;
     case 6:
         if (temp1 == NULL)
@@ -30,7 +30,7 @@ int STATUSCODE instr_move_gpr_into_mem(cb_t *cb, int indent, gpr_reg_t reg,
         cb_add_back(cb, indent, "mov %s, %s\n", temp1->reg->qname, reg->qname);
         cb_add_back(cb, indent, "shr %s, 32\n", temp1->reg->qname);
         cb_add_back(cb, indent, "mov word [%s], %s\n",
-                    fmt_stack_offset(stack_offset + 4), temp1->reg->wname);
+                    util_format_memory_address2(addr, 4), temp1->reg->wname);
         goto jmp_4bytes;
     case 5:
         if (temp1 == NULL)
@@ -38,12 +38,12 @@ int STATUSCODE instr_move_gpr_into_mem(cb_t *cb, int indent, gpr_reg_t reg,
         cb_add_back(cb, indent, "mov %s, %s\n", temp1->reg->qname, reg->qname);
         cb_add_back(cb, indent, "shr %s, 32\n", temp1->reg->qname);
         cb_add_back(cb, indent, "mov byte [%s], %s\n",
-                    fmt_stack_offset(stack_offset + 4), temp1->reg->bname);
+                    util_format_memory_address2(addr, 4), temp1->reg->bname);
     case 4:
         goto jmp_4bytes;  // shut up gcc, fallthrough is indended
     jmp_4bytes:
         cb_add_back(cb, indent, "mov dword [%s], %s\n",
-                    fmt_stack_offset(stack_offset), reg->dname);
+                    util_format_memory_address(addr), reg->dname);
         break;
     case 3:
         if (temp1 == NULL)
@@ -51,16 +51,16 @@ int STATUSCODE instr_move_gpr_into_mem(cb_t *cb, int indent, gpr_reg_t reg,
         cb_add_back(cb, indent, "mov %s, %s\n", temp1->reg->qname, reg->qname);
         cb_add_back(cb, indent, "shr %s, 8\n", temp1->reg->qname);
         cb_add_back(cb, indent, "mov word [%s], %s\n",
-                    fmt_stack_offset(stack_offset + 1), temp1->reg->wname);
+                    util_format_memory_address2(addr, 1), temp1->reg->wname);
         goto jmp_1byte;
     case 2:
         cb_add_back(cb, indent, "mov word [%s], %s\n",
-                    fmt_stack_offset(stack_offset), reg->wname);
+                    util_format_memory_address(addr), reg->wname);
         break;
     case 1:
     jmp_1byte:
         cb_add_back(cb, indent, "mov byte [%s], %s\n",
-                    fmt_stack_offset(stack_offset), reg->bname);
+                    util_format_memory_address(addr), reg->bname);
         break;
     default:
         return -1;
@@ -92,35 +92,36 @@ int STATUSCODE instr_move_gpr_into_gpr(cb_t *cb, int indent, gpr_reg_t from,
 }
 
 int STATUSCODE instr_move_sse_into_mem(cb_t *cb, int indent, sse_reg_t reg,
-                                       size_t len, int64_t stack_offset,
+                                       size_t len, struct util_memory_address_t addr,
                                        struct gpr_pool_t *pool,
                                        const tfrag_t     *frag) {
     struct gpr_pool_item_t *temp1 = NULL;
     if (len > 8) {
         return -1;
     } else if (len == 8) {
-        cb_add_back(cb, indent, "movsd [%s], %s\n", fmt_stack_offset(stack_offset),
+        cb_add_back(cb, indent, "movsd [%s], %s\n", util_format_memory_address(addr),
                     reg->name);
         return 0;
     } else if (len == 4) {
-        cb_add_back(cb, indent, "movss [%s], %s\n", fmt_stack_offset(stack_offset),
+        cb_add_back(cb, indent, "movss [%s], %s\n", util_format_memory_address(addr),
                     reg->name);
         return 0;
     } else {
         temp1 = gpr_pool_borrow(frag, pool);
         cb_add_back(cb, indent, "movq %s, %s\n", temp1->reg->qname, reg->name);
-        int ret = instr_move_gpr_into_mem(cb, indent, temp1->reg, len, stack_offset,
-                                          pool, frag);
+        int ret =
+            instr_move_gpr_into_mem(cb, indent, temp1->reg, len, addr, pool, frag);
         gpr_pool_release(temp1);
         return ret;
     }
 }
 
-int STATUSCODE instr_move_mem_into_mem(cb_t *cb, int indent, int64_t from_offset,
-                                       size_t len, int64_t to_offset,
-                                       struct label_generator_t *lblg,
-                                       struct gpr_pool_t        *pool,
-                                       const tfrag_t            *frag) {
+int STATUSCODE instr_move_mem_into_mem(cb_t *cb, int indent,
+                                       struct util_memory_address_t from, size_t len,
+                                       struct util_memory_address_t to,
+                                       struct label_generator_t    *lblg,
+                                       struct gpr_pool_t           *pool,
+                                       const tfrag_t               *frag) {
 #define THRESHOLD 128
     struct gpr_pool_item_t *temp1 = NULL, *temp2 = NULL;
     if (len >= THRESHOLD) {
@@ -134,17 +135,17 @@ int STATUSCODE instr_move_mem_into_mem(cb_t *cb, int indent, int64_t from_offset
                     temp1->reg->qname);
         cb_add_back(cb, indent + CB_TAB, "jz %s\n", end_label);
         cb_add_back(cb, indent + CB_TAB, "mov %s, qword [%s + %s]\n",
-                    temp2->reg->qname, fmt_stack_offset(from_offset - 8),
+                    temp2->reg->qname, util_format_memory_address2(from, -8),
                     temp1->reg->qname);
         cb_add_back(cb, indent + CB_TAB, "mov qword [%s + %s], %s\n",
-                    fmt_stack_offset(to_offset - 8), temp1->reg->qname,
+                    util_format_memory_address2(to, -8), temp1->reg->qname,
                     temp2->reg->qname);
         cb_add_back(cb, indent + CB_TAB, "sub %s, 8\n", temp1->reg->qname);
         cb_add_back(cb, indent + CB_TAB, "jmp %s\n", loop_label);
         cb_add_back(cb, indent, "%s:\n", end_label);
 
-        from_offset += len - len % 8;
-        to_offset += len - len % 8;
+        from.offset += len - len % 8;
+        to.offset += len - len % 8;
         len %= 8;
     }
 
@@ -152,13 +153,13 @@ int STATUSCODE instr_move_mem_into_mem(cb_t *cb, int indent, int64_t from_offset
         if (temp2 == NULL)
             temp2 = gpr_pool_borrow(frag, pool);
         cb_add_back(cb, indent, "mov %s, qword [%s]\n", temp2->reg->qname,
-                    fmt_stack_offset(from_offset + i));
+                    util_format_memory_address2(from, i));
         cb_add_back(cb, indent, "mov qword [%s], %s\n",
-                    fmt_stack_offset(to_offset + i), temp2->reg->qname);
+                    util_format_memory_address2(to, i), temp2->reg->qname);
     }
 
-    from_offset += len - len % 8;
-    to_offset += len - len % 8;
+    from.offset += len - len % 8;
+    to.offset += len - len % 8;
     len %= 8;
 
     if (len == 0) {
@@ -169,11 +170,11 @@ int STATUSCODE instr_move_mem_into_mem(cb_t *cb, int indent, int64_t from_offset
         if (temp2 == NULL)
             temp2 = gpr_pool_borrow(frag, pool);
         cb_add_back(cb, indent, "mov %s, dword [%s]\n", temp2->reg->dname,
-                    fmt_stack_offset(from_offset));
-        cb_add_back(cb, indent, "mov dword [%s], %s\n", fmt_stack_offset(to_offset),
-                    temp2->reg->dname);
-        from_offset += 4;
-        to_offset += 4;
+                    util_format_memory_address(from));
+        cb_add_back(cb, indent, "mov dword [%s], %s\n",
+                    util_format_memory_address(to), temp2->reg->dname);
+        from.offset += 4;
+        to.offset += 4;
         len -= 4;
     }
 
@@ -181,11 +182,11 @@ int STATUSCODE instr_move_mem_into_mem(cb_t *cb, int indent, int64_t from_offset
         if (temp2 == NULL)
             temp2 = gpr_pool_borrow(frag, pool);
         cb_add_back(cb, indent, "mov %s, word [%s]\n", temp2->reg->wname,
-                    fmt_stack_offset(from_offset));
-        cb_add_back(cb, indent, "mov word [%s], %s\n", fmt_stack_offset(to_offset),
-                    temp2->reg->wname);
-        from_offset += 2;
-        to_offset += 2;
+                    util_format_memory_address(from));
+        cb_add_back(cb, indent, "mov word [%s], %s\n",
+                    util_format_memory_address(to), temp2->reg->wname);
+        from.offset += 2;
+        to.offset += 2;
         len -= 2;
     }
 
@@ -193,11 +194,9 @@ int STATUSCODE instr_move_mem_into_mem(cb_t *cb, int indent, int64_t from_offset
         if (temp2 == NULL)
             temp2 = gpr_pool_borrow(frag, pool);
         cb_add_back(cb, indent, "mov %s, byte [%s]\n", temp2->reg->bname,
-                    fmt_stack_offset(from_offset));
-        cb_add_back(cb, indent, "mov byte [%s], %s\n", fmt_stack_offset(to_offset),
-                    temp2->reg->bname);
-        from_offset += 1;
-        to_offset += 1;
+                    util_format_memory_address(from));
+        cb_add_back(cb, indent, "mov byte [%s], %s\n",
+                    util_format_memory_address(to), temp2->reg->bname);
         len -= 1;
     }
 
