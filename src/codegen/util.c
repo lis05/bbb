@@ -243,7 +243,8 @@ ONETIME const char *util_format_memory_address2(struct util_memory_address_t add
     return util_format_memory_address(addr);
 }
 ONETIME const char *util_format_memory_address(struct util_memory_address_t addr) {
-    if (addr.scale != 8 && addr.scale != 4 && addr.scale != 2 && addr.scale != 1 && addr.scale != 0) {
+    if (addr.scale != 8 && addr.scale != 4 && addr.scale != 2 && addr.scale != 1 &&
+        addr.scale != 0) {
         return NULL;
     }
 

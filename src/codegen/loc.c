@@ -20,49 +20,49 @@ cb_t loc_args_copy(int indent, struct location_t *from, struct location_t *to,
     switch (from->type) {
     case LOC_GPR:
         if (instr_move_gpr_into_mem(&res, indent, from->gpr_reg1, from->true_len,
-                                    util_get_memory_address(to), pool, frag))
+                                    util_get_memory_address(to), frag))
             goto error;
         break;
     case LOC_SSE:
         if (instr_move_sse_into_mem(&res, indent, from->sse_reg1, from->true_len,
-                                    util_get_memory_address(to), pool, frag))
+                                    util_get_memory_address(to), frag))
             goto error;
         break;
     case LOC_GPR_GPR:
         if (instr_move_gpr_into_mem(&res, indent, from->gpr_reg1, 8,
-                                    util_get_memory_address(to), pool, frag))
+                                    util_get_memory_address(to), frag))
             goto error;
         if (instr_move_gpr_into_mem(&res, indent, from->gpr_reg2, from->true_len - 8,
-                                    util_get_memory_address2(to, 8), pool, frag))
+                                    util_get_memory_address2(to, 8), frag))
             goto error;
         break;
     case LOC_GPR_SSE:
         if (instr_move_gpr_into_mem(&res, indent, from->gpr_reg1, 8,
-                                    util_get_memory_address(to), pool, frag))
+                                    util_get_memory_address(to), frag))
             goto error;
         if (instr_move_sse_into_mem(&res, indent, from->sse_reg2, from->true_len - 8,
-                                    util_get_memory_address2(to, 8), pool, frag))
+                                    util_get_memory_address2(to, 8), frag))
             goto error;
         break;
     case LOC_SSE_GPR:
         if (instr_move_sse_into_mem(&res, indent, from->sse_reg1, 8,
-                                    util_get_memory_address(to), pool, frag))
+                                    util_get_memory_address(to), frag))
             goto error;
         if (instr_move_gpr_into_mem(&res, indent, from->gpr_reg2, from->true_len - 8,
-                                    util_get_memory_address2(to, 8), pool, frag))
+                                    util_get_memory_address2(to, 8), frag))
             goto error;
         break;
     case LOC_SSE_SSE:
         if (instr_move_sse_into_mem(&res, indent, from->sse_reg1, 8,
-                                    util_get_memory_address(to), pool, frag))
+                                    util_get_memory_address(to), frag))
             goto error;
         if (instr_move_sse_into_mem(&res, indent, from->sse_reg2, from->true_len - 8,
-                                    util_get_memory_address2(to, 8), pool, frag))
+                                    util_get_memory_address2(to, 8), frag))
             goto error;
         break;
     case LOC_PTR_IN_GPR:
         if (instr_move_gpr_into_mem(&res, indent, from->gpr_reg1, 8,
-                                    util_get_memory_address(to), pool, frag))
+                                    util_get_memory_address(to), frag))
             goto error;
         break;
     case LOC_PTR_ON_STACK:
@@ -87,42 +87,89 @@ error:
 }
 
 cb_t loc_move_data(int indent, struct location_t *from, struct location_t *to,
-                   size_t len, struct gpr_pool_t *pool, const tfrag_t *frag) {
+                   size_t len, struct gpr_pool_t *pool,
+                   struct label_generator_t *lblg, const tfrag_t *frag) {
     cb_t res = {0};
     cb_init(&res);
 
-    if (from->type == LOC_GPR) {
-        if (to->type == LOC_GPR) {
-            if (instr_move_gpr_into_gpr(&res, indent, from->gpr_reg1, to->gpr_reg1,
-                                        len, frag)) {
-                goto error;
-            }
-            return res;
-        } else if (to->type == LOC_MEM) {
-            if (instr_move_gpr_into_mem(&res, indent, from->gpr_reg1, len,
-                                        util_get_memory_address(to), pool, frag)) {
-                goto error;
-            }
-            return res;
-        }
-    } else if (from->type == LOC_MEM) {
-    } else if (from->type == LOC_INT_LITERAL) {
+    if (from->type == LOC_INT_LITERAL) {
         if (to->type == LOC_GPR) {
             if (instr_move_int_into_gpr(&res, indent, from->int_literal, len,
-                                        to->gpr_reg1, frag)) {
+                                        to->gpr_reg1, frag))
                 goto error;
-            }
-            return res;
-        }
+        } else if (to->type == LOC_MEM) {
+            if (instr_move_int_into_mem(&res, indent, from->int_literal, len,
+                                        util_get_memory_address(to), frag))
+                goto error;
+        } else
+            goto unsupported;
+
     } else if (from->type == LOC_UINT_LITERAL) {
         if (to->type == LOC_GPR) {
             if (instr_move_uint_into_gpr(&res, indent, from->uint_literal, len,
-                                         to->gpr_reg1, frag)) {
+                                         to->gpr_reg1, frag))
                 goto error;
-            }
-            return res;
-        }
+        } else if (to->type == LOC_MEM) {
+            if (instr_move_uint_into_mem(&res, indent, from->uint_literal, len,
+                                         util_get_memory_address(to), frag))
+                goto error;
+        } else
+            goto unsupported;
+
+    } else if (from->type == LOC_GPR) {
+        if (to->type == LOC_GPR) {
+            if (instr_move_gpr_into_gpr(&res, indent, from->gpr_reg1, to->gpr_reg1,
+                                        len, frag))
+                goto error;
+        } else if (to->type == LOC_SSE) {
+            if (instr_move_gpr_into_sse(&res, indent, from->gpr_reg1, to->sse_reg1,
+                                        len, frag))
+                goto error;
+        } else if (to->type == LOC_MEM) {
+            if (instr_move_gpr_into_mem(&res, indent, from->gpr_reg1, len,
+                                        util_get_memory_address(to), frag))
+                goto error;
+        } else
+            goto unsupported;
+
+    } else if (from->type == LOC_SSE) {
+        if (to->type == LOC_GPR) {
+            if (instr_move_sse_into_gpr(&res, indent, from->sse_reg1, len,
+                                        to->gpr_reg1, frag))
+                goto error;
+        } else if (to->type == LOC_SSE) {
+            if (instr_move_sse_into_sse(&res, indent, from->sse_reg1, len,
+                                        to->sse_reg1, frag))
+                goto error;
+        } else if (to->type == LOC_MEM) {
+            if (instr_move_sse_into_mem(&res, indent, from->sse_reg1, len,
+                                        util_get_memory_address(to), frag))
+                goto error;
+        } else
+            goto unsupported;
+
+    } else if (from->type == LOC_MEM) {
+        if (to->type == LOC_GPR) {
+            if (instr_move_mem_into_gpr(&res, indent, util_get_memory_address(from),
+                                        len, to->gpr_reg1, frag))
+                goto error;
+        } else if (to->type == LOC_SSE) {
+            if (instr_move_mem_into_sse(&res, indent, util_get_memory_address(from),
+                                        len, to->sse_reg1, frag))
+                goto error;
+        } else if (to->type == LOC_MEM) {
+            if (instr_move_mem_into_mem(&res, indent, util_get_memory_address(from),
+                                        len, util_get_memory_address(to), lblg, pool,
+                                        frag))
+                goto error;
+        } else
+            goto unsupported;
+
+    } else {
+        goto unsupported;
     }
+
+    return res;
 
 unsupported:
     context_msg(frag, "Error: unsupported move between location types %d and %d\n",

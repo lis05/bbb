@@ -22,16 +22,24 @@ struct expr_gen_t loc_v(tfrag_t *frag, int indent, struct location_t loc,
     struct expr_gen_t res = {0};
     cb_init(&res.cb);
 
-    if (loc.type == LOC_GPR || loc.type == LOC_SSE || loc.type == LOC_INT_LITERAL ||
-        loc.type == LOC_UINT_LITERAL) {
+    if (loc.type == LOC_INT_LITERAL || loc.type == LOC_UINT_LITERAL ||
+        loc.type == LOC_GPR || loc.type == LOC_SSE || loc.type == LOC_MEM) {
         res.loc = loc;
         return res;
+    }
+    else {
     }
 
     context_msg(frag, "Error: cannot calculate value.\n");
     expr_gen_destroy(&res);
     return expr_gen_invalid();
 }
+
+
+// TODO: finish loc_v and loc_a
+// TODO: remember that each gen_X has to release registers occupied by its arguments
+// i.e. if a=b; then a will be stored in some REG1 and b in REG2, release REG1 and
+// REG2 AND the answer goes into REG3 that will be released by something else
 
 struct expr_gen_t loc_a(tfrag_t *frag, int indent, struct location_t loc,
                         struct function_context_t *fc) {
@@ -109,7 +117,8 @@ struct expr_gen_t gen_expression(int indent, struct expression_node_t *node,
         goto error;
     }
 
-    last = loc_move_data(indent, &value.loc, &addr.loc, left_size, &fc->gpr_pool, &node->frag);
+    last = loc_move_data(indent, &value.loc, &addr.loc, left_size, &fc->gpr_pool,
+                         &fc->lblg, &node->frag);
     if (!cb_is_valid(&last)) {
         goto error;
     }

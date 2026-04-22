@@ -60,8 +60,8 @@ struct location_t {
         struct {
             gpr_reg_t base;
             gpr_reg_t index;
-            size_t scale;
-            int64_t offset;
+            size_t    scale;
+            int64_t   offset;
         };
 
         const char *symbol;
@@ -83,4 +83,5 @@ cb_t loc_args_copy(int indent, struct location_t *from, struct location_t *to,
 
 /* Copies a number of bytes from one location to another. */
 cb_t loc_move_data(int indent, struct location_t *from, struct location_t *to,
-                   size_t len, struct gpr_pool_t *pool, const tfrag_t *frag);
+                   size_t len, struct gpr_pool_t *pool,
+                   struct label_generator_t *lblg, const tfrag_t *frag);
