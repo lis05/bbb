@@ -2,6 +2,7 @@
 
 #include "../common/common.h"
 #include "../parser/error.h"
+#include "gen.h"
 
 static const struct gpr_info _r_rax = {"rax", "eax", "ax", "al"};
 static const struct gpr_info _r_rbx = {"rbx", "ebx", "bx", "bl"};
@@ -140,23 +141,33 @@ struct gpr_pool_item_t *gpr_pool_find(struct gpr_pool_t *pool, gpr_reg_t reg) {
 
 struct gpr_pool_item_t *NONULL gpr_pool_borrow(const tfrag_t *NONULL     frag,
                                                struct gpr_pool_t *NONULL pool) SAFE {
+    log_debug("borrowing a GPR register: ");
     for (int i = 0; i < GPR_REGS; i++) {
         // if totally available
         if (pool->items[i].available && !pool->items[i].abi_protected &&
             !pool->items[i].avoid && !pool->items[i].borrowed) {
             pool->items[i].available = 0;
+            log_pure("%s (was available)\n", pool->items[i].reg->qname);
             return &pool->items[i];
         }
+    }
+    for (int i = 0; i < GPR_REGS; i++) {
         // if not available but otherwise fine
-        else if (!pool->items[i].available && !pool->items[i].abi_protected &&
-                 !pool->items[i].avoid && !pool->items[i].borrowed) {
+        if (!pool->items[i].available && !pool->items[i].abi_protected &&
+            !pool->items[i].avoid && !pool->items[i].borrowed) {
             pool->items[i].borrowed = 1;
+            log_pure("%s (was not available, now borrowed)\n",
+                     pool->items[i].reg->qname);
             return &pool->items[i];
         }
+    }
+    for (int i = 0; i < GPR_REGS; i++) {
         // if not available and abi_protected. sad but ok
-        else if (!pool->items[i].available && pool->items[i].abi_protected &&
-                 !pool->items[i].avoid && !pool->items[i].borrowed) {
+        if (!pool->items[i].available && pool->items[i].abi_protected &&
+            !pool->items[i].avoid && !pool->items[i].borrowed) {
             pool->items[i].borrowed = 1;
+            log_pure("%s (was not available, ABI protected, now borrowed)\n",
+                     pool->items[i].reg->qname);
             return &pool->items[i];
         }
     }
@@ -183,25 +194,33 @@ void gpr_pool_release(struct gpr_pool_item_t *YESNULL item) {
     }
 }
 
-void gpr_pool_handle_borrowed(cb_t *NONULL cb, int indent, struct gpr_pool_t *NONULL pool,
-                              int BOOL align_to_16) {
+void gpr_pool_handle_borrowed(cb_t *NONULL cb, int indent,
+                              struct gpr_pool_t *NONULL pool, int BOOL align_to_16) {
     int cnt = 0;
     for (int i = 0; i < GPR_REGS; i++) {
         if (pool->items[i].borrowed) {
+            EXPLAIN(*cb, indent, "Borrowing %s\n", pool->items[i].reg->qname);
             cb_add_front(cb, indent, "push %s\n", pool->items[i].reg->qname);
             cnt++;
         }
     }
 
     if (cnt % 2 != 0 && align_to_16) {
+        EXPLAIN(*cb, indent, "Borrowing (need to align stack).\n");
         cb_add_front(cb, indent, "push rax\n");
     }
 
     for (int i = 0; i < GPR_REGS; i++) {
         if (pool->items[i].borrowed) {
+            EXPLAIN(*cb, indent, "Unborrowing %s\n", pool->items[i].reg->qname);
             cb_add_back(cb, indent, "pop %s\n", pool->items[i].reg->qname);
             pool->items[i].borrowed = 0;
         }
+    }
+
+    if (cnt % 2 != 0 && align_to_16) {
+        EXPLAIN(*cb, indent, "Unborrowing (need to align stack).\n");
+        cb_add_back(cb, indent, "pop rax\n");
     }
 }
 void sse_pool_init(struct sse_pool_t *pool) {
