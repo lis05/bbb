@@ -5,6 +5,7 @@
 #include "cb.h"
 #include "lblg.h"
 #include "regs.h"
+#include "gpr_pool.h"
 
 enum location_type {
     /* A single GPR register. */
@@ -76,7 +77,7 @@ struct location_t {
  * treated as simply 8-byte long data, and are not *dereferenced* if ykwim.
  *
  * This function should only be used to transfer function arguments from their
- * locations onto the stack. It uses R10 register.*/
+ * locations onto the stack. It uses R10 register. */
 cb_t loc_args_copy(int indent, struct location_t *from, struct location_t *to,
                    struct label_generator_t *lblg, struct gpr_pool_t *pool,
                    const tfrag_t *frag);

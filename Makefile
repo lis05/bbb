@@ -1,7 +1,7 @@
 MAKEFLAGS += -r
 
 CC := gcc
-CFLAGS := -Wall -Wextra -O0 -g -std=gnu11 -fno-pie
+CFLAGS := -Wall -Wextra -O0 -g -std=gnu23 -fno-pie
 
 LD := gcc
 LDFLAGS := -rdynamic -g -no-pie

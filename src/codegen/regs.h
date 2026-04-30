@@ -35,6 +35,16 @@ extern const gpr_reg_t r_r14;
 extern const gpr_reg_t r_r15;
 extern const gpr_reg_t r_gpr[GPR_REGS];
 
+static inline int gpr_reg_index(gpr_reg_t NONULL reg) {
+    for (int i = 0; i < GPR_REGS; i++) {
+        if (reg == r_gpr[i]) {
+            return i;
+        }
+    }
+    log_crit("Invalid GPR register.\n");
+    return 0;
+}
+
 // ===
 // SSE registers
 // ===
@@ -61,47 +71,3 @@ extern sse_reg_t r_xmm12;
 extern sse_reg_t r_xmm13;
 extern sse_reg_t r_xmm14;
 extern sse_reg_t r_xmm15;
-
-// ===
-// GPR registers pool
-// ===
-
-struct gpr_pool_item_t {
-    gpr_reg_t reg;
-    uint8_t   available : 1;      // if the register is used somewhere else
-    uint8_t   abi_protected : 1;  // if it is "protected" by the abi
-    uint8_t   avoid : 1;  // totally unavailable, must not use under no circumstance
-    uint8_t   borrowed : 1;  // not available but borrowed, must be returned
-};
-
-struct gpr_pool_t {
-    struct gpr_pool_item_t items[GPR_REGS];
-};
-
-void                           gpr_pool_init(struct gpr_pool_t *pool);
-struct gpr_pool_item_t        *gpr_pool_find(struct gpr_pool_t *pool, gpr_reg_t reg);
-struct gpr_pool_item_t        *gpr_pool_find_available(struct gpr_pool_t *pool);
-struct gpr_pool_item_t *NONULL gpr_pool_borrow(const tfrag_t *NONULL     frag,
-                                               struct gpr_pool_t *NONULL pool) SAFE;
-void gpr_pool_release_borrowed(struct gpr_pool_t *NONULL pool);
-void gpr_pool_release(struct gpr_pool_item_t *YESNULL item);  // only for unoccupied
-void gpr_pool_handle_borrowed(cb_t *NONULL cb, int indent, struct gpr_pool_t *NONULL pool,
-                              int BOOL align_to_16);
-
-// ===
-// SSE registers pool
-// ===
-
-struct sse_pool_item_t {
-    sse_reg_t reg;
-    uint8_t   available : 1;
-};
-
-struct sse_pool_t {
-    struct sse_pool_item_t items[SSE_REGS];
-};
-
-void                    sse_pool_init(struct sse_pool_t *pool);
-struct sse_pool_item_t *sse_pool_find_available(struct sse_pool_t *pool);
-struct sse_pool_item_t *sse_pool_find(struct sse_pool_t *pool, sse_reg_t reg);
-

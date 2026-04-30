@@ -4,6 +4,7 @@
 #include "regs.h"
 #include "scope.h"
 #include "lblg.h"
+#include "gpr_pool.h"
 
 struct function_context_t {
     int64_t stack_offset;
@@ -12,7 +13,6 @@ struct function_context_t {
     struct scope_t local_scope;
     struct label_generator_t lblg;
     struct gpr_pool_t gpr_pool;
-    struct sse_pool_t sse_pool;
 };
 
 void fc_init(struct function_context_t *fc NONULL) MEMSAFE;
