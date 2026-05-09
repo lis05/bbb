@@ -18,33 +18,16 @@ void expr_gen_destroy(struct expr_gen_t *eg) {
     }
 }
 
-/* ===================================== */
-/* ===================================== */
-/* ===================================== */
-/* ===================================== */
-/* ===================================== */
-
-/*
- * By convention, any gen_X function must only change one register in the pool (if
- * any): the output register.
- * */
-
-/* ===================================== */
-/* ===================================== */
-/* ===================================== */
-/* ===================================== */
-/* ===================================== */
-
 /*
  * Some locations (like symbols, or pointers*) are not immediatelly available for
  * codegen. This function extracts them into a register.
  * For all other locs, it does nothing.
  *
  * This function may use a register from the gpr pool. */
+
 static struct expr_gen_t extract(tfrag_t *frag, int indent, struct location_t *loc,
-                                 struct function_context_t    *fc,
-                                 enum gpr_pool_register_please reg_type) {
-    log_debug("Extracting loc_id=%d\n", loc->type);
+                                 struct function_context_t *fc) {
+    log_debug("Extracting loc_id=%s\n", LOCATION_TYPE[loc->type]);
     struct expr_gen_t res = {0};
     cb_init(&res.cb);
 
@@ -52,7 +35,7 @@ static struct expr_gen_t extract(tfrag_t *frag, int indent, struct location_t *l
         // extract address into a register. inefficient, but i do not care atp.
         log_debug(" - extracting LOC_SYMBOL\n");
         EXPLAIN(res.cb, indent, "Extracting LOC_SYMBOL into a register.\n");
-        gpr_reg_t reg = gpr_pool_please(&fc->gpr_pool, frag, reg_type);
+        gpr_reg_t reg = gpr_pool_please(&fc->gpr_pool, frag);
         cb_add_back(&res.cb, indent, "lea %s, [rel %s]\n", reg->qname, loc->symbol);
         res.loc = (struct location_t){
             .type = LOC_MEM,
@@ -68,7 +51,7 @@ static struct expr_gen_t extract(tfrag_t *frag, int indent, struct location_t *l
         // same
         log_debug(" - extracting LOC_PTR_IN_GPR\n");
         EXPLAIN(res.cb, indent, "Extracting LOC_PTR_IN_GPR into a register.\n");
-        gpr_reg_t reg = gpr_pool_please(&fc->gpr_pool, frag, reg_type);
+        gpr_reg_t reg = gpr_pool_please(&fc->gpr_pool, frag);
         cb_add_back(&res.cb, indent, "mov %s, %s\n", reg->qname, loc->gpr_reg1);
         res.loc = (struct location_t){
             .type = LOC_MEM,
@@ -84,7 +67,7 @@ static struct expr_gen_t extract(tfrag_t *frag, int indent, struct location_t *l
         // also the same
         log_debug(" - extracting LOC_PTR_ON_STACK\n");
         EXPLAIN(res.cb, indent, "Extracting LOC_PTR_ON_STACK into a register.\n");
-        gpr_reg_t reg = gpr_pool_please(&fc->gpr_pool, frag, reg_type);
+        gpr_reg_t reg = gpr_pool_please(&fc->gpr_pool, frag);
         cb_add_back(&res.cb, indent, "mov %s, [%s]\n", reg->qname,
                     util_format_memory_address(util_get_memory_address(loc)));
         res.loc = (struct location_t){
@@ -97,9 +80,20 @@ static struct expr_gen_t extract(tfrag_t *frag, int indent, struct location_t *l
             .offset = 0,
         };
         return res;
-    } else {
+    } else if (loc->type == LOC_GPR) {
         res.loc = *loc;
         return res;
+    }
+    else {
+        res.loc = *loc;
+        return res;
+    }
+}
+
+static void mark_as_output(struct location_t *NONULL         loc,
+                           struct function_context_t *NONULL fc) {
+    if (loc->type == LOC_GPR) {
+        gpr_pool_output(&fc->gpr_pool, loc->gpr_reg1);
     }
 }
 
@@ -129,21 +123,25 @@ struct expr_gen_t gen_expression(int indent, struct expression_node_t *node,
     if (!expr_gen_is_valid(&left)) {
         goto error;
     }
+    log_debug(" - generated left side of the assignment.\n");
 
     right = gen_expr(indent, node->arg2, fc);
     if (!expr_gen_is_valid(&right)) {
         goto error;
     }
+    log_debug(" - generated right side of the assignment.\n");
 
-    addr = extract(&node->arg1->frag, indent, &left.loc, fc, REGISTER_OUTPUT);
+    addr = extract(&node->arg1->frag, indent, &left.loc, fc);
     if (!expr_gen_is_valid(&addr)) {
         goto error;
     }
+    log_debug(" - extracted left side of the assignment.\n");
 
-    value = extract(&node->arg2->frag, indent, &right.loc, fc, REGISTER_ANY);
+    value = extract(&node->arg2->frag, indent, &right.loc, fc);
     if (!expr_gen_is_valid(&value)) {
         goto error;
     }
+    log_debug(" - extracted right side of the assignment.\n");
 
     cb_glue_back(&res.cb, &left.cb);
     cb_glue_back(&res.cb, &right.cb);
@@ -165,6 +163,7 @@ struct expr_gen_t gen_expression(int indent, struct expression_node_t *node,
 
     last = loc_move_data(indent, &value.loc, &addr.loc, left_size, &fc->gpr_pool,
                          &fc->lblg, &node->frag);
+    log_debug(" - generated loc_move_data()\n");
     if (!cb_is_valid(&last)) {
         goto error;
     }
@@ -172,9 +171,11 @@ struct expr_gen_t gen_expression(int indent, struct expression_node_t *node,
     cb_glue_back(&res.cb, &last);
 
     res.loc = left.loc;
+    log_debug(" - assignment generation done with SUCCESS.\n");
 
 end:
     RESTORE_CONTEXT(fc, context_save);
+    mark_as_output(&res.loc, fc);
     return res;
 
 error:
@@ -572,6 +573,8 @@ struct expr_gen_t gen_literal(int indent, struct literal_node_t *node,
     } else {
         log_crit("lmao how\n");
     }
+
+    mark_as_output(&res.loc, fc);
 
     return res;
 }

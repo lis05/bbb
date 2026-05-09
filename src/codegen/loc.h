@@ -3,9 +3,9 @@
 #include "../common/common.h"
 #include "../parser/tfrag.h"
 #include "cb.h"
+#include "gpr_pool.h"
 #include "lblg.h"
 #include "regs.h"
-#include "gpr_pool.h"
 
 enum location_type {
     /* A single GPR register. */
@@ -32,6 +32,12 @@ enum location_type {
     LOC_INT_LITERAL,
     /* Uint literal. */
     LOC_UINT_LITERAL,
+};
+
+static const char *LOCATION_TYPE[] = {
+    "LOC_GPR",     "LOC_SSE",     "LOC_GPR_GPR",     "LOC_GPR_SSE",
+    "LOC_SSE_GPR", "LOC_SSE_SSE", "LOC_PTR_IN_GPR",  "LOC_PTR_ON_STACK",
+    "LOC_MEM",     "LOC_SYMBOL",  "LOC_INT_LITERAL", "LOC_UINT_LITERAL",
 };
 
 struct location_t {

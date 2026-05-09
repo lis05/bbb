@@ -76,9 +76,9 @@ cb_t loc_args_copy(int indent, struct location_t *from, struct location_t *to,
                                     lblg, pool, frag))
             goto error;
         break;
+    default: break;
     }
 
-end:
     return res;
 
 error:

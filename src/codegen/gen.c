@@ -1,6 +1,7 @@
 #include "gen.h"
 
 #include "expr.h"
+#include "gpr_pool.h"
 
 static cb_t gen_program(int indent, const struct program_node_t *node);
 static cb_t gen_global_variable_decl(
@@ -22,6 +23,8 @@ static cb_t gen_variable_declaration(int indent,
                                      struct function_context_t                *fc);
 static cb_t gen_register_alias(int indent, const struct register_alias_node_t *node,
                                struct function_context_t *fc);
+static cb_t gen_avoid_block(int indent, const struct avoid_block_node_t *node,
+                            struct function_context_t *fc);
 static cb_t gen_nasm_block(int indent, const struct name_node_t *node,
                            struct function_context_t *fc);
 
@@ -839,44 +842,45 @@ static cb_t gen_register_alias(int indent, const struct register_alias_node_t *n
     cb_t res;
     cb_init(&res);
 
-    struct gpr_pool_item_t *item;
+    gpr_reg_t reg = NULL;
 
     if (strcmp(node->reg->name, KW_ALIAS_REG) == 0) {
-        item = gpr_pool_find_available(&fc->gpr_pool);
+        /* it may borrow, but we ignore it. if it borrows, you're screwed anyway. */
+        reg = gpr_pool_please(&fc->gpr_pool, &node->frag);
     } else {
         // ugly. switch? tables?
         if (strcmp(node->reg->name, r_rax->qname) == 0) {
-            item = gpr_pool_find(&fc->gpr_pool, r_rax);
+            reg = r_rax;
         } else if (strcmp(node->reg->name, r_rbx->qname) == 0) {
-            item = gpr_pool_find(&fc->gpr_pool, r_rbx);
+            reg = r_rbx;
         } else if (strcmp(node->reg->name, r_rcx->qname) == 0) {
-            item = gpr_pool_find(&fc->gpr_pool, r_rcx);
+            reg = r_rcx;
         } else if (strcmp(node->reg->name, r_rdx->qname) == 0) {
-            item = gpr_pool_find(&fc->gpr_pool, r_rdx);
+            reg = r_rdx;
         } else if (strcmp(node->reg->name, r_rsi->qname) == 0) {
-            item = gpr_pool_find(&fc->gpr_pool, r_rsi);
+            reg = r_rsi;
         } else if (strcmp(node->reg->name, r_rdi->qname) == 0) {
-            item = gpr_pool_find(&fc->gpr_pool, r_rdi);
+            reg = r_rdi;
         } else if (strcmp(node->reg->name, r_rbp->qname) == 0) {
-            item = gpr_pool_find(&fc->gpr_pool, r_rbp);
+            reg = r_rbp;
         } else if (strcmp(node->reg->name, r_rsp->qname) == 0) {
-            item = gpr_pool_find(&fc->gpr_pool, r_rsp);
+            reg = r_rsp;
         } else if (strcmp(node->reg->name, r_r8->qname) == 0) {
-            item = gpr_pool_find(&fc->gpr_pool, r_r8);
+            reg = r_r8;
         } else if (strcmp(node->reg->name, r_r9->qname) == 0) {
-            item = gpr_pool_find(&fc->gpr_pool, r_r9);
+            reg = r_r9;
         } else if (strcmp(node->reg->name, r_r10->qname) == 0) {
-            item = gpr_pool_find(&fc->gpr_pool, r_r10);
+            reg = r_r10;
         } else if (strcmp(node->reg->name, r_r11->qname) == 0) {
-            item = gpr_pool_find(&fc->gpr_pool, r_r11);
+            reg = r_r11;
         } else if (strcmp(node->reg->name, r_r12->qname) == 0) {
-            item = gpr_pool_find(&fc->gpr_pool, r_r12);
+            reg = r_r12;
         } else if (strcmp(node->reg->name, r_r13->qname) == 0) {
-            item = gpr_pool_find(&fc->gpr_pool, r_r13);
+            reg = r_r13;
         } else if (strcmp(node->reg->name, r_r14->qname) == 0) {
-            item = gpr_pool_find(&fc->gpr_pool, r_r14);
+            reg = r_r14;
         } else if (strcmp(node->reg->name, r_r15->qname) == 0) {
-            item = gpr_pool_find(&fc->gpr_pool, r_r15);
+            reg = r_r15;
         } else {
             context_msg(&node->frag, "Error: invalid register.\n");
             cb_destroy(&res);
@@ -884,38 +888,90 @@ static cb_t gen_register_alias(int indent, const struct register_alias_node_t *n
         }
     }
 
-    if (item == NULL) {
+    struct gpr_pool_item_t *item = gpr_pool_item(&fc->gpr_pool, reg);
+    if (gpr_pool_item(&fc->gpr_pool, reg)->status == GPIS_BORROWED) {
+        context_msg(&node->frag, "Note: using register %s may break things.\n",
+                    reg->qname);
+    }
+    // since bbb compiler is increadibly disgusting, alias now just bind a register
+    // to a variable, without forbidding its usage in the block. use avoid{}
+    // item->status = GPIS_FORBIDDEN; // as the spec says, must not be used.
+
+    if (reg == NULL) {
         context_msg(&node->frag, "Error: could not find an available register.\n");
         cb_destroy(&res);
         return cb_invalid();
-    }
-    if (item->avoid) {
-        context_msg(&node->frag, "Note: the register should be avoided.\n");
-    }
-    if (item->abi_protected) {
-        context_msg(
-            &node->frag,
-            "Note: will use register %s which might cause ABI-related issues.\n",
-            item->reg->qname);
-    }
-    if (!item->available) {
-        context_msg(&node->frag, "Note: register %s is already in use.\n",
-                    item->reg->qname);
     }
 
     struct location_t loc = {
         .type = LOC_GPR,
         .true_len = 8,
         .alignment = 8,
-        .gpr_reg1 = item->reg,
+        .gpr_reg1 = reg,
     };
-    item->available = 0;
 
     log_debug(" - alias '%s' is register %s\n", node->name->name, item->reg->qname);
     scope_add(&fc->local_scope, node->name->name, loc);
     return res;
 }
 
+static cb_t gen_avoid_block(int indent, const struct avoid_block_node_t *node,
+                            struct function_context_t *fc) {
+    log_assert(node != NULL);
+    LOG_ENTER(&node->frag, indent);
+
+    struct function_context_t saved = *fc;
+
+    struct avoid_block_regs_node_t *regs = node->regs;
+    while (regs != NULL) {
+        log_debug(" - avoid %s\n", regs->reg->name);
+        if (strcmp(regs->reg->name, r_rax->qname) == 0) {
+            gpr_pool_item(&fc->gpr_pool, r_rax)->status = GPIS_FORBIDDEN;
+        } else if (strcmp(regs->reg->name, r_rbx->qname) == 0) {
+            gpr_pool_item(&fc->gpr_pool, r_rbx)->status = GPIS_FORBIDDEN;
+        } else if (strcmp(regs->reg->name, r_rcx->qname) == 0) {
+            gpr_pool_item(&fc->gpr_pool, r_rcx)->status = GPIS_FORBIDDEN;
+        } else if (strcmp(regs->reg->name, r_rdx->qname) == 0) {
+            gpr_pool_item(&fc->gpr_pool, r_rdx)->status = GPIS_FORBIDDEN;
+        } else if (strcmp(regs->reg->name, r_rsi->qname) == 0) {
+            gpr_pool_item(&fc->gpr_pool, r_rsi)->status = GPIS_FORBIDDEN;
+        } else if (strcmp(regs->reg->name, r_rdi->qname) == 0) {
+            gpr_pool_item(&fc->gpr_pool, r_rdi)->status = GPIS_FORBIDDEN;
+        } else if (strcmp(regs->reg->name, r_rbp->qname) == 0) {
+            gpr_pool_item(&fc->gpr_pool, r_rbp)->status = GPIS_FORBIDDEN;
+        } else if (strcmp(regs->reg->name, r_rsp->qname) == 0) {
+            gpr_pool_item(&fc->gpr_pool, r_rsp)->status = GPIS_FORBIDDEN;
+        } else if (strcmp(regs->reg->name, r_r8->qname) == 0) {
+            gpr_pool_item(&fc->gpr_pool, r_r8)->status = GPIS_FORBIDDEN;
+        } else if (strcmp(regs->reg->name, r_r9->qname) == 0) {
+            gpr_pool_item(&fc->gpr_pool, r_r9)->status = GPIS_FORBIDDEN;
+        } else if (strcmp(regs->reg->name, r_r10->qname) == 0) {
+            gpr_pool_item(&fc->gpr_pool, r_r10)->status = GPIS_FORBIDDEN;
+        } else if (strcmp(regs->reg->name, r_r11->qname) == 0) {
+            gpr_pool_item(&fc->gpr_pool, r_r11)->status = GPIS_FORBIDDEN;
+        } else if (strcmp(regs->reg->name, r_r12->qname) == 0) {
+            gpr_pool_item(&fc->gpr_pool, r_r12)->status = GPIS_FORBIDDEN;
+        } else if (strcmp(regs->reg->name, r_r13->qname) == 0) {
+            gpr_pool_item(&fc->gpr_pool, r_r13)->status = GPIS_FORBIDDEN;
+        } else if (strcmp(regs->reg->name, r_r14->qname) == 0) {
+            gpr_pool_item(&fc->gpr_pool, r_r14)->status = GPIS_FORBIDDEN;
+        } else if (strcmp(regs->reg->name, r_r15->qname) == 0) {
+            gpr_pool_item(&fc->gpr_pool, r_r15)->status = GPIS_FORBIDDEN;
+        }
+        else {
+            context_msg(&node->frag, "Cannot avoid %s: invalid\n", regs->reg->name);
+            *fc = saved;
+            return cb_invalid();
+        }
+
+        regs = regs->rest;
+    }
+
+    cb_t res = gen_body(indent, node->body, fc);
+    *fc = saved;
+
+    return res;
+}
 /*
  * 1. Tokens like $var are replaced with:
  *   - rel <symbol>
