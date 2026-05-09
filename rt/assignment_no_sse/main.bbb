@@ -1,0 +1,132 @@
+%nasm
+section .data
+    fmt_i32 db `%d\n`, 0
+    fmt_i64 db `%lld\n`, 0
+    fmt_u32 db `%u\n`, 0
+    fmt_u64 db `%llu\n`, 0
+    fmt_f db `%f\n`, 0
+%endnasm
+
+extern printf
+%nasm
+%macro print 2
+    lea rdi, [rel %1]
+    mov rsi, %2
+    xor rax, rax
+    call printf wrt ..plt
+%endmacro
+
+%macro print_f 1
+    lea rdi, [rel fmt_f]
+    movq xmm0, %1
+    mov rax, 1
+    call printf wrt ..plt
+%endmacro
+%endnasm
+
+%nasm
+section .data
+    global_var db 1,2,3,4,5,6,7,8
+%endnasm
+
+main: global fn(argc: m4 align8, argv: m8 align8) {
+%nasm
+    push r14
+    push r15
+%endnasm
+
+    mem1: m8
+    mem2: m8
+    reg1: alias r14
+    reg2: alias r15
+
+//
+//  <- int
+//
+
+    reg1 m8=m8 -1;
+    %nasm print fmt_i64, $reg1 %endnasm // prints 1
+
+    mem1 m8=m8 -2;
+    %nasm print fmt_i64, [$mem1] %endnasm // prints -2
+
+//
+//  <- uint
+//
+    reg1 m8=m8 3;
+    %nasm print fmt_u64, $reg1 %endnasm // prints 3
+
+    mem1 m8=m8 4;
+    %nasm print fmt_u64, [$mem1] %endnasm // prints 4
+
+//
+//  <- reg
+//
+    reg1 m8=m8 5;
+    reg2 m8=m8 reg1;
+    %nasm print fmt_i64, $reg1 %endnasm // prints 5
+
+    reg1 m8=m8 6;
+    mem1 m8=m8 reg1;
+    %nasm print fmt_i64, [$mem1] %endnasm // prints 6
+
+
+//
+//  <- mem
+//
+
+    mem1 m8=m8 7;
+    reg1 m8=m8 mem1;
+    %nasm print fmt_i64, $reg1 %endnasm // prints 7
+
+    mem1 m8=m8 8;
+    mem2 m8=m8 mem1;
+    %nasm print fmt_i64, [$mem2] %endnasm // prints 8
+
+//
+// chaining
+//
+    reg1 m8=m8 9;
+    mem1 = mem2 = reg2 = reg1;
+    %nasm print fmt_i64, $reg1 %endnasm // prints 9
+    %nasm print fmt_i64, $reg2 %endnasm // prints 9
+    %nasm print fmt_i64, [$mem1] %endnasm // prints 9
+    %nasm print fmt_i64, [$mem2] %endnasm // prints 9
+
+    reg1 = reg2 = mem1 = mem2 = reg1 = reg2 = mem1 = mem2 = reg1 = reg2
+        = mem1 = mem2 = reg1 = reg2 = mem1 = mem2 = reg1 = reg2 = 10;
+    %nasm print fmt_i64, $reg1 %endnasm // prints 10
+    %nasm print fmt_i64, $reg2 %endnasm // prints 10
+    %nasm print fmt_i64, [$mem1] %endnasm // prints 10
+    %nasm print fmt_i64, [$mem2] %endnasm // prints 10
+
+// smaller than 8 bytes
+    %nasm mov $reg1, 0 %endnasm
+    reg1 m1=m1 11;
+    %nasm print fmt_i64, $reg1 %endnasm // prints 11
+
+    %nasm mov $reg1, 0 %endnasm
+    reg1 m2=m2 1212;
+    %nasm print fmt_i64, $reg1 %endnasm // prints 1212
+
+    %nasm mov $reg1, 0 %endnasm
+    reg1 m4=m4 131313131;
+    %nasm print fmt_i64, $reg1 %endnasm // prints 131313131
+
+    %nasm mov qword [$mem1], 0 %endnasm
+    mem1 m1=m1 14;
+    %nasm print fmt_i64, [$mem1] %endnasm // prints 14
+
+    %nasm mov qword [$mem1], 0 %endnasm
+    mem1 m2=m2 1515;
+    %nasm print fmt_i64, [$mem1] %endnasm // prints 1515
+
+    %nasm mov qword [$mem1], 0 %endnasm
+    mem1 m4=m4 161616161;
+    %nasm print fmt_i64, [$mem1] %endnasm // prints 161616161
+
+%nasm
+    pop r15
+    pop r14
+%endnasm
+}

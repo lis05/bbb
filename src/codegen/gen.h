@@ -12,11 +12,25 @@
 #include "util.h"
 #include "vmap.h"
 
+#define RV_EXPLAIN(cbref, indent, ...)                        \
+    do {                                                      \
+        if (add_explanatory_comments) {                       \
+            cb_add_front(&(cbref), indent, "; " __VA_ARGS__); \
+        }                                                     \
+    } while (0)
+
 #define EXPLAIN(cbref, indent, ...)                          \
     do {                                                     \
         if (add_explanatory_comments) {                      \
             cb_add_back(&(cbref), indent, "; " __VA_ARGS__); \
         }                                                    \
+    } while (0)
+
+#define RV_EXPLAIN_NL(cbref)                 \
+    do {                                     \
+        if (add_explanatory_comments) {      \
+            cb_add_front(&(cbref), 0, "\n"); \
+        }                                    \
     } while (0)
 
 #define EXPLAIN_NL(cbref)                   \

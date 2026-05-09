@@ -179,6 +179,7 @@ end:
     return res;
 
 error:
+    log_debug(" - error has happened.\n");
     expr_gen_destroy(&res);
     expr_gen_destroy(&left);
     expr_gen_destroy(&right);
@@ -186,7 +187,7 @@ error:
     expr_gen_destroy(&value);
     cb_destroy(&last);
     res = expr_gen_invalid();
-    goto end;
+    return res;
 }
 
 struct expr_gen_t gen_logical_or(int indent, struct logical_or_node_t *node,

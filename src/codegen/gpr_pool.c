@@ -77,15 +77,15 @@ void gpr_pool_thanks(struct gpr_pool_t *NONULL pool, cb_t *NONULL cb, int indent
     int cnt = 0;
     for (int i = 0; i < GPR_REGS; i++) {
         if (pool->items[i].status == GPIS_BORROWED) {
-            EXPLAIN(*cb, indent, "Borrowing %s\n", pool->items[i].reg->qname);
             cb_add_front(cb, indent, "push %s\n", pool->items[i].reg->qname);
+            RV_EXPLAIN(*cb, indent, "Borrowing %s\n", pool->items[i].reg->qname);
             cnt++;
         }
     }
 
     if (cnt % 2 != 0 && align_to_16) {
-        EXPLAIN(*cb, indent, "Borrowing (need to align stack).\n");
         cb_add_front(cb, indent, "push rax\n");
+        RV_EXPLAIN(*cb, indent, "Borrowing (need to align stack).\n");
     }
 
     for (int i = 0; i < GPR_REGS; i++) {

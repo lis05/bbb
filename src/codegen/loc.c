@@ -76,7 +76,8 @@ cb_t loc_args_copy(int indent, struct location_t *from, struct location_t *to,
                                     lblg, pool, frag))
             goto error;
         break;
-    default: break;
+    default:
+        break;
     }
 
     return res;
@@ -172,8 +173,8 @@ cb_t loc_move_data(int indent, struct location_t *from, struct location_t *to,
     return res;
 
 unsupported:
-    context_msg(frag, "Error: unsupported move between location types %d and %d\n",
-                from->type, to->type);
+    context_msg(frag, "Error: unsupported move between locations %s and %s\n",
+                LOCATION_TYPE[from->type], LOCATION_TYPE[to->type]);
 error:
     cb_destroy(&res);
     return cb_invalid();

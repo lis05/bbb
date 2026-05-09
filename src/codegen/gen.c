@@ -746,6 +746,9 @@ static cb_t gen_statement(int indent, const struct statement_node_t *node,
     } else if (node->alias != NULL) {
         cb_t res = gen_register_alias(indent, node->alias, fc);
         return res;
+    } else if (node->avoid != NULL) {
+        cb_t res = gen_avoid_block(indent, node->avoid, fc);
+        return res;
     } else if (node->nasm != NULL) {
         cb_t res = gen_nasm_block(indent, node->nasm, fc);
         return res;
@@ -957,8 +960,7 @@ static cb_t gen_avoid_block(int indent, const struct avoid_block_node_t *node,
             gpr_pool_item(&fc->gpr_pool, r_r14)->status = GPIS_FORBIDDEN;
         } else if (strcmp(regs->reg->name, r_r15->qname) == 0) {
             gpr_pool_item(&fc->gpr_pool, r_r15)->status = GPIS_FORBIDDEN;
-        }
-        else {
+        } else {
             context_msg(&node->frag, "Cannot avoid %s: invalid\n", regs->reg->name);
             *fc = saved;
             return cb_invalid();
